@@ -13,6 +13,10 @@ module Gemstash
       end
 
       def run
+        latest = @cli.options[:latest]
+        threads = @cli.options[:threads]
+        http_client = HTTPClient.for(Upstream.new(@cli.options[:server_url]))
+        Gemstash::Preload::GemPreloader.new(http_client, latest, threads)
       end
     end
   end

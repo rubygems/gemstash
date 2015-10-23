@@ -11,6 +11,7 @@ module Gemstash
     autoload :Start,     "gemstash/cli/start"
     autoload :Status,    "gemstash/cli/status"
     autoload :Stop,      "gemstash/cli/stop"
+    autoload :Preload,   "gemstash/cli/preload"
 
     # Thor::Error for the CLI, which colors the message red.
     class Error < Thor::Error
@@ -73,5 +74,16 @@ module Gemstash
       say "Gemstash version #{Gemstash::VERSION}"
     end
     map %w(-v --version) => :version
+
+    desc "preload", "Preloads all the gems in your gemstash server from the default upstream"
+    method_option :latest, :type => :boolean, :default => false, :desc =>
+      "Only fetch the latest specs"
+    method_option :server_url, :type => :string, :default => "http://localhost:9292", :desc =>
+      "Gemstash server url"
+    method_option :threads, :type => :numeric, :default => 20, :desc =>
+      "Number of threads to run the fetching job with"
+    def preload
+      Gemstash::CLI::Preload.new(self).run
+    end
   end
 end

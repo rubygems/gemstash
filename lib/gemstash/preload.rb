@@ -1,6 +1,39 @@
+require "zlib"
+require "thread"
+require "forwardable"
+
 module Gemstash
   module Preload
-    class GemPuller
+    class GemPreloader
+      def initialize(http_client, latest = false, threads = 20)
+        @http_client = http_client
+        specs = GemSpecs.new(http_client, latest)
+        specs.fetch
+        puts "Fetched #{specs.count} specs"
+      end
+    end
+
+    class GemSpecs
+      include Enumerable
+
+      def initialize(http_client, latest = false)
+        @http_client = http_client
+        @specs_file = "/specs.4.8.gz" unless latest
+        @specs_file ||= "/latest_specs.4.8.gz"
+      end
+
+      def fetch
+        reader = Zlib::GzipReader.new(
+          StringIO.new(@http_client.get(@specs_file)))
+        @specs = Marshal.load(reader.read)
+        self
+      end
+
+      def each(&block)
+        @specs.each do |gem|
+          yield GemName.new(gem)
+        end
+      end
     end
 
     class GemName
@@ -10,26 +43,6 @@ module Gemstash
 
       def to_s
         "#{@name}-#{@version.to_s}"
-      end
-    end
-
-    class GemSpecs
-      include Enumerable
-
-      def fetch
-        con = Connection.new
-        puts "Downloading latest specs..."
-        req = con.get "/latest_specs.4.8.gz"
-        puts "Inflating specs..."
-        reader = Zlib::GzipReader.new(StringIO.new(req.body.to_s))
-        @specs = Marshal.load(reader.read)
-        self
-      end
-
-      def each(&block)
-        @specs.each do |gem|
-          yield GemName.new(gem)
-        end
       end
     end
 
