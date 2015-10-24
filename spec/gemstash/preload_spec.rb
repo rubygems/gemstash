@@ -1,14 +1,14 @@
 require "spec_helper"
 
 describe Gemstash::Preload do
-  let(:stubs) { stub = Faraday::Adapter::Test::Stubs.new }
-  let(:http_client) { Gemstash::HTTPClient.new(Faraday.new {|builder| builder.adapter(:test, stubs) } ) }
-  let(:latest_specs) {
+  let(:stubs) { Faraday::Adapter::Test::Stubs.new }
+  let(:http_client) { Gemstash::HTTPClient.new(Faraday.new {|builder| builder.adapter(:test, stubs) }) }
+  let(:latest_specs) do
     to_marshaled_gzipped_bytes([["latest_gem", "1.0.0", ""]])
-  }
-  let(:full_specs) {
+  end
+  let(:full_specs) do
     to_marshaled_gzipped_bytes([["latest_gem", "1.0.0", ""], ["other", "0.1.0", ""]])
-  }
+  end
 
   describe Gemstash::Preload::GemSpecs do
     it "GemSpecs fetches the full specs by default" do
@@ -26,7 +26,7 @@ describe Gemstash::Preload do
       stubs.get("latest_specs.4.8.gz") do
         [200, { "CONTENT-TYPE" => "octet/stream" }, latest_specs]
       end
-      specs = Gemstash::Preload::GemSpecs.new(http_client, latest = true).fetch
+      specs = Gemstash::Preload::GemSpecs.new(http_client, latest: true).fetch
       expect(specs.to_a.last.to_s).to eq("latest_gem-1.0.0")
     end
   end

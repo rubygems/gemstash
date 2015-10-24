@@ -2,12 +2,15 @@ require "zlib"
 require "thread"
 require "forwardable"
 
+#:nodoc:
 module Gemstash
+  #:nodoc:
   module Preload
+    #:nodoc:
     class GemPreloader
       def initialize(http_client, latest: false, threads: 20)
         @http_client = http_client
-        @specs = GemSpecs.new(http_client, latest)
+        @specs = GemSpecs.new(http_client, latest: latest)
         @threads = threads
       end
 
@@ -25,10 +28,11 @@ module Gemstash
       end
     end
 
+    #:nodoc:
     class GemSpecs
       include Enumerable
 
-      def initialize(http_client, latest = false)
+      def initialize(http_client, latest: false)
         @http_client = http_client
         @specs_file = "specs.4.8.gz" unless latest
         @specs_file ||= "latest_specs.4.8.gz"
@@ -48,16 +52,18 @@ module Gemstash
       end
     end
 
+    #:nodoc:
     class GemName
       def initialize(gem)
-        (@name, @version, _) = gem
+        (@name, @version, _ignored) = gem
       end
 
       def to_s
-        "#{@name}-#{@version.to_s}"
+        "#{@name}-#{@version}"
       end
     end
 
+    #:nodoc:
     class Pool
       def initialize(size: 20)
         @size = size
