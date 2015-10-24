@@ -5,11 +5,23 @@ require "forwardable"
 module Gemstash
   module Preload
     class GemPreloader
-      def initialize(http_client, latest = false, threads = 20)
+      def initialize(http_client, latest: false, threads: 20)
         @http_client = http_client
-        specs = GemSpecs.new(http_client, latest)
-        specs.fetch
-        puts "Fetched #{specs.count} specs"
+        @specs = GemSpecs.new(http_client, latest)
+        @threads = threads
+      end
+
+      def preload
+        gems = @specs.fetch.to_a
+        pool = Pool.new(size: @threads)
+        gems.each_with_index do |gem, index|
+          pool.schedule(gem.to_s, index) do |gem_name, gem_index|
+            @http_client.get("gems/#{gem_name}.gem") do
+              STDOUT.write("\r#{gem_index}/#{gems.size}")
+            end
+          end
+        end
+        pool.shutdown
       end
     end
 
@@ -18,8 +30,8 @@ module Gemstash
 
       def initialize(http_client, latest = false)
         @http_client = http_client
-        @specs_file = "/specs.4.8.gz" unless latest
-        @specs_file ||= "/latest_specs.4.8.gz"
+        @specs_file = "specs.4.8.gz" unless latest
+        @specs_file ||= "latest_specs.4.8.gz"
       end
 
       def fetch
@@ -70,6 +82,7 @@ module Gemstash
         @size.times do
           schedule { throw :exit }
         end
+        Thread.pass until @jobs.empty?
       end
     end
   end
