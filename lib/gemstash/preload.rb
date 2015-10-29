@@ -1,6 +1,7 @@
 require "zlib"
 require "thread"
 require "forwardable"
+require "faraday"
 
 #:nodoc:
 module Gemstash
@@ -8,23 +9,52 @@ module Gemstash
   module Preload
     #:nodoc:
     class GemPreloader
-      def initialize(http_client, latest: false, threads: 20)
+      def initialize(http_client, out: STDOUT, latest: false, threads: 20)
         @http_client = http_client
-        @specs = GemSpecs.new(http_client, latest: latest)
         @threads = threads
+        @skip = 0
+        @out = out
+        @specs = GemSpecs.new(http_client, latest: latest)
+      end
+
+      def limit(size)
+        @limit = size
+        self
+      end
+
+      def skip(size)
+        @skip = size
+        self
       end
 
       def preload
-        gems = @specs.fetch.to_a
         pool = Pool.new(size: @threads)
-        gems.each_with_index do |gem, index|
-          pool.schedule(gem.to_s, index) do |gem_name, gem_index|
-            @http_client.get("gems/#{gem_name}.gem") do
-              STDOUT.write("\r#{gem_index}/#{gems.size}")
+        semaphore = Mutex.new
+        each_gem do |gem, index, total|
+          pool.schedule(gem, index, total) do |gem_name, gem_index, total_gems|
+            @http_client.get("gems/#{gem_name}.gem")
+            semaphore.synchronize do
+              @out.write("\r#{gem_index}/#{total_gems}")
             end
           end
         end
         pool.shutdown
+      end
+
+    private
+
+      def each_gem
+        gem_specs = @specs.fetch.to_a
+        return if !@limit.nil? && @limit <= 0
+        return if @skip >= gem_specs.size
+        gem_specs[range_for(gem_specs)].each_with_index do |gem, index|
+          yield gem.to_s, index + @skip + 1, gem_specs.size
+        end
+      end
+
+      def range_for(gem_specs)
+        limit = (@limit || gem_specs.size) + @skip - 1
+        (@skip..limit)
       end
     end
 

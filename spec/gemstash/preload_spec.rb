@@ -44,10 +44,37 @@ describe Gemstash::Preload do
       end
     end
 
+    let(:out) { StringIO.new }
+    let(:preloader) { Gemstash::Preload::GemPreloader.new(http_client, out: out) }
+
     it "Preloads all the gems included in the specs file" do
-      preloader = Gemstash::Preload::GemPreloader.new(http_client)
       preloader.preload
       stubs.verify_stubbed_calls
+    end
+
+    it "Skips gems as requested" do
+      preloader.skip(1).preload
+      expect(out.string).to eq("\r2/2")
+    end
+
+    it "Loads as many gems as requested" do
+      preloader.limit(1).preload
+      expect(out.string).to eq("\r1/2")
+    end
+
+    it "Loads only the last gem when requested" do
+      preloader.skip(1).limit(1).preload
+      expect(out.string).to eq("\r2/2")
+    end
+
+    it "Loads no gem at all when the skip is larger than the size" do
+      preloader.skip(3).preload
+      expect(out.string).to be_empty
+    end
+
+    it "Loads no gem at all when the limit is zero" do
+      preloader.limit(0).preload
+      expect(out.string).to be_empty
     end
   end
 
