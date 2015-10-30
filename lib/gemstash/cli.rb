@@ -82,6 +82,10 @@ module Gemstash
       "Gemstash server url"
     method_option :threads, :type => :numeric, :default => 20, :desc =>
       "Number of threads to run the fetching job with"
+    method_option :limit, :type => :numeric, :default => nil, :desc =>
+      "Limit for the number of gems to preload"
+    method_option :skip, :type => :numeric, :default => 0, :desc =>
+      "Number of gems to skip when preloading"
     def preload
       Gemstash::CLI::Preload.new(self).run
     end

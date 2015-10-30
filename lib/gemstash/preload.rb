@@ -9,12 +9,17 @@ module Gemstash
   module Preload
     #:nodoc:
     class GemPreloader
-      def initialize(http_client, out: STDOUT, latest: false, threads: 20)
+      def initialize(http_client, out: STDOUT, latest: false)
         @http_client = http_client
-        @threads = threads
+        @threads = 20
         @skip = 0
         @out = out
         @specs = GemSpecs.new(http_client, latest: latest)
+      end
+
+      def threads(size)
+        @threads = size
+        self
       end
 
       def limit(size)
@@ -29,13 +34,10 @@ module Gemstash
 
       def preload
         pool = Pool.new(size: @threads)
-        semaphore = Mutex.new
         each_gem do |gem, index, total|
-          pool.schedule(gem, index, total) do |gem_name, gem_index, total_gems|
+          @out.write("\r#{index}/#{total}")
+          pool.schedule(gem) do |gem_name|
             @http_client.get("gems/#{gem_name}.gem")
-            semaphore.synchronize do
-              @out.write("\r#{gem_index}/#{total_gems}")
-            end
           end
         end
         pool.shutdown

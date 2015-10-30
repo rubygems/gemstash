@@ -76,6 +76,11 @@ describe Gemstash::Preload do
       preloader.limit(0).preload
       expect(out.string).to be_empty
     end
+
+    it "Loads in order when using only one thread" do
+      preloader.threads(1).preload
+      expect(out.string).to eq("\r1/2\r2/2")
+    end
   end
 
   def to_marshaled_gzipped_bytes(obj)
