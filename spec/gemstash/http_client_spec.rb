@@ -128,21 +128,25 @@ describe Gemstash::HTTPClient do
           expect(exceptions).to be_empty
         end
 
-        context "with a block to store the headers" do
-          it "throws an error" do
-            stubs.get("/gems/rack") { [200, { "CONTENT-TYPE" => "octet/stream" }, "zapatito"] }
-
-            body_result = nil
-            headers_result = nil
-
-            http_client.get("gems/rack") do |body, headers|
-              body_result = body
-              headers_result = headers
-            end
-
-            expect(body_result).to eq("zapatito")
-            expect(headers_result).to eq("CONTENT-TYPE" => "octet/stream")
+        it "forwards the body and headers when providing a block for a get" do
+          stubs.get("/gems/rack") { [200, { "CONTENT-TYPE" => "octet/stream" }, "zapatito"] }
+          http_client.get("gems/rack") do |body, headers|
+            expect(body).to eq("zapatito")
+            expect(headers).to eq("CONTENT-TYPE" => "octet/stream")
           end
+        end
+
+        it "can be used to get the head only with a block" do
+          stubs.head("/gems/other") { [200, { "content-length" => "15" }] }
+          http_client.head("gems/other") do |headers|
+            expect(headers).to eq("content-length" => "15" )
+          end
+        end
+
+        it "can be used to get the head only getting the return value back" do
+          stubs.head("/gems/other") { [200, { "content-length" => "15" }] }
+          headers = http_client.head("gems/other")
+          expect(headers).to eq("content-length" => "15" )
         end
       end
     end

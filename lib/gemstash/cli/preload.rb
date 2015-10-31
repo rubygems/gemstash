@@ -18,6 +18,7 @@ module Gemstash
         preloader = Gemstash::Preload::GemPreloader.new(http_client, latest: @cli.options[:latest]).
           limit(@cli.options[:limit]).skip(@cli.options[:skip]).threads(@cli.options[:threads])
         preloader.preload
+        @cli.say "\nDone"
       end
 
       def are_you_sure?

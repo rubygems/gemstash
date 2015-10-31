@@ -43,15 +43,7 @@ module Gemstash
     end
 
     def get(path)
-      response = with_retries do
-        @client.get(path) do |req|
-          req.headers["User-Agent"] = @user_agent
-          req.options.open_timeout = 2
-        end
-      end
-
-      raise Gemstash::WebError.new(response.body, response.status) unless response.success?
-
+      response = request(:get, path)
       if block_given?
         yield(response.body, response.headers)
       else
@@ -59,7 +51,27 @@ module Gemstash
       end
     end
 
+    def head(path)
+      response = request(:head, path)
+      if block_given?
+        yield response.headers
+      else
+        response.headers
+      end
+    end
+
   private
+
+    def request(method, path)
+      response = with_retries do
+        @client.public_send(method, path) do |request|
+          request.headers["User-Agent"] = @user_agent
+          request.options.open_timeout = 2
+        end
+      end
+      raise Gemstash::WebError.new(response.body, response.status) unless response.success?
+      response
+    end
 
     def with_retries(times: 3, &block)
       loop do
