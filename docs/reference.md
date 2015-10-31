@@ -39,6 +39,14 @@ Table of Contents
         * [--config-file](#--config-file-4)
     * [Version](#version)
       * [Usage](#usage-5)
+    * [Preload](#preload)
+      * [Usage](#usage-5)
+      * [Options](#options-5)
+        * [--latest](#--latest)
+        * [--skip](#--skip)
+        * [--limit](#--limit)
+        * [--threads](#--threads)
+        * [--server_url](#--server_url)
 
 
 
@@ -313,10 +321,58 @@ Show what version of Gemstash you are using.
 ### Usage
 
 ```
+<<<<<<< HEAD
 gemstash version
 gemstash --version
 gemstash -v
 ```
+
+## Preload
+
+Preloads all the gems in your gemstash server from the default upstream
+gemstash preload
+gemstash preload --latest
+gemstash preload --limit=1000
+gemstash preload --limit=1000 --skip=1000
+gemstash preload --threads=10 --server_url=http://my-server-url:9292
+```
+
+### Options
+
+#### --latest
+
+**Usage:** `--latest`
+
+**Description**<br />
+Only fetch the latest specs
+
+#### --skip
+
+**Usage:** `--skip=<number>`
+
+**Description**<br />
+Number of gems to skip when preloading
+
+#### --limit
+
+**Usage:** `--limit=<number>`
+
+**Description**<br />
+Limit for the number of gems to preload
+
+#### --threads
+
+**Usage:** `--threads=<number>`
+
+**Description**<br />
+Number of threads to run the fetching job with
+
+#### --server_url
+
+**Usage:** `--server_url=<url>`
+
+**Description**<br />
+Gemstash server url
 
 ---
 
