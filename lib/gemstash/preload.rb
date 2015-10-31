@@ -37,7 +37,7 @@ module Gemstash
         each_gem do |gem, index, total|
           @out.write("\r#{index}/#{total}")
           pool.schedule(gem) do |gem_name|
-            @http_client.get("gems/#{gem_name}.gem")
+            @http_client.head("gems/#{gem_name}.gem")
           end
         end
         pool.shutdown

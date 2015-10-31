@@ -36,10 +36,10 @@ describe Gemstash::Preload do
       stubs.get("specs.4.8.gz") do
         [200, { "CONTENT-TYPE" => "octet/stream" }, full_specs]
       end
-      stubs.get("gems/latest_gem-1.0.0.gem") do
+      stubs.head("gems/latest_gem-1.0.0.gem") do
         [200, { "CONTENT-TYPE" => "octet/stream" }, "The latest gem"]
       end
-      stubs.get("gems/other-0.1.0.gem") do
+      stubs.head("gems/other-0.1.0.gem") do
         [200, { "CONTENT-TYPE" => "octet/stream" }, "The other gem"]
       end
     end
