@@ -139,14 +139,14 @@ describe Gemstash::HTTPClient do
         it "can be used to get the head only with a block" do
           stubs.head("/gems/other") { [200, { "content-length" => "15" }] }
           http_client.head("gems/other") do |headers|
-            expect(headers).to eq("content-length" => "15" )
+            expect(headers).to eq("content-length" => "15")
           end
         end
 
         it "can be used to get the head only getting the return value back" do
           stubs.head("/gems/other") { [200, { "content-length" => "15" }] }
           headers = http_client.head("gems/other")
-          expect(headers).to eq("content-length" => "15" )
+          expect(headers).to eq("content-length" => "15")
         end
       end
     end
