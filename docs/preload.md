@@ -4,12 +4,12 @@ You can force a preloading all or the latest gems that are registered in
 rubygems. This can be handy particularly if you are working with a bad
 connection, or if you plan to be offline for a while.
 
-The latter can be enhanced by setting up Gemstash to work in Sherpa mode (not
-supported yet)
+Being offline and taking your own personal rubygems with you can be achieved
+with the *Sherpa mode* (not supported yet)
 
-This preloading has the to be executed while the Gemstash server is running.
+The preloading process has to be executed while the Gemstash server is running.
 
-An examples of how it behaves is as follows:
+Example:
 
 ```
 $ gemstash preload --limit=100
