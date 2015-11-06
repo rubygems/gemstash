@@ -47,7 +47,7 @@ module Gemstash
 
       def each_gem
         @specs.fetch
-        return if !@limit.nil? && @limit <= 0
+        return if @limit && @limit <= 0
         return if @skip >= @specs.size
         @specs[range].each_with_index do |gem, index|
           yield gem.to_s, index + @skip + 1, @specs.size
