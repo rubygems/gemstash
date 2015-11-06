@@ -55,8 +55,8 @@ module Gemstash
       end
 
       def range_for(gem_specs)
-        limit = (@limit || gem_specs.size) + @skip - 1
-        (@skip..limit)
+        limit = (@limit || gem_specs.size) + @skip
+        (@skip...limit)
       end
     end
 
