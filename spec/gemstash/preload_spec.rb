@@ -4,10 +4,10 @@ describe Gemstash::Preload do
   let(:stubs) { Faraday::Adapter::Test::Stubs.new }
   let(:http_client) { Gemstash::HTTPClient.new(Faraday.new {|builder| builder.adapter(:test, stubs) }) }
   let(:latest_specs) do
-    to_marshaled_gzipped_bytes([["latest_gem", "1.0.0", ""]])
+    to_marshaled_gzipped_bytes([["latest_gem", "1.0.0", "ruby"]])
   end
   let(:full_specs) do
-    to_marshaled_gzipped_bytes([["latest_gem", "1.0.0", ""], ["other", "0.1.0", ""]])
+    to_marshaled_gzipped_bytes([["latest_gem", "1.0.0", "ruby"], ["other", "0.1.0", "ruby"]])
   end
 
   describe Gemstash::Preload::GemSpecs do
