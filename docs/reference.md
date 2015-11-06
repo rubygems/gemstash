@@ -329,7 +329,15 @@ gemstash -v
 
 ## Preload
 
-Preloads all the gems in your gemstash server from the default upstream
+Preload all the gems in your gemstash server from the default upstream.
+This can be useful if you plan to go somewhere where the internet connection
+will not be reliable or available.
+It is worth noting that this will require a large amount of disk space and
+computing time.
+
+### Usage
+
+```
 gemstash preload
 gemstash preload --latest
 gemstash preload --limit=1000
@@ -344,35 +352,45 @@ gemstash preload --threads=10 --server_url=http://my-server-url:9292
 **Usage:** `--latest`
 
 **Description**<br />
-Only fetch the latest specs
+Only fetch the latest specs. This will limit the amount of disk space required,
+but there is no guarantee that the gems you are using will have all their
+dependencies met.
 
 #### --skip
 
 **Usage:** `--skip=<number>`
 
 **Description**<br />
-Number of gems to skip when preloading
+Number of gems to skip when preloading. This can be useful to load in chunks or
+to resume a gem preloading.
 
 #### --limit
 
 **Usage:** `--limit=<number>`
 
 **Description**<br />
-Limit for the number of gems to preload
+Limit for the number of gems to preload. In conjunction with [--skip](#--skip)
+this can be used for loading gems in chunks or resuming the process.
 
 #### --threads
 
 **Usage:** `--threads=<number>`
 
 **Description**<br />
-Number of threads to run the fetching job with
+Number of threads to run the fetching job with.
+Since this activity is heavily IO bound (most of the time goes into waiting the
+network) it is useful to use more threads for performing the task. The default
+number of threads is 20 already which should be good enough, but in case you
+want to experiment this value can be changed.
 
 #### --server_url
 
 **Usage:** `--server_url=<url>`
 
 **Description**<br />
-Gemstash server url
+Gemstash server url. By default this is assumed to be running from the same
+host as the gemstash server so it will default to `http://localhost:9292` or
+whatever is defined in your configuration as the *bind* address.
 
 ---
 
