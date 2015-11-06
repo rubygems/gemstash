@@ -46,7 +46,7 @@ Table of Contents
         * [--skip](#--skip)
         * [--limit](#--limit)
         * [--threads](#--threads)
-        * [--server_url](#--server_url)
+        * [--server-url](#--server-url)
 
 
 
@@ -342,7 +342,7 @@ gemstash preload
 gemstash preload --latest
 gemstash preload --limit=1000
 gemstash preload --limit=1000 --skip=1000
-gemstash preload --threads=10 --server_url=http://my-server-url:9292
+gemstash preload --threads=10 --server-url=http://my-server-url:9292
 ```
 
 ### Options
@@ -383,9 +383,9 @@ network) it is useful to use more threads for performing the task. The default
 number of threads is 20 already which should be good enough, but in case you
 want to experiment this value can be changed.
 
-#### --server_url
+#### --server-url
 
-**Usage:** `--server_url=<url>`
+**Usage:** `--server-url=<url>`
 
 **Description**<br />
 Gemstash server url. By default this is assumed to be running from the same
