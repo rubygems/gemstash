@@ -16,10 +16,9 @@ describe Gemstash::Preload do
         [200, { "CONTENT-TYPE" => "octet/stream" }, full_specs]
       end
       specs = Gemstash::Preload::GemSpecs.new(http_client).fetch
-      gems = specs.to_a
-      expect(gems).not_to be_empty
-      expect(gems.first.to_s).to eq("latest_gem-1.0.0")
-      expect(gems.last.to_s).to eq("other-0.1.0")
+      expect(specs).not_to be_empty
+      expect(specs.first.to_s).to eq("latest_gem-1.0.0")
+      expect(specs.last.to_s).to eq("other-0.1.0")
     end
 
     it "GemSpecs fetches the latest specs when requested" do
@@ -27,7 +26,7 @@ describe Gemstash::Preload do
         [200, { "CONTENT-TYPE" => "octet/stream" }, latest_specs]
       end
       specs = Gemstash::Preload::GemSpecs.new(http_client, latest: true).fetch
-      expect(specs.to_a.last.to_s).to eq("latest_gem-1.0.0")
+      expect(specs.last.to_s).to eq("latest_gem-1.0.0")
     end
   end
 

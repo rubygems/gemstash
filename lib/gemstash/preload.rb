@@ -46,23 +46,25 @@ module Gemstash
     private
 
       def each_gem
-        gem_specs = @specs.fetch.to_a
+        @specs.fetch
         return if !@limit.nil? && @limit <= 0
-        return if @skip >= gem_specs.size
-        gem_specs[range_for(gem_specs)].each_with_index do |gem, index|
-          yield gem.to_s, index + @skip + 1, gem_specs.size
+        return if @skip >= @specs.size
+        @specs[range].each_with_index do |gem, index|
+          yield gem.to_s, index + @skip + 1, @specs.size
         end
       end
 
-      def range_for(gem_specs)
-        limit = (@limit || gem_specs.size) + @skip
+      def range
+        limit = (@limit || @specs.size) + @skip
         (@skip...limit)
       end
     end
 
     #:nodoc:
     class GemSpecs
-      include Enumerable
+      extend Forwardable
+
+      def_delegators :@specs, :each, :size, :each_with_index, :[], :first, :last, :empty?
 
       def initialize(http_client, latest: false)
         @http_client = http_client
@@ -71,16 +73,15 @@ module Gemstash
       end
 
       def fetch
-        reader = Zlib::GzipReader.new(
-          StringIO.new(@http_client.get(@specs_file)))
-        @specs = Marshal.load(reader.read)
-        self
-      end
-
-      def each(&block)
-        @specs.each do |gem|
-          yield GemName.new(gem)
+        begin
+          reader = Zlib::GzipReader.new(StringIO.new(@http_client.get(@specs_file)))
+          @specs = Marshal.load(reader.read).inject([]) do |specs, gem|
+            specs << GemName.new(gem)
+          end
+        ensure
+          reader.close if reader
         end
+        self
       end
     end
 
