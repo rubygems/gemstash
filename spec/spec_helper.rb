@@ -57,6 +57,7 @@ RSpec.configure do |config|
     end
 
     Gemstash::Logging.setup_logger(TEST_LOG_FILE)
+    Gemstash.plugins.clear
   end
 
   config.after(:suite) do

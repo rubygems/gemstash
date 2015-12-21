@@ -75,8 +75,15 @@ module Gemstash
       @config = value
     end
 
+    def plugins
+      @plugins ||= Gemstash.plugins.map do |plugin|
+        plugin.new(self)
+      end
+    end
+
     def reset
       @config = nil
+      @plugins = nil
       @cache = nil
       @cache_client = nil
       @db = nil

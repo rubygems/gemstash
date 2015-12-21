@@ -3,17 +3,56 @@ require "json"
 require "gemstash"
 
 module Gemstash
-  #:nodoc:
-  class Web < Sinatra::Base
-    def initialize(gemstash_env: nil, http_client_builder: nil)
+  # Sinatra app which contains Gemstash::Web along with any additional routes
+  # from plugins.
+  class SinatraApp
+    def initialize(gemstash_env)
+      @gemstash_env = gemstash_env
+    end
+
+    def app
+      @app ||= begin
+        gemstash_env = @gemstash_env
+
+        Class.new(Sinatra::Base) do
+          use Gemstash::WebPrep, gemstash_env: gemstash_env
+
+          gemstash_env.plugins.each do |plugin|
+            use plugin.prepended_routes if plugin.respond_to?(:prepended_routes)
+          end
+
+          use Gemstash::Web
+
+          gemstash_env.plugins.each do |plugin|
+            use plugin.routes if plugin.respond_to?(:routes)
+          end
+        end
+      end
+    end
+  end
+
+  # This contains the prep work that needs to be done for all routes, including
+  # prepended routes.
+  class WebPrep < Sinatra::Base
+    def initialize(app = nil, gemstash_env: nil)
       @gemstash_env = gemstash_env || Gemstash::Env.new
-      @http_client_builder = http_client_builder || Gemstash::HTTPClient
       Gemstash::Env.current = @gemstash_env
-      super()
+      super(app)
     end
 
     before do
       Gemstash::Env.current = @gemstash_env
+    end
+  end
+
+  # This is the main routes for the Gemstash Sinatra app.
+  class Web < Sinatra::Base
+    def initialize(app = nil, http_client_builder: nil)
+      @http_client_builder = http_client_builder || Gemstash::HTTPClient
+      super(app)
+    end
+
+    before do
       @gem_source = env["gemstash.gem_source"].new(self)
     end
 

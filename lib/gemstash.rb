@@ -16,12 +16,17 @@ module Gemstash
   autoload :Logging,             "gemstash/logging"
   autoload :LruReduxClient,      "gemstash/cache"
   autoload :NotAuthorizedError,  "gemstash/authorization"
+  autoload :Plugins,             "gemstash/plugins"
   autoload :RackEnvRewriter,     "gemstash/rack_env_rewriter"
   autoload :Resource,            "gemstash/storage"
+  autoload :SinatraApp,          "gemstash/web"
   autoload :SpecsBuilder,        "gemstash/specs_builder"
   autoload :Storage,             "gemstash/storage"
   autoload :Upstream,            "gemstash/upstream"
   autoload :Web,                 "gemstash/web"
+  autoload :WebPrep,             "gemstash/web"
   autoload :WebError,            "gemstash/http_client"
   autoload :VERSION,             "gemstash/version"
+
+  extend Gemstash::Plugins
 end
