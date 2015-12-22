@@ -8,6 +8,7 @@ if Gemstash::Env.daemonized?
   use Puma::CommonLogger, Gemstash::Logging::StreamLogger.for_stdout
 end
 
+Gemstash::Env.current.require!
 use Gemstash::Env::RackMiddleware, Gemstash::Env.current
 use Gemstash::GemSource::RackMiddleware
 run Gemstash::SinatraApp.new(Gemstash::Env.current).app

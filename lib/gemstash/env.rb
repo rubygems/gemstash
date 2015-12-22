@@ -7,6 +7,8 @@ require "uri"
 module Gemstash
   # Storage for application-wide variables and configuration.
   class Env
+    include Gemstash::Logging
+
     # The Gemstash::Env must be set before being retreived via
     # Gemstash::Env.current. This error is thrown when that is not honored.
     class EnvNotSetError < StandardError
@@ -75,9 +77,24 @@ module Gemstash
       @config = value
     end
 
+    def require!
+      return unless config[:require]
+      log.info "Requiring plugins..."
+
+      config[:require].each do |lib|
+        log.info "Requiring: #{lib.inspect}"
+        require lib
+      end
+    end
+
     def plugins
-      @plugins ||= Gemstash.plugins.map do |plugin|
-        plugin.new(self)
+      @plugins ||= begin
+        log.info "Loading plugins..."
+
+        Gemstash.plugins.map do |plugin|
+          log.info "Loading plugin: #{plugin}"
+          plugin.new(self)
+        end
       end
     end
 
