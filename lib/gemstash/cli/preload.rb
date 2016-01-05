@@ -15,8 +15,7 @@ module Gemstash
       def run
         return unless are_you_sure?
         http_client = HTTPClient.for(Upstream.new(@cli.options[:server_url]))
-        preloader = Gemstash::Preload::GemPreloader.new(http_client, latest: @cli.options[:latest]).
-          limit(@cli.options[:limit]).skip(@cli.options[:skip]).threads(@cli.options[:threads])
+        preloader = Gemstash::Preload::GemPreloader.new(http_client, @cli.options)
         preloader.preload
         @cli.say "\nDone"
       end

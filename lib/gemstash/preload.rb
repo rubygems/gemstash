@@ -9,27 +9,13 @@ module Gemstash
   module Preload
     #:nodoc:
     class GemPreloader
-      def initialize(http_client, out: STDOUT, latest: false)
+      def initialize(http_client, options, out: STDOUT)
         @http_client = http_client
-        @threads = 20
-        @skip = 0
+        @threads = options[:threads] || 20
+        @skip = options[:skip] || 0
+        @limit = options[:limit]
         @out = out
-        @specs = GemSpecs.new(http_client, latest: latest)
-      end
-
-      def threads(size)
-        @threads = size
-        self
-      end
-
-      def limit(size)
-        @limit = size
-        self
-      end
-
-      def skip(size)
-        @skip = size
-        self
+        @specs = GemSpecs.new(http_client, latest: options[:latest])
       end
 
       def preload

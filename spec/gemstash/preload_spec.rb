@@ -44,40 +44,39 @@ describe Gemstash::Preload do
     end
 
     let(:out) { StringIO.new }
-    let(:preloader) { Gemstash::Preload::GemPreloader.new(http_client, out: out) }
 
     it "Preloads all the gems included in the specs file" do
-      preloader.preload
+      Gemstash::Preload::GemPreloader.new(http_client, out: out).preload
       stubs.verify_stubbed_calls
     end
 
     it "Skips gems as requested" do
-      preloader.skip(1).preload
+      Gemstash::Preload::GemPreloader.new(http_client, {skip: 1}, out: out).preload
       expect(out.string).to eq("\r2/2")
     end
 
     it "Loads as many gems as requested" do
-      preloader.limit(1).preload
+      Gemstash::Preload::GemPreloader.new(http_client, {limit: 1}, out: out).preload
       expect(out.string).to eq("\r1/2")
     end
 
     it "Loads only the last gem when requested" do
-      preloader.skip(1).limit(1).preload
+      Gemstash::Preload::GemPreloader.new(http_client, {skip: 1, limit: 1}, out: out).preload
       expect(out.string).to eq("\r2/2")
     end
 
     it "Loads no gem at all when the skip is larger than the size" do
-      preloader.skip(3).preload
+      Gemstash::Preload::GemPreloader.new(http_client, {skip: 3}, out: out).preload
       expect(out.string).to be_empty
     end
 
     it "Loads no gem at all when the limit is zero" do
-      preloader.limit(0).preload
+      Gemstash::Preload::GemPreloader.new(http_client, {limit: 0}, out: out).preload
       expect(out.string).to be_empty
     end
 
     it "Loads in order when using only one thread" do
-      preloader.threads(1).preload
+      Gemstash::Preload::GemPreloader.new(http_client, {threads: 1}, out: out).preload
       expect(out.string).to eq("\r1/2\r2/2")
     end
   end
