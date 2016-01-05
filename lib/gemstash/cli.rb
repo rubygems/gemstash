@@ -78,6 +78,8 @@ module Gemstash
     desc "preload", "Preloads all the gems in your gemstash server from the default upstream"
     method_option :latest, :type => :boolean, :default => false, :desc =>
       "Only fetch the latest specs"
+    method_option :prerelease, :type => :boolean, :default => false, :desc =>
+      "Only fetch the prerelease specs"
     method_option :server_url, :type => :string, :default => "http://localhost:9292", :desc =>
       "Gemstash server url"
     method_option :threads, :type => :numeric, :default => 20, :desc =>

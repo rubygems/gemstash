@@ -6,11 +6,36 @@ describe Gemstash::Preload do
   let(:latest_specs) do
     to_marshaled_gzipped_bytes([["latest_gem", "1.0.0", "ruby"]])
   end
+  let(:prerelease_specs) do
+    to_marshaled_gzipped_bytes([["prerelease_gem", "0.9.0", "ruby"]])
+  end
   let(:full_specs) do
     to_marshaled_gzipped_bytes([["latest_gem", "1.0.0", "ruby"], ["other", "0.1.0", "ruby"]])
   end
 
+  describe Gemstash::Preload::GemSpecFilename do
+    it "fails when both latest and prerelease is set to true" do
+      expect { Gemstash::Preload::GemSpecFilename.new(prerelease: true, latest: true) }.to raise_error(
+        /It makes no sense to ask for latest and prerelease, pick only one/)
+    end
+
+    it "returns the default spec file by default" do
+      expect(Gemstash::Preload::GemSpecFilename.new.to_s).to eq("specs.4.8.gz")
+    end
+
+    it "returns the prerelease spec file with prerelease: true" do
+      expect(Gemstash::Preload::GemSpecFilename.new(prerelease: true).to_s).to eq("prerelease_specs.4.8.gz")
+    end
+
+    it "returns the latest spec file with latest: true" do
+      expect(Gemstash::Preload::GemSpecFilename.new(latest: true).to_s).to eq("latest_specs.4.8.gz")
+    end
+  end
+
   describe Gemstash::Preload::GemSpecs do
+    let(:latest) { Gemstash::Preload::GemSpecFilename.new(latest: true) }
+    let(:prerelease) { Gemstash::Preload::GemSpecFilename.new(prerelease: true) }
+
     it "GemSpecs fetches the full specs by default" do
       stubs.get("specs.4.8.gz") do
         [200, { "CONTENT-TYPE" => "octet/stream" }, full_specs]
@@ -21,12 +46,20 @@ describe Gemstash::Preload do
       expect(specs.last.to_s).to eq("other-0.1.0")
     end
 
-    it "GemSpecs fetches the latest specs when requested" do
+    it "fetches the latest specs when requested" do
       stubs.get("latest_specs.4.8.gz") do
         [200, { "CONTENT-TYPE" => "octet/stream" }, latest_specs]
       end
-      specs = Gemstash::Preload::GemSpecs.new(http_client, latest: true).fetch
+      specs = Gemstash::Preload::GemSpecs.new(http_client, latest).fetch
       expect(specs.last.to_s).to eq("latest_gem-1.0.0")
+    end
+
+    it "fetches the prerelease specs when requested" do
+      stubs.get("prerelease_specs.4.8.gz") do
+        [200, { "CONTENT-TYPE" => "octet/stream" }, prerelease_specs]
+      end
+      specs = Gemstash::Preload::GemSpecs.new(http_client, prerelease).fetch
+      expect(specs.last.to_s).to eq("prerelease_gem-0.9.0")
     end
   end
 

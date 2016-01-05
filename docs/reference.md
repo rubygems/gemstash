@@ -43,6 +43,7 @@ Table of Contents
       * [Usage](#usage-5)
       * [Options](#options-5)
         * [--latest](#--latest)
+        * [--prerelease](#--prerelease)
         * [--skip](#--skip)
         * [--limit](#--limit)
         * [--threads](#--threads)
@@ -340,6 +341,7 @@ computing time.
 ```
 gemstash preload
 gemstash preload --latest
+gemstash preload --prerelease
 gemstash preload --limit=1000
 gemstash preload --limit=1000 --skip=1000
 gemstash preload --threads=10 --server-url=http://my-server-url:9292
@@ -355,6 +357,14 @@ gemstash preload --threads=10 --server-url=http://my-server-url:9292
 Only fetch the latest specs. This will limit the amount of disk space required,
 but there is no guarantee that the gems you are using will have all their
 dependencies met.
+
+#### --prerelease
+
+**Usage:** `--prerelease`
+
+**Description**<br />
+Only fetch the prerelease specs.
+Note that you cannot mix --prerelease with --latest
 
 #### --skip
 

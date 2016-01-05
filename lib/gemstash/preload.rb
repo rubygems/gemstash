@@ -15,7 +15,7 @@ module Gemstash
         @skip = options[:skip] || 0
         @limit = options[:limit]
         @out = out
-        @specs = GemSpecs.new(http_client, latest: options[:latest])
+        @specs = GemSpecs.new(http_client, GemSpecFilename.new(options))
       end
 
       def preload
@@ -47,15 +47,29 @@ module Gemstash
     end
 
     #:nodoc:
+    class GemSpecFilename
+      def initialize(options = {})
+        @latest = options[:latest]
+        @prerelease = options[:prerelease]
+        raise "It makes no sense to ask for latest and prerelease, pick only one" if @prerelease && @latest
+      end
+
+      def to_s
+        prefix = "latest_" if @latest
+        prefix = "prerelease_" if @prerelease
+        "#{prefix}specs.4.8.gz"
+      end
+    end
+
+    #:nodoc:
     class GemSpecs
       extend Forwardable
 
       def_delegators :@specs, :each, :size, :each_with_index, :[], :first, :last, :empty?
 
-      def initialize(http_client, latest: false)
+      def initialize(http_client, filename = GemSpecFilename.new)
         @http_client = http_client
-        @specs_file = "specs.4.8.gz" unless latest
-        @specs_file ||= "latest_specs.4.8.gz"
+        @specs_file = filename.to_s
       end
 
       def fetch
