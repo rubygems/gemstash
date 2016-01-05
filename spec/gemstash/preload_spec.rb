@@ -4,13 +4,13 @@ describe Gemstash::Preload do
   let(:stubs) { Faraday::Adapter::Test::Stubs.new }
   let(:http_client) { Gemstash::HTTPClient.new(Faraday.new {|builder| builder.adapter(:test, stubs) }) }
   let(:latest_specs) do
-    to_marshaled_gzipped_bytes([["latest_gem", "1.0.0", "ruby"]])
+    gzip(Marshal.dump([["latest_gem", "1.0.0", "ruby"]]))
   end
   let(:prerelease_specs) do
-    to_marshaled_gzipped_bytes([["prerelease_gem", "0.9.0", "ruby"]])
+    gzip(Marshal.dump([["prerelease_gem", "0.9.0", "ruby"]]))
   end
   let(:full_specs) do
-    to_marshaled_gzipped_bytes([["latest_gem", "1.0.0", "ruby"], ["other", "0.1.0", "ruby"]])
+    gzip(Marshal.dump([["latest_gem", "1.0.0", "ruby"], ["other", "0.1.0", "ruby"]]))
   end
 
   describe Gemstash::Preload::GemSpecFilename do
@@ -112,13 +112,5 @@ describe Gemstash::Preload do
       Gemstash::Preload::GemPreloader.new(http_client, { threads: 1 }, out: out).preload
       expect(out.string).to eq("\r1/2\r2/2")
     end
-  end
-
-  def to_marshaled_gzipped_bytes(obj)
-    buffer = StringIO.new
-    gzip = Zlib::GzipWriter.new(buffer)
-    gzip.write(Marshal.dump(obj))
-    gzip.close
-    buffer.string
   end
 end
