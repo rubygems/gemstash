@@ -51,32 +51,32 @@ describe Gemstash::Preload do
     end
 
     it "Skips gems as requested" do
-      Gemstash::Preload::GemPreloader.new(http_client, {skip: 1}, out: out).preload
+      Gemstash::Preload::GemPreloader.new(http_client, { skip: 1 }, out: out).preload
       expect(out.string).to eq("\r2/2")
     end
 
     it "Loads as many gems as requested" do
-      Gemstash::Preload::GemPreloader.new(http_client, {limit: 1}, out: out).preload
+      Gemstash::Preload::GemPreloader.new(http_client, { limit: 1 }, out: out).preload
       expect(out.string).to eq("\r1/2")
     end
 
     it "Loads only the last gem when requested" do
-      Gemstash::Preload::GemPreloader.new(http_client, {skip: 1, limit: 1}, out: out).preload
+      Gemstash::Preload::GemPreloader.new(http_client, { skip: 1, limit: 1 }, out: out).preload
       expect(out.string).to eq("\r2/2")
     end
 
     it "Loads no gem at all when the skip is larger than the size" do
-      Gemstash::Preload::GemPreloader.new(http_client, {skip: 3}, out: out).preload
+      Gemstash::Preload::GemPreloader.new(http_client, { skip: 3 }, out: out).preload
       expect(out.string).to be_empty
     end
 
     it "Loads no gem at all when the limit is zero" do
-      Gemstash::Preload::GemPreloader.new(http_client, {limit: 0}, out: out).preload
+      Gemstash::Preload::GemPreloader.new(http_client, { limit: 0 }, out: out).preload
       expect(out.string).to be_empty
     end
 
     it "Loads in order when using only one thread" do
-      Gemstash::Preload::GemPreloader.new(http_client, {threads: 1}, out: out).preload
+      Gemstash::Preload::GemPreloader.new(http_client, { threads: 1 }, out: out).preload
       expect(out.string).to eq("\r1/2\r2/2")
     end
   end
