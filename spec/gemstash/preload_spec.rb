@@ -1,4 +1,5 @@
 require "spec_helper"
+require "faraday"
 
 describe Gemstash::Preload do
   let(:stubs) { Faraday::Adapter::Test::Stubs.new }
@@ -64,53 +65,55 @@ describe Gemstash::Preload do
   end
 
   describe Gemstash::Preload::GemPreloader do
+    let(:out) { StringIO.new }
+
     before do
       stubs.get("specs.4.8.gz") do
         [200, { "CONTENT-TYPE" => "octet/stream" }, full_specs]
       end
       stubs.head("gems/latest_gem-1.0.0.gem") do
+        out.write("gems/latest_gem-1.0.0.gem\n")
         [200, { "CONTENT-TYPE" => "octet/stream" }, "The latest gem"]
       end
       stubs.head("gems/other-0.1.0.gem") do
+        out.write("gems/other-0.1.0.gem\n")
         [200, { "CONTENT-TYPE" => "octet/stream" }, "The other gem"]
       end
     end
 
-    let(:out) { StringIO.new }
-
     it "Preloads all the gems included in the specs file" do
-      Gemstash::Preload::GemPreloader.new(http_client, out: out).preload
+      Gemstash::Preload::GemPreloader.new(http_client).preload
       stubs.verify_stubbed_calls
     end
 
     it "Skips gems as requested" do
-      Gemstash::Preload::GemPreloader.new(http_client, { skip: 1 }, out: out).preload
-      expect(out.string).to eq("\r2/2")
+      Gemstash::Preload::GemPreloader.new(http_client, skip: 1).preload
+      expect(out.string).to eq("gems/other-0.1.0.gem\n")
     end
 
     it "Loads as many gems as requested" do
-      Gemstash::Preload::GemPreloader.new(http_client, { limit: 1 }, out: out).preload
-      expect(out.string).to eq("\r1/2")
+      Gemstash::Preload::GemPreloader.new(http_client, limit: 1).preload
+      expect(out.string).to eq("gems/latest_gem-1.0.0.gem\n")
     end
 
     it "Loads only the last gem when requested" do
-      Gemstash::Preload::GemPreloader.new(http_client, { skip: 1, limit: 1 }, out: out).preload
-      expect(out.string).to eq("\r2/2")
+      Gemstash::Preload::GemPreloader.new(http_client, skip: 1, limit: 1).preload
+      expect(out.string).to eq("gems/other-0.1.0.gem\n")
     end
 
     it "Loads no gem at all when the skip is larger than the size" do
-      Gemstash::Preload::GemPreloader.new(http_client, { skip: 3 }, out: out).preload
+      Gemstash::Preload::GemPreloader.new(http_client, skip: 3).preload
       expect(out.string).to be_empty
     end
 
     it "Loads no gem at all when the limit is zero" do
-      Gemstash::Preload::GemPreloader.new(http_client, { limit: 0 }, out: out).preload
+      Gemstash::Preload::GemPreloader.new(http_client, limit: 0).preload
       expect(out.string).to be_empty
     end
 
     it "Loads in order when using only one thread" do
-      Gemstash::Preload::GemPreloader.new(http_client, { threads: 1 }, out: out).preload
-      expect(out.string).to eq("\r1/2\r2/2")
+      Gemstash::Preload::GemPreloader.new(http_client, threads: 1).preload
+      expect(out.string).to eq("gems/latest_gem-1.0.0.gem\ngems/other-0.1.0.gem\n")
     end
   end
 end
