@@ -36,6 +36,10 @@ module Gemstash
       @host_id ||= "#{host}_#{hash}"
     end
 
+    def storage
+      @storage ||= Gemstash::Storage.for("gem_cache").for(host_id)
+    end
+
   private
 
     def hash

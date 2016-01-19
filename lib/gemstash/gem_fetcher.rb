@@ -4,8 +4,7 @@ require "set"
 module Gemstash
   #:nodoc:
   class GemFetcher
-    def initialize(storage, http_client)
-      @storage = storage
+    def initialize(http_client)
       @http_client = http_client
       @valid_headers = Set.new(["etag", "content-type", "content-length", "last-modified"])
     end
@@ -27,7 +26,7 @@ module Gemstash
   private
 
     def store(gem_name, type, body, properties)
-      gem_resource = @storage.resource(gem_name.name)
+      gem_resource = gem_name.upstream.storage.resource(gem_name.name)
 
       resource_properties = {
         upstream: gem_name.upstream.to_s,

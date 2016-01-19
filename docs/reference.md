@@ -322,7 +322,6 @@ Show what version of Gemstash you are using.
 ### Usage
 
 ```
-<<<<<<< HEAD
 gemstash version
 gemstash --version
 gemstash -v
