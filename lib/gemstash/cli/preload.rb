@@ -4,18 +4,14 @@ module Gemstash
   class CLI
     # This implements the command line preload task to cache all the available gems:
     # $ gemstash preload
-    class Preload
-      include Gemstash::Env::Helper
-
-      def initialize(cli)
-        Gemstash::Env.current = Gemstash::Env.new
-        @cli = cli
-      end
-
+    class Preload < Gemstash::CLI::Base
       def run
+        prepare
         return unless are_you_sure?
-        http_client = HTTPClient.for(Upstream.new(@cli.options[:server_url]))
-        preloader = Gemstash::Preload::GemPreloader.new(http_client, @cli.options)
+        upstream_url = @cli.options[:upstream] || gemstash_env.config[:rubygems_url]
+        upstream = Gemstash::Upstream.new(upstream_url)
+        http_client = Gemstash::HTTPClient.for(upstream)
+        preloader = Gemstash::Preload::GemPreloader.new(upstream, http_client, @cli.options)
         preloader.preload
         @cli.say "\nDone"
       end

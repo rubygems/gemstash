@@ -65,13 +65,14 @@ module Gemstash
     end
     map %w(-v --version) => :version
 
-    desc "preload", "Preloads all the gems in your gemstash server from the default upstream"
+    desc "preload", "Preloads all the gems from a single upstream"
     method_option :latest, type: :boolean, default: false, desc: "Only fetch the latest specs"
     method_option :prerelease, type: :boolean, default: false, desc: "Only fetch the prerelease specs"
-    method_option :server_url, type: :string, default: "http://localhost:9292", desc: "Gemstash server url"
+    method_option :upstream, type: :string, default: nil, desc: "Upstream to fetch from, else the default gem source"
     method_option :threads, type: :numeric, default: 20, desc: "Number of threads to run the fetching job with"
     method_option :limit, type: :numeric, default: nil, desc: "Limit for the number of gems to preload"
     method_option :skip, type: :numeric, default: 0, desc: "Number of gems to skip when preloading"
+    method_option :config_file, type: :string, desc: "Config file to load when preloading"
     def preload
       Gemstash::CLI::Preload.new(self).run
     end

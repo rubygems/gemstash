@@ -8,12 +8,13 @@ module Gemstash
   module Preload
     #:nodoc:
     class GemPreloader
-      def initialize(http_client, options = {})
+      def initialize(upstream, http_client, options = {})
+        @upstream = upstream
         @http_client = http_client
         @threads = options[:threads] || 20
         @skip = options[:skip] || 0
         @limit = options[:limit]
-        @specs = GemSpecs.new(http_client, GemSpecFilename.new(options))
+        @specs = GemSpecs.new(upstream, http_client, GemSpecFilename.new(options))
       end
 
       def preload
@@ -58,7 +59,8 @@ module Gemstash
 
       def_delegators :@specs, :each, :size, :each_with_index, :[], :first, :last, :empty?
 
-      def initialize(http_client, filename = GemSpecFilename.new)
+      def initialize(upstream, http_client, filename = GemSpecFilename.new)
+        @upstream = upstream
         @http_client = http_client
         @specs_file = filename.to_s
       end
