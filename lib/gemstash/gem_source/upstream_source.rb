@@ -139,7 +139,7 @@ module Gemstash
       end
 
       def gem_fetcher
-        @gem_fetcher ||= Gemstash::GemFetcher.new(http_client_for(upstream))
+        @gem_fetcher ||= Gemstash::GemFetcher.new(storage, http_client_for(upstream))
       end
 
       def fetch_gem(id, resource_type)
@@ -148,7 +148,7 @@ module Gemstash
         if gem_resource.exist?(resource_type)
           fetch_local_gem(gem_name, gem_resource, resource_type)
         else
-          fetch_remote_gem(gem_name, gem_resource, resource_type)
+          fetch_remote_gem(gem_name, resource_type)
         end
       end
 
@@ -157,19 +157,9 @@ module Gemstash
         gem_resource
       end
 
-      def fetch_remote_gem(gem_name, gem_resource, resource_type)
+      def fetch_remote_gem(gem_name, resource_type)
         log.info "Gem #{gem_name.name} is not cached, fetching #{resource_type}"
-        gem_fetcher.fetch(gem_name.id, resource_type) do |content, properties|
-          resource_properties = {
-            upstream: upstream.to_s,
-            gem_name: gem_name.name,
-            headers: { resource_type => properties }
-          }
-
-          gem = gem_resource.save({ resource_type => content }, resource_properties)
-          Gemstash::DB::CachedRubygem.store(upstream, gem_name, resource_type)
-          gem
-        end
+        gem_fetcher.fetch(gem_name, resource_type)
       end
     end
 

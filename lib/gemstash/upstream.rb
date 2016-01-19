@@ -44,6 +44,8 @@ module Gemstash
 
     #:nodoc:
     class GemName
+      attr_reader :upstream
+
       def initialize(upstream, gem_name)
         @upstream = upstream
         @id = gem_name
