@@ -11,7 +11,7 @@ describe Gemstash::Web do
     class StubHttpBuilder
       def for(server_url)
         stubs = Faraday::Adapter::Test::Stubs.new do |stub|
-          stub.get("/gems/rack") { [200, { "CONTENT-TYPE" => "octet/stream" }, "zapatito"] }
+          stub.get("/gems/rack.gem") { [200, { "CONTENT-TYPE" => "octet/stream" }, "zapatito"] }
           stub.get("/gems/rack-1.0.0.gem") { [200, { "CONTENT-TYPE" => "octet/stream" }, "zapatito-1.0.0"] }
           stub.get("/gems/rack-1.1.0.gem") { [200, { "CONTENT-TYPE" => "octet/stream" }, "zapatito-1.1.0"] }
           stub.get("/quick/Marshal.4.8/rack.gemspec.rz") { [200, { "CONTENT-TYPE" => "octet/stream" }, "specatito"] }

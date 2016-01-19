@@ -138,23 +138,23 @@ module Gemstash
       end
 
       def fetch_gem(id, resource_type)
-        gem_name = upstream.gem_name(id)
-        gem_resource = upstream.storage.resource(gem_name.name)
-        if gem_resource.exist?(resource_type)
-          fetch_local_gem(gem_name, gem_resource, resource_type)
+        gem_name = upstream.gem_name(id, resource_type)
+
+        if gem_name.resource.exist?(gem_name.type)
+          fetch_local_gem(gem_name)
         else
-          fetch_remote_gem(gem_name, resource_type)
+          fetch_remote_gem(gem_name)
         end
       end
 
-      def fetch_local_gem(gem_name, gem_resource, resource_type)
-        log.info "Gem #{gem_name.name} exists, returning cached #{resource_type}"
-        gem_resource
+      def fetch_local_gem(gem_name)
+        log.info "Gem #{gem_name.name} exists, returning cached #{gem_name.type}"
+        gem_name.resource
       end
 
-      def fetch_remote_gem(gem_name, resource_type)
-        log.info "Gem #{gem_name.name} is not cached, fetching #{resource_type}"
-        gem_fetcher.fetch(gem_name, resource_type)
+      def fetch_remote_gem(gem_name)
+        log.info "Gem #{gem_name.name} is not cached, fetching #{gem_name.type}"
+        gem_fetcher.fetch(gem_name)
       end
     end
 

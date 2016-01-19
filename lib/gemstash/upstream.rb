@@ -40,8 +40,8 @@ module Gemstash
       @storage ||= Gemstash::Storage.for("gem_cache").for(host_id)
     end
 
-    def gem_name(name)
-      Gemstash::Upstream::GemName.new(self, name)
+    def gem_name(name, type)
+      Gemstash::Upstream::GemName.new(self, name, type)
     end
 
   private
@@ -52,15 +52,16 @@ module Gemstash
 
     #:nodoc:
     class GemName
-      attr_reader :upstream
+      attr_reader :name, :type, :upstream
 
-      def initialize(upstream, gem_name)
+      def initialize(upstream, gem_name, type)
         @upstream = upstream
+        @type = type
 
         if gem_name.is_a?(Array)
-          @id = from_spec_array(gem_name)
+          @name = from_spec_array(gem_name)
         else
-          @id = gem_name
+          @name = gem_name.gsub(/\.gem(spec\.rz)?$/i, "")
         end
       end
 
@@ -68,12 +69,19 @@ module Gemstash
         name
       end
 
-      def id
-        @id
+      def resource
+        @resource ||= upstream.storage.resource(name)
       end
 
-      def name
-        @name ||= @id.gsub(/\.gem(spec\.rz)?$/i, "")
+      def path
+        case type
+        when :gem
+          "gems/#{name}.gem"
+        when :spec
+          "quick/Marshal.4.8/#{name}.gemspec.rz"
+        else
+          raise "Invalid type #{type.inspect}"
+        end
       end
 
     private

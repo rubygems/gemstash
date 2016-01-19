@@ -69,7 +69,7 @@ module Gemstash
         begin
           reader = Zlib::GzipReader.new(StringIO.new(@http_client.get(@specs_file)))
           @specs = Marshal.load(reader.read).inject([]) do |specs, gem_spec|
-            specs << @upstream.gem_name(gem_spec)
+            specs << @upstream.gem_name(gem_spec, :gem)
           end
         ensure
           reader.close if reader

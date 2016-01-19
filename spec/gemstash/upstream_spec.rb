@@ -96,31 +96,37 @@ describe Gemstash::Upstream::GemName do
     let(:upstream) { Gemstash::Upstream.new("https://rubygems.org/") }
 
     it "resolves to the gem name" do
-      expect(upstream.gem_name("mygemname").to_s).to eq("mygemname")
+      expect(upstream.gem_name("mygemname", :gem).to_s).to eq("mygemname")
     end
 
     it "removes the trailing .gem from the name" do
-      gem_name = upstream.gem_name("mygemname-1.0.1.gem")
-      expect(gem_name.id).to eq("mygemname-1.0.1.gem")
+      gem_name = upstream.gem_name("mygemname-1.0.1.gem", :gem)
       expect(gem_name.name).to eq("mygemname-1.0.1")
     end
 
     it "removes the trailing .gemspec.rz from the name" do
-      gem_name = upstream.gem_name("mygemname-1.0.1.gemspec.rz")
-      expect(gem_name.id).to eq("mygemname-1.0.1.gemspec.rz")
+      gem_name = upstream.gem_name("mygemname-1.0.1.gemspec.rz", :gem)
       expect(gem_name.name).to eq("mygemname-1.0.1")
     end
 
     it "can take the serialized spec array" do
-      gem_name = upstream.gem_name(["mygemname", Gem::Version.new("1.0.1"), "ruby"])
-      expect(gem_name.id).to eq("mygemname-1.0.1")
+      gem_name = upstream.gem_name(["mygemname", Gem::Version.new("1.0.1"), "ruby"], :gem)
       expect(gem_name.name).to eq("mygemname-1.0.1")
     end
 
     it "can take the serialized spec array with a different platform" do
-      gem_name = upstream.gem_name(["mygemname", Gem::Version.new("1.0.1"), "java"])
-      expect(gem_name.id).to eq("mygemname-1.0.1-java")
+      gem_name = upstream.gem_name(["mygemname", Gem::Version.new("1.0.1"), "java"], :gem)
       expect(gem_name.name).to eq("mygemname-1.0.1-java")
+    end
+
+    it "can have :gem type for a gem path" do
+      gem_name = upstream.gem_name("mygemname-1.0.1.gem", :gem)
+      expect(gem_name.path).to eq("gems/mygemname-1.0.1.gem")
+    end
+
+    it "can have :spec type for a gemspec path" do
+      gem_name = upstream.gem_name("mygemname-1.0.1.gemspec.rz", :spec)
+      expect(gem_name.path).to eq("quick/Marshal.4.8/mygemname-1.0.1.gemspec.rz")
     end
   end
 end
