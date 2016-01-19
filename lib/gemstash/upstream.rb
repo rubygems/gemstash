@@ -40,6 +40,10 @@ module Gemstash
       @storage ||= Gemstash::Storage.for("gem_cache").for(host_id)
     end
 
+    def gem_name(name)
+      Gemstash::Upstream::GemName.new(self, name)
+    end
+
   private
 
     def hash
@@ -52,7 +56,12 @@ module Gemstash
 
       def initialize(upstream, gem_name)
         @upstream = upstream
-        @id = gem_name
+
+        if gem_name.is_a?(Array)
+          @id = from_spec_array(gem_name)
+        else
+          @id = gem_name
+        end
       end
 
       def to_s
@@ -65,6 +74,18 @@ module Gemstash
 
       def name
         @name ||= @id.gsub(/\.gem(spec\.rz)?$/i, "")
+      end
+
+    private
+
+      def from_spec_array(spec)
+        raise "Expected spec array to be of length 3!" if spec.size != 3
+
+        if spec[2] == "ruby"
+          spec[0, 2].join("-")
+        else
+          spec.join("-")
+        end
       end
     end
   end

@@ -57,7 +57,7 @@ module Gemstash
     class GemSpecs
       extend Forwardable
 
-      def_delegators :@specs, :each, :size, :each_with_index, :[], :first, :last, :empty?
+      def_delegators :@specs, :each, :map, :size, :each_with_index, :[], :first, :last, :empty?
 
       def initialize(upstream, http_client, filename = GemSpecFilename.new)
         @upstream = upstream
@@ -69,23 +69,12 @@ module Gemstash
         begin
           reader = Zlib::GzipReader.new(StringIO.new(@http_client.get(@specs_file)))
           @specs = Marshal.load(reader.read).inject([]) do |specs, gem_spec|
-            specs << GemName.new(gem_spec)
+            specs << @upstream.gem_name(gem_spec)
           end
         ensure
           reader.close if reader
         end
         self
-      end
-    end
-
-    #:nodoc:
-    class GemName
-      def initialize(gem)
-        (@name, @version, _ignored) = gem
-      end
-
-      def to_s
-        "#{@name}-#{@version}"
       end
     end
   end

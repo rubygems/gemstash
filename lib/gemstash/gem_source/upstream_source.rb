@@ -138,7 +138,7 @@ module Gemstash
       end
 
       def fetch_gem(id, resource_type)
-        gem_name = Gemstash::Upstream::GemName.new(upstream, id)
+        gem_name = upstream.gem_name(id)
         gem_resource = upstream.storage.resource(gem_name.name)
         if gem_resource.exist?(resource_type)
           fetch_local_gem(gem_name, gem_resource, resource_type)

@@ -6,13 +6,15 @@ describe Gemstash::Preload do
   let(:upstream) { Gemstash::Upstream.new("https://example.com") }
   let(:http_client) { Gemstash::HTTPClient.new(Faraday.new {|builder| builder.adapter(:test, stubs) }) }
   let(:latest_specs) do
-    gzip(Marshal.dump([["latest_gem", "1.0.0", "ruby"]]))
+    gzip(Marshal.dump([["latest_gem", Gem::Version.new("1.0.0"), "ruby"]]))
   end
   let(:prerelease_specs) do
-    gzip(Marshal.dump([["prerelease_gem", "0.9.0", "ruby"]]))
+    gzip(Marshal.dump([["prerelease_gem", Gem::Version.new("0.9.0"), "ruby"]]))
   end
   let(:full_specs) do
-    gzip(Marshal.dump([["latest_gem", "1.0.0", "ruby"], ["other", "0.1.0", "ruby"]]))
+    gzip(Marshal.dump([["latest_gem", Gem::Version.new("1.0.0"), "ruby"],
+                       ["other", Gem::Version.new("0.1.0"), "ruby"],
+                       ["other_platform", Gem::Version.new("0.1.0"), "java"]]))
   end
 
   describe Gemstash::Preload::GemSpecFilename do
@@ -44,8 +46,7 @@ describe Gemstash::Preload do
       end
       specs = Gemstash::Preload::GemSpecs.new(upstream, http_client).fetch
       expect(specs).not_to be_empty
-      expect(specs.first.to_s).to eq("latest_gem-1.0.0")
-      expect(specs.last.to_s).to eq("other-0.1.0")
+      expect(specs.map(&:to_s)).to eq(["latest_gem-1.0.0", "other-0.1.0", "other_platform-0.1.0-java"])
     end
 
     it "fetches the latest specs when requested" do
@@ -80,6 +81,10 @@ describe Gemstash::Preload do
         out.write("gems/other-0.1.0.gem\n")
         [200, { "CONTENT-TYPE" => "octet/stream" }, "The other gem"]
       end
+      stubs.head("gems/other_platform-0.1.0-java.gem") do
+        out.write("gems/other_platform-0.1.0-java.gem\n")
+        [200, { "CONTENT-TYPE" => "octet/stream" }, "The other platform gem"]
+      end
     end
 
     it "Preloads all the gems included in the specs file" do
@@ -88,8 +93,8 @@ describe Gemstash::Preload do
     end
 
     it "Skips gems as requested" do
-      Gemstash::Preload::GemPreloader.new(upstream, http_client, skip: 1).preload
-      expect(out.string).to eq("gems/other-0.1.0.gem\n")
+      Gemstash::Preload::GemPreloader.new(upstream, http_client, skip: 2).preload
+      expect(out.string).to eq("gems/other_platform-0.1.0-java.gem\n")
     end
 
     it "Loads as many gems as requested" do
@@ -114,7 +119,7 @@ describe Gemstash::Preload do
 
     it "Loads in order when using only one thread" do
       Gemstash::Preload::GemPreloader.new(upstream, http_client, threads: 1).preload
-      expect(out.string).to eq("gems/latest_gem-1.0.0.gem\ngems/other-0.1.0.gem\n")
+      expect(out.string).to eq("gems/latest_gem-1.0.0.gem\ngems/other-0.1.0.gem\ngems/other_platform-0.1.0-java.gem\n")
     end
   end
 end
