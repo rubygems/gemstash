@@ -23,8 +23,6 @@ module Gemstash
     # Base GemSource for some common utilities.
     class Base
       extend Forwardable
-      extend Gemstash::Logging
-      include Gemstash::Logging
 
       def_delegators :@app, :cache_control, :content_type, :env, :halt,
         :headers, :http_client_for, :params, :redirect, :request

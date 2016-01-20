@@ -68,58 +68,94 @@ describe Gemstash::Preload do
 
   describe Gemstash::Preload::GemPreloader, db_transaction: false do
     let(:out) { StringIO.new }
+    let(:storage) { Gemstash::Storage.for("gem_cache").for(upstream.host_id) }
 
-    before do
-      stubs.get("specs.4.8.gz") do
-        [200, { "CONTENT-TYPE" => "octet/stream" }, full_specs]
+    context "with no cached gems" do
+      before do
+        stubs.get("specs.4.8.gz") do
+          [200, { "CONTENT-TYPE" => "octet/stream" }, full_specs]
+        end
+        stubs.get("gems/latest_gem-1.0.0.gem") do
+          out.write("gems/latest_gem-1.0.0.gem\n")
+          [200, { "CONTENT-TYPE" => "octet/stream" }, "The latest gem"]
+        end
+        stubs.get("gems/other-0.1.0.gem") do
+          out.write("gems/other-0.1.0.gem\n")
+          [200, { "CONTENT-TYPE" => "octet/stream" }, "The other gem"]
+        end
+        stubs.get("gems/other_platform-0.1.0-java.gem") do
+          out.write("gems/other_platform-0.1.0-java.gem\n")
+          [200, { "CONTENT-TYPE" => "octet/stream" }, "The other platform gem"]
+        end
       end
-      stubs.get("gems/latest_gem-1.0.0.gem") do
-        out.write("gems/latest_gem-1.0.0.gem\n")
-        [200, { "CONTENT-TYPE" => "octet/stream" }, "The latest gem"]
+
+      it "Preloads all the gems included in the specs file" do
+        Gemstash::Preload::GemPreloader.new(upstream, http_client).preload
+        stubs.verify_stubbed_calls
       end
-      stubs.get("gems/other-0.1.0.gem") do
-        out.write("gems/other-0.1.0.gem\n")
-        [200, { "CONTENT-TYPE" => "octet/stream" }, "The other gem"]
+
+      it "Skips gems as requested" do
+        Gemstash::Preload::GemPreloader.new(upstream, http_client, skip: 2).preload
+        expect(out.string).to eq("gems/other_platform-0.1.0-java.gem\n")
       end
-      stubs.get("gems/other_platform-0.1.0-java.gem") do
-        out.write("gems/other_platform-0.1.0-java.gem\n")
-        [200, { "CONTENT-TYPE" => "octet/stream" }, "The other platform gem"]
+
+      it "Loads as many gems as requested" do
+        Gemstash::Preload::GemPreloader.new(upstream, http_client, limit: 1).preload
+        expect(out.string).to eq("gems/latest_gem-1.0.0.gem\n")
+      end
+
+      it "Loads only the last gem when requested" do
+        Gemstash::Preload::GemPreloader.new(upstream, http_client, skip: 1, limit: 1).preload
+        expect(out.string).to eq("gems/other-0.1.0.gem\n")
+      end
+
+      it "Loads no gem at all when the skip is larger than the size" do
+        Gemstash::Preload::GemPreloader.new(upstream, http_client, skip: 3).preload
+        expect(out.string).to be_empty
+      end
+
+      it "Loads no gem at all when the limit is zero" do
+        Gemstash::Preload::GemPreloader.new(upstream, http_client, limit: 0).preload
+        expect(out.string).to be_empty
+      end
+
+      it "Loads in order when using only one thread" do
+        Gemstash::Preload::GemPreloader.new(upstream, http_client, threads: 1).preload
+        expect(out.string).to eq("gems/latest_gem-1.0.0.gem\ngems/other-0.1.0.gem\ngems/other_platform-0.1.0-java.gem\n")
+      end
+
+      it "stores the gems" do
+        expect(storage.resource("latest_gem-1.0.0").exist?(:gem)).to be_falsey
+        expect(storage.resource("other-0.1.0").exist?(:gem)).to be_falsey
+        expect(storage.resource("other_platform-0.1.0-java").exist?(:gem)).to be_falsey
+
+        Gemstash::Preload::GemPreloader.new(upstream, http_client, threads: 1).preload
+
+        expect(storage.resource("latest_gem-1.0.0").exist?(:gem)).to be_truthy
+        expect(storage.resource("other-0.1.0").exist?(:gem)).to be_truthy
+        expect(storage.resource("other_platform-0.1.0-java").exist?(:gem)).to be_truthy
+
+        expect(storage.resource("latest_gem-1.0.0").content(:gem)).to eq("The latest gem")
+        expect(storage.resource("other-0.1.0").content(:gem)).to eq("The other gem")
+        expect(storage.resource("other_platform-0.1.0-java").content(:gem)).to eq("The other platform gem")
       end
     end
 
-    it "Preloads all the gems included in the specs file" do
-      Gemstash::Preload::GemPreloader.new(upstream, http_client).preload
-      stubs.verify_stubbed_calls
-    end
+    context "with cached gems" do
+      before do
+        stubs.get("specs.4.8.gz") do
+          [200, { "CONTENT-TYPE" => "octet/stream" }, full_specs]
+        end
 
-    it "Skips gems as requested" do
-      Gemstash::Preload::GemPreloader.new(upstream, http_client, skip: 2).preload
-      expect(out.string).to eq("gems/other_platform-0.1.0-java.gem\n")
-    end
+        storage.resource("latest_gem-1.0.0").save(gem: "The latest gem")
+        storage.resource("other-0.1.0").save(gem: "The other gem")
+        storage.resource("other_platform-0.1.0-java").save(gem: "The other platform gem")
+      end
 
-    it "Loads as many gems as requested" do
-      Gemstash::Preload::GemPreloader.new(upstream, http_client, limit: 1).preload
-      expect(out.string).to eq("gems/latest_gem-1.0.0.gem\n")
-    end
-
-    it "Loads only the last gem when requested" do
-      Gemstash::Preload::GemPreloader.new(upstream, http_client, skip: 1, limit: 1).preload
-      expect(out.string).to eq("gems/other-0.1.0.gem\n")
-    end
-
-    it "Loads no gem at all when the skip is larger than the size" do
-      Gemstash::Preload::GemPreloader.new(upstream, http_client, skip: 3).preload
-      expect(out.string).to be_empty
-    end
-
-    it "Loads no gem at all when the limit is zero" do
-      Gemstash::Preload::GemPreloader.new(upstream, http_client, limit: 0).preload
-      expect(out.string).to be_empty
-    end
-
-    it "Loads in order when using only one thread" do
-      Gemstash::Preload::GemPreloader.new(upstream, http_client, threads: 1).preload
-      expect(out.string).to eq("gems/latest_gem-1.0.0.gem\ngems/other-0.1.0.gem\ngems/other_platform-0.1.0-java.gem\n")
+      it "doesn't request already cached gems" do
+        Gemstash::Preload::GemPreloader.new(upstream, http_client, threads: 1).preload
+        # No error means the missing stubs weren't called, so the already cached gems were honored
+      end
     end
   end
 end
