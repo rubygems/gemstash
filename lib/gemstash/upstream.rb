@@ -58,10 +58,10 @@ module Gemstash
         @upstream = upstream
         @type = type
 
-        if gem_name.is_a?(Array)
-          @name = from_spec_array(gem_name)
+        @name = if gem_name.is_a?(Array)
+          from_spec_array(gem_name)
         else
-          @name = gem_name.gsub(/\.gem(spec\.rz)?$/i, "")
+          gem_name.gsub(/\.gem(spec\.rz)?$/i, "")
         end
       end
 

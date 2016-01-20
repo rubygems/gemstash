@@ -14,10 +14,10 @@ module DBHelpers
   def insert_version(gem_id, number, platform: "ruby", indexed: true, prerelease: false)
     gem_name = Gemstash::Env.current.db[:rubygems][:id => gem_id][:name]
 
-    if platform == "ruby"
-      storage_id = "#{gem_name}-#{number}"
+    storage_id = if platform == "ruby"
+      "#{gem_name}-#{number}"
     else
-      storage_id = "#{gem_name}-#{number}-#{platform}"
+      "#{gem_name}-#{number}-#{platform}"
     end
 
     Gemstash::Env.current.db[:versions].insert(

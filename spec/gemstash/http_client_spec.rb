@@ -118,11 +118,8 @@ describe Gemstash::HTTPClient do
         it "retries 3 times on connection error" do
           exceptions = [Faraday::ConnectionFailed, Faraday::ConnectionFailed]
           stubs.get("/gems/rack", "User-Agent" => default_user_agent) do
-            if exceptions.empty?
-              [200, { "CONTENT-TYPE" => "octet/stream" }, "zapatito"]
-            else
-              raise exceptions.pop, "I don't like your DNS query!"
-            end
+            raise exceptions.pop, "I don't like your DNS query!" unless exceptions.empty?
+            [200, { "CONTENT-TYPE" => "octet/stream" }, "zapatito"]
           end
           expect(http_client.get("/gems/rack")).to eq("zapatito")
           expect(exceptions).to be_empty

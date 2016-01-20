@@ -94,10 +94,10 @@ module Gemstash
       def ask_database_details(database)
         say_current_config(:db_url, "Current database url")
 
-        if RUBY_PLATFORM == "java"
-          default_value = "jdbc:#{database}:///gemstash"
+        default_value = if RUBY_PLATFORM == "java"
+          "jdbc:#{database}:///gemstash"
         else
-          default_value = "#{database}:///gemstash"
+          "#{database}:///gemstash"
         end
 
         url = @cli.ask "Where is the database? [#{default_value}]"

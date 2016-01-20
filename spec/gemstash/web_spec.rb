@@ -87,7 +87,7 @@ describe Gemstash::Web do
     end
 
     context "there are too many gems" do
-      let(:gems) { 201.times.map {|i| "gem-#{i}" }.join(",") }
+      let(:gems) { Array.new(201) {|i| "gem-#{i}" }.join(",") }
 
       it "returns a 422" do
         get "#{request}?gems=#{gems}", {}, rack_env
@@ -141,7 +141,7 @@ describe Gemstash::Web do
     end
 
     context "there are too many gems" do
-      let(:gems) { 201.times.map {|i| "gem-#{i}" }.join(",") }
+      let(:gems) { Array.new(201) {|i| "gem-#{i}" }.join(",") }
 
       it "returns a 422" do
         error = {

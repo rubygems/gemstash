@@ -66,11 +66,13 @@ module Gemstash
         existing = Gemstash::DB::Version.find_by_spec(gem_id, spec)
 
         if existing
+          # rubocop:disable Style/GuardClause
           if existing.indexed
             raise ExistingVersionError, "Cannot push to an existing version!"
           else
             raise YankedVersionError, "Cannot push to a yanked version!"
           end
+          # rubocop:enable Style/GuardClause
         end
 
         version_id = Gemstash::DB::Version.insert_by_spec(gem_id, spec)
