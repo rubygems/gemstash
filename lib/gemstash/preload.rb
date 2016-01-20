@@ -11,15 +11,18 @@ module Gemstash
       def initialize(upstream, http_client, options = {})
         @upstream = upstream
         @http_client = http_client
+        @gem_fetcher = Gemstash::GemFetcher.new(http_client)
         @threads = options[:threads] || 20
         @skip = options[:skip] || 0
         @limit = options[:limit]
         @specs = GemSpecs.new(upstream, http_client, GemSpecFilename.new(options))
+        @env = Gemstash::Env.current
       end
 
       def preload
         Parallel.map(specs, in_threads: @threads, progress: "downloading gems") do |gem_name|
-          @http_client.head("gems/#{gem_name}.gem")
+          Gemstash::Env.current = @env
+          @gem_fetcher.fetch(gem_name)
         end
       end
 

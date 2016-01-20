@@ -66,22 +66,22 @@ describe Gemstash::Preload do
     end
   end
 
-  describe Gemstash::Preload::GemPreloader do
+  describe Gemstash::Preload::GemPreloader, db_transaction: false do
     let(:out) { StringIO.new }
 
     before do
       stubs.get("specs.4.8.gz") do
         [200, { "CONTENT-TYPE" => "octet/stream" }, full_specs]
       end
-      stubs.head("gems/latest_gem-1.0.0.gem") do
+      stubs.get("gems/latest_gem-1.0.0.gem") do
         out.write("gems/latest_gem-1.0.0.gem\n")
         [200, { "CONTENT-TYPE" => "octet/stream" }, "The latest gem"]
       end
-      stubs.head("gems/other-0.1.0.gem") do
+      stubs.get("gems/other-0.1.0.gem") do
         out.write("gems/other-0.1.0.gem\n")
         [200, { "CONTENT-TYPE" => "octet/stream" }, "The other gem"]
       end
-      stubs.head("gems/other_platform-0.1.0-java.gem") do
+      stubs.get("gems/other_platform-0.1.0-java.gem") do
         out.write("gems/other_platform-0.1.0-java.gem\n")
         [200, { "CONTENT-TYPE" => "octet/stream" }, "The other platform gem"]
       end
