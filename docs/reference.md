@@ -40,14 +40,14 @@ Table of Contents
     * [Version](#version)
       * [Usage](#usage-5)
     * [Preload](#preload)
-      * [Usage](#usage-5)
+      * [Usage](#usage-6)
       * [Options](#options-5)
         * [--latest](#--latest)
         * [--prerelease](#--prerelease)
         * [--skip](#--skip)
         * [--limit](#--limit)
         * [--threads](#--threads)
-        * [--server-url](#--server-url)
+        * [--upstream](#--upstream)
 
 
 
@@ -329,11 +329,10 @@ gemstash -v
 
 ## Preload
 
-Preload all the gems in your gemstash server from the default upstream.
-This can be useful if you plan to go somewhere where the internet connection
-will not be reliable or available.
-It is worth noting that this will require a large amount of disk space and
-computing time.
+Preload all the gems in your gemstash server from an upstream (defaults to the
+default gem source). This can be useful if you plan to go somewhere where the
+internet connection will not be reliable or available. It is worth noting that
+this will require a large amount of disk space and computing time.
 
 ### Usage
 
@@ -343,7 +342,7 @@ gemstash preload --latest
 gemstash preload --prerelease
 gemstash preload --limit=1000
 gemstash preload --limit=1000 --skip=1000
-gemstash preload --threads=10 --server-url=http://my-server-url:9292
+gemstash preload --threads=10 --upstream=https://my.gem-source.local
 ```
 
 ### Options
@@ -387,19 +386,17 @@ this can be used for loading gems in chunks or resuming the process.
 
 **Description**<br />
 Number of threads to run the fetching job with.
-Since this activity is heavily IO bound (most of the time goes into waiting the
+Since this activity is heavily IO bound (most of the time goes into waiting on the
 network) it is useful to use more threads for performing the task. The default
 number of threads is 20 already which should be good enough, but in case you
 want to experiment this value can be changed.
 
-#### --server-url
+#### --upstream
 
-**Usage:** `--server-url=<url>`
+**Usage:** `--upstream=<url>`
 
-**Description**<br />
-Gemstash server url. By default this is assumed to be running from the same
-host as the gemstash server so it will default to `http://localhost:9292` or
-whatever is defined in your configuration as the *bind* address.
+**Description**<br /> Upstream gem server url. By default this will be the
+default rubygems url ([which defaults to https://www.rubygems.org](#rubygems_url)).
 
 ---
 
