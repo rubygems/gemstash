@@ -1,4 +1,5 @@
 language: ruby
+sudo: false
 matrix:
   allow_failures:
   - rvm: ruby-head
