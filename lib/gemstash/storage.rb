@@ -275,7 +275,9 @@ module Gemstash
     end
 
     def check_resource_version
-      version = @properties[:gemstash_resource_version]
+      version = @properties.fetch(:gemstash_resource_version) do
+        raise "Resources are too old and don't have version, please wipe the cache directory"
+      end
       return if version <= Gemstash::Resource::VERSION
       reset
       raise Gemstash::Resource::VersionTooNew.new(name, folder, version)
