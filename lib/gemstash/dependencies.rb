@@ -59,7 +59,7 @@ module Gemstash
       def fetch_from_database
         return if done?
         return unless @db_model
-        log.info "Querying dependencies: #{@gems.to_a.join(", ")}"
+        log.info "Querying dependencies: #{@gems.to_a.join(", ")} from database"
 
         @db_model.fetch(@gems) do |gem, value|
           @gems.delete(gem)
@@ -71,7 +71,7 @@ module Gemstash
       def fetch_from_web
         return if done?
         return unless @http_client
-        log.info "Fetching dependencies: #{@gems.to_a.join(", ")}"
+        log.info "Fetching dependencies: #{@gems.to_a.join(", ")} from web upstream"
         gems_param = @gems.map {|gem| CGI.escape(gem) }.join(",")
         fetched = @http_client.get("api/v1/dependencies?gems=#{gems_param}")
         fetched = Marshal.load(fetched).group_by {|r| r[:name] }

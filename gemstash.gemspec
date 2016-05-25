@@ -32,6 +32,7 @@ you push your own private gems as well."
   spec.add_runtime_dependency "thor", "~> 0.19"
   spec.add_runtime_dependency "faraday", "~> 0.9"
   spec.add_runtime_dependency "faraday_middleware", "~> 0.10"
+  spec.add_runtime_dependency "parallel", "~> 1.6"
 
   # Run Gemstash with the mysql adapter
   # spec.add_runtime_dependency "mysql", "~> 2.9"

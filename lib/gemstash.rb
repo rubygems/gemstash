@@ -16,6 +16,7 @@ module Gemstash
   autoload :Logging,             "gemstash/logging"
   autoload :LruReduxClient,      "gemstash/cache"
   autoload :NotAuthorizedError,  "gemstash/authorization"
+  autoload :Preload,             "gemstash/preload"
   autoload :RackEnvRewriter,     "gemstash/rack_env_rewriter"
   autoload :Resource,            "gemstash/storage"
   autoload :SpecsBuilder,        "gemstash/specs_builder"
