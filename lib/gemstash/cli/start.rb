@@ -42,11 +42,7 @@ module Gemstash
       end
 
       def daemonize_args
-        if daemonize?
-          ["--daemon"]
-        else
-          []
-        end
+        daemonize? ? ["--daemon"] : []
       end
     end
   end
