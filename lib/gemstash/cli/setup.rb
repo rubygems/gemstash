@@ -74,6 +74,7 @@ module Gemstash
         say_current_config(:cache_type, "Current cache")
         @config[:cache_type] = ask_with_default("Cache with what?", %w(memory memcached), "memory")
         ask_memcached_details if @config[:cache_type] == "memcached"
+        ask_redis_details if @config[:cache_type] == "redis"
       end
 
       def ask_memcached_details
@@ -81,6 +82,13 @@ module Gemstash
         servers = @cli.ask "What is the comma separated Memcached servers? [localhost:11211]"
         servers = "localhost:11211" if servers.empty?
         @config[:memcached_servers] = servers
+      end
+
+      def ask_redis_details
+        say_current_config(:redis_servers, "Current Memcached servers")
+        servers = @cli.ask "What is the comma separated Memcached servers? [localhost:6379]"
+        servers = "localhost:6379" if servers.empty?
+        @config[:redis_servers] = servers
       end
 
       def ask_database

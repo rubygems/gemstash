@@ -76,4 +76,40 @@ module Gemstash
       @cache[key] = value
     end
   end
+
+  # Wrapper around the redis-rb gem to behave like a dalli Memcached client.
+  class RedisClient
+    extend Forwardable
+
+    def_delegators :@cache, :delete
+    def_delegators :@cache, :get
+
+    def initialize(:redis_servers)
+      @cache = Redis.new(:url => :redis_servers) #check initialization configuration
+    end
+
+    def alive!
+      @cache.ping == "PONG"
+    end
+
+    def get_multi(keys)
+      @cache.multi do
+        keys.each do |key|
+          found = true
+          # Atomic fetch... don't rely on nil meaning missing
+          @cache.get(key) { found = false }
+          next unless found
+          yield(key, value)
+        end
+      end
+    end
+
+    def set(key, value, expiry)
+      @cache.set(key, value, expiry)
+    end
+
+    def flush
+      @cache.flushdb
+    end
+  end
 end
