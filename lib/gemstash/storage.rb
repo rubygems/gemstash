@@ -60,7 +60,7 @@ module Gemstash
       file = gemstash_env.base_file("metadata.yml")
 
       unless File.exist?(file)
-        gemstash_env.atomic_write(file) do |f|
+        File.atomic_write(file, File.dirname(file)) do |f|
           f.write({ storage_version: Gemstash::Storage::VERSION,
                     gemstash_version: Gemstash::VERSION }.to_yaml)
         end
@@ -319,11 +319,15 @@ module Gemstash
 
     def save_file(filename)
       content = yield
-      gemstash_env.atomic_write(filename) {|f| f.write(content) }
+      atomic_write(filename) {|f| f.write(content) }
     end
 
     def read_file(filename)
       File.open(filename, "rb", &:read)
+    end
+
+    def atomic_write(file, &block)
+      File.atomic_write(file, File.dirname(file), &block)
     end
 
     def content_filename(key)

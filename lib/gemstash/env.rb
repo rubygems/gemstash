@@ -4,6 +4,7 @@ require "dalli"
 require "fileutils"
 require "sequel"
 require "uri"
+require "byebug"
 
 module Gemstash
   # Storage for application-wide variables and configuration.
@@ -83,7 +84,6 @@ module Gemstash
 
     def base_path
       dir = config[:base_path]
-
       if config.default?(:base_path)
         FileUtils.mkpath(dir) unless Dir.exist?(dir)
       else
@@ -103,10 +103,6 @@ module Gemstash
       else
         base_file(config[:log_file] || "server.log")
       end
-    end
-
-    def atomic_write(file, &block)
-      File.atomic_write(file, File.dirname(file), &block)
     end
 
     def rackup
