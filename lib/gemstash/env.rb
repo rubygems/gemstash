@@ -4,6 +4,7 @@ require "dalli"
 require "fileutils"
 require "sequel"
 require "uri"
+require "byebug"
 
 module Gemstash
   # Storage for application-wide variables and configuration.
