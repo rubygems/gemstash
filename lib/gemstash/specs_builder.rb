@@ -41,7 +41,6 @@ module Gemstash
     end
 
   private
-
     def storage
       @storage ||= gemstash_env.storage_adapter_class.for("private").for("specs_collection")
     end
