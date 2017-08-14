@@ -3,7 +3,6 @@ require "digest"
 require "fileutils"
 require "pathname"
 require "yaml"
-require "byebug"
 require "aws-sdk"
 
 module Gemstash
@@ -132,9 +131,9 @@ module Gemstash
     # @return [Boolean] true if the indicated content exists
     def exist?(key = nil)
       if key
-        File.exist?(properties_filename) && File.exist?(content_filename(key))
+        S3.base_file(properties_filename).exists? && S3.base_file(content_filename(key)).exists?
       else
-        File.exist?(properties_filename) && content?
+        S3.base_file(properties_filename).exists? && content? 
       end
     end
 
@@ -276,8 +275,8 @@ module Gemstash
 
     def load_properties(force = false)
       return if @properties && !force
-      return unless File.exist?(properties_filename)
-      @properties = YAML.load_file(properties_filename) || {}
+      return unless S3.base_file(properties_filename).exists?
+      @properties = YAML.load(S3.base_file(properties_filename).get.body) || {}
       check_resource_version
     end
 
@@ -317,7 +316,6 @@ module Gemstash
     end
 
     def store(filename, content)
-      FileUtils.mkpath(@folder) unless Dir.exist?(@folder)
       save_file(filename) { content }
     end
 
@@ -327,11 +325,10 @@ module Gemstash
     end
 
     def read_file(filename)
-      File.open(filename, "rb", &:read)
+      S3.base_file(filename).get.body
     end
 
     def atomic_write(file, content)
-      byebug
       S3.base_file(file).put(body: content)   
     end
 
