@@ -14,6 +14,8 @@ gemstash-configuration
 # ~/.gemstash/config.yml
 ---
 :base_path: "/var/gemstash"
+:gem_path: 'my-bucket'
+:storage_adapter: 'S3'
 :cache_type: memcached
 :memcached_servers: localhost:11211
 :db_adapter: postgres
@@ -46,6 +48,26 @@ ahead of time and be writable to the Gemstash server process. Specifying the
 ## Valid values
 
 Any valid path
+
+# Storage Adapter
+
+`:storage_adapter`
+
+Specifies how gems should be stores
+
+## Default value
+
+`Storage`
+
+## Valid values
+
+`Storage`, `S3`
+
+# Gem path
+
+`:gem_path`
+
+S3 Bucket.  Requires "S3" to be set for `:storage_adapter`
 
 # Cache Type
 
