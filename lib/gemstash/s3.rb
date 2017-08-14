@@ -3,19 +3,22 @@ require "digest"
 require "fileutils"
 require "pathname"
 require "yaml"
+require "byebug"
+require "aws-sdk"
 
 module Gemstash
   # The entry point into the storage engine for storing cached gems, specs, and
   # private gems.
-  class Storage
+  class S3
     extend Gemstash::Env::Helper
     VERSION = 1
+    CLIENT = Aws::S3::Client.new
 
     # If the storage engine detects the base cache directory was originally
     # initialized with a newer version, this error is thrown.
     class VersionTooNew < StandardError
       def initialize(folder, version)
-        super("Gemstash storage version #{Gemstash::Storage::VERSION} does " \
+        super("Gemstash storage version #{Gemstash::S3::VERSION} does " \
               "not support version #{version} found at #{folder}")
       end
     end
@@ -25,33 +28,32 @@ module Gemstash
     def initialize(folder, root: true)
       @folder = folder
       check_storage_version if root
-      FileUtils.mkpath(@folder) unless Dir.exist?(@folder)
     end
 
     # Fetch the resource with the given +id+ within this storage.
     #
     # @param id [String] the id of the resource to fetch
-    # @return [Gemstash::Resource] a new resource instance from the +id+
+    # @return [Gemstash::S3Resource] a new resource instance from the +id+
     def resource(id)
-      Resource.new(@folder, id)
+      S3Resource.new(@folder, id)
     end
 
     # Fetch a nested entry from this instance in the storage engine.
     #
     # @param child [String] the name of the nested entry to load
-    # @return [Gemstash::Storage] a new storage instance for the +child+
+    # @return [Gemstash::S3] a new storage instance for the +child+
     def for(child)
-      Storage.new(File.join(@folder, child), root: false)
+      S3.new(File.join(@folder.key, child), root: false)
     end
 
     def self.base_file(path)
-      File.join(gemstash_env.gem_path, path)
+      Aws::S3::Object.new(gemstash_env.gem_path, path, client: CLIENT)
     end
 
     # Fetch a base entry in the storage engine.
     #
     # @param name [String] the name of the entry to load
-    # @return [Gemstash::Storage] a new storage instance for the +name+
+    # @return [Gemstash::S3] a new storage instance for the +name+
     def self.for(name)
       new(base_file(name))
     end
@@ -63,22 +65,20 @@ module Gemstash
     def self.metadata
       file = base_file("metadata.yml")
 
-      unless File.exist?(file)
-        File.atomic_write(file, File.dirname(file)) do |f|
-          f.write({ storage_version: Gemstash::Storage::VERSION,
-                    gemstash_version: Gemstash::VERSION }.to_yaml)
-        end
+      unless file.exists?
+        file.put(body: { storage_version: Gemstash::S3::VERSION,
+                         gemstash_version: Gemstash::VERSION }.to_yaml)
       end
 
-      YAML.load_file(file)
+      YAML.load(file.get.body)
     end
 
   private
 
     def check_storage_version
-      version = Gemstash::Storage.metadata[:storage_version]
-      return if version <= Gemstash::Storage::VERSION
-      raise Gemstash::Storage::VersionTooNew.new(@folder, version)
+      version = Gemstash::S3.metadata[:storage_version]
+      return if version <= Gemstash::S3::VERSION
+      raise Gemstash::S3::VersionTooNew.new(@folder, version)
     end
 
     def path_valid?(path)
@@ -90,7 +90,7 @@ module Gemstash
 
   # A resource within the storage engine. The resource may have 1 or more files
   # associated with it along with a metadata Hash that is stored in a YAML file.
-  class Resource
+  class S3Resource
     include Gemstash::Env::Helper
     include Gemstash::Logging
     attr_reader :name, :folder
@@ -100,14 +100,14 @@ module Gemstash
     # version, this error is thrown.
     class VersionTooNew < StandardError
       def initialize(name, folder, version)
-        super("Gemstash resource version #{Gemstash::Resource::VERSION} does " \
+        super("Gemstash resource version #{Gemstash::S3Resource::VERSION} does " \
               "not support version #{version} for resource #{name.inspect} " \
               "found at #{folder}")
       end
     end
 
     # This object should not be constructed directly, but instead via
-    # {Gemstash::Storage#resource}.
+    # {Gemstash::S3#resource}.
     def initialize(folder, name)
       @base_path = folder
       @name = name
@@ -150,13 +150,13 @@ module Gemstash
     #
     # Examples:
     #
-    #   Gemstash::Storage.for("foo").resource("bar").save(baz: "qux")
-    #   Gemstash::Storage.for("foo").resource("bar").save(baz: "one", qux: "two")
-    #   Gemstash::Storage.for("foo").resource("bar").save({ baz: "qux" }, meta: true)
+    #   Gemstash::S3.for("foo").resource("bar").save(baz: "qux")
+    #   Gemstash::S3.for("foo").resource("bar").save(baz: "one", qux: "two")
+    #   Gemstash::S3.for("foo").resource("bar").save({ baz: "qux" }, meta: true)
     #
     # @param content [Hash{Symbol => String}] files to save, *must not be nil*
     # @param properties [Hash, nil] metadata properties related to this resource
-    # @return [Gemstash::Resource] self for chaining purposes
+    # @return [Gemstash::S3Resource] self for chaining purposes
     def save(content, properties = nil)
       content.each do |key, value|
         save_content(key, value)
@@ -192,7 +192,7 @@ module Gemstash
     # also be merged.
     #
     # @param props [Hash] the properties to add
-    # @return [Gemstash::Resource] self for chaining purposes
+    # @return [Gemstash::S3Resource] self for chaining purposes
     def update_properties(props)
       load_properties(true)
 
@@ -214,7 +214,7 @@ module Gemstash
     #
     # Examples:
     #
-    #   resource = Gemstash::Storage.for("x").resource("y")
+    #   resource = Gemstash::S3.for("x").resource("y")
     #   resource.save({ file: "content" }, foo: "one", bar: { baz: "qux" })
     #   resource.has_property?(:foo)       # true
     #   resource.has_property?(:bar, :baz) # true
@@ -244,7 +244,7 @@ module Gemstash
     # Does nothing if the key doesn't {#exist?}.
     #
     # @param key [Symbol] the key of the content to delete
-    # @return [Gemstash::Resource] self for chaining purposes
+    # @return [Gemstash::S3Resource] self for chaining purposes
     def delete(key)
       return self unless exist?(key)
 
@@ -268,7 +268,7 @@ module Gemstash
   private
 
     def load(key)
-      raise "Resource #{@name} has no #{key.inspect} content to load" unless exist?(key)
+      raise "S3Resource #{@name} has no #{key.inspect} content to load" unless exist?(key)
       load_properties # Ensures storage version is checked
       @content ||= {}
       @content[key] = read_file(content_filename(key))
@@ -283,9 +283,9 @@ module Gemstash
 
     def check_resource_version
       version = @properties[:gemstash_resource_version]
-      return if version <= Gemstash::Resource::VERSION
+      return if version <= Gemstash::S3Resource::VERSION
       reset
-      raise Gemstash::Resource::VersionTooNew.new(name, folder, version)
+      raise Gemstash::S3Resource::VersionTooNew.new(name, folder, version)
     end
 
     def reset
@@ -311,7 +311,7 @@ module Gemstash
 
     def save_properties(props)
       props ||= {}
-      props = { gemstash_resource_version: Gemstash::Resource::VERSION }.merge(props)
+      props = { gemstash_resource_version: Gemstash::S3Resource::VERSION }.merge(props)
       store(properties_filename, props.to_yaml)
       @properties = props
     end
@@ -323,15 +323,16 @@ module Gemstash
 
     def save_file(filename)
       content = yield
-      atomic_write(filename) {|f| f.write(content) }
+      atomic_write(filename, content)
     end
 
     def read_file(filename)
       File.open(filename, "rb", &:read)
     end
 
-    def atomic_write(file, &block)
-      File.atomic_write(file, File.dirname(file), &block)
+    def atomic_write(file, content)
+      byebug
+      S3.base_file(file).put(body: content)   
     end
 
     def content_filename(key)

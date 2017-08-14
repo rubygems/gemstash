@@ -4,7 +4,6 @@ require "dalli"
 require "fileutils"
 require "sequel"
 require "uri"
-require "byebug"
 
 module Gemstash
   # Storage for application-wide variables and configuration.
@@ -91,6 +90,14 @@ module Gemstash
       end
 
       dir
+    end
+
+    def storage_adapter_class
+      Kernel.const_get("Gemstash::#{config[:storage_adapter]}")
+    end
+
+    def gem_path
+      config[:gem_path] || base_path
     end
 
     def base_file(path)
