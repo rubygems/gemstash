@@ -83,7 +83,6 @@ module Gemstash
 
     def base_path
       dir = config[:base_path]
-
       if config.default?(:base_path)
         FileUtils.mkpath(dir) unless Dir.exist?(dir)
       else
@@ -91,6 +90,14 @@ module Gemstash
       end
 
       dir
+    end
+
+    def storage_adapter_class
+      Kernel.const_get("Gemstash::#{config[:storage_adapter]}")
+    end
+
+    def gem_path
+      config[:gem_path] || base_path
     end
 
     def base_file(path)
@@ -103,10 +110,6 @@ module Gemstash
       else
         base_file(config[:log_file] || "server.log")
       end
-    end
-
-    def atomic_write(file, &block)
-      File.atomic_write(file, File.dirname(file), &block)
     end
 
     def rackup

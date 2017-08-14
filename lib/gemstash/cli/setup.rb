@@ -148,7 +148,7 @@ module Gemstash
       def store_config
         config_dir = File.dirname(config_file)
         FileUtils.mkpath(config_dir) unless Dir.exist?(config_dir)
-        gemstash_env.atomic_write(config_file) {|f| f.write(YAML.dump(@config)) }
+        File.atomic_write(config_file) {|f| f.write(YAML.dump(@config)) }
       end
 
       def save_metadata
