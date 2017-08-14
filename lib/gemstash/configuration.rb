@@ -8,7 +8,7 @@ module Gemstash
       cache_type: "memory",
       base_path: File.expand_path("~/.gemstash"),
       gem_path: nil,
-      storage_adapter: 'Storage',
+      storage_adapter: "Storage",
       db_adapter: "sqlite3",
       bind: "tcp://0.0.0.0:9292",
       rubygems_url: "https://rubygems.org",
