@@ -14,6 +14,8 @@ module Gemstash
       fetch_timeout: 20,
       # Actual default for db_connection_options is dynamic based on the adapter
       db_connection_options: {},
+      cache_expiration: 30 * 60,
+      cache_max_size: 500,
       puma_threads: 16
     }.freeze
 
