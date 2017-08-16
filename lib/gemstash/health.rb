@@ -7,6 +7,8 @@ module Gemstash
   # This module contains the logic used to supply a health monitor for
   # Gemstash. You can access the health monitor at the /health endpoint.
   module Health
+    extend Gemstash::Env::Helper
+ 
     # This check can be used if you don't want to read or write content during a
     # health check.
     def self.heartbeat
@@ -15,13 +17,13 @@ module Gemstash
 
     def self.check_storage_read
       if check_storage_write
-        content = Gemstash::Storage.for("health").resource("test").content(:example)
+        content = gemstash_env.storage_adapter_class.for("health").resource("test").content(:example)
         content =~ /\Acontent-\d+\z/
       end
     end
 
     def self.check_storage_write
-      resource = Gemstash::Storage.for("health").resource("test")
+      resource = gemstash_env.storage_adapter_class.for("health").resource("test")
       resource.save(example: "content-#{Time.now.to_i}")
       true
     end

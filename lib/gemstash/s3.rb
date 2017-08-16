@@ -34,7 +34,7 @@ module Gemstash
     # @param id [String] the id of the resource to fetch
     # @return [Gemstash::S3Resource] a new resource instance from the +id+
     def resource(id)
-      S3Resource.new(@folder, id)
+      S3Resource.new(@folder.key, id)
     end
 
     # Fetch a nested entry from this instance in the storage engine.
@@ -325,7 +325,7 @@ module Gemstash
     end
 
     def read_file(filename)
-      S3.base_file(filename).get.body
+      S3.base_file(filename).get.body.string
     end
 
     def atomic_write(file, content)
