@@ -12,6 +12,7 @@ module Gemstash
         Gemstash::Env.current = Gemstash::Env.new
         @cli = cli
         @args = args
+        store_pidfile
       end
 
     private
@@ -46,8 +47,16 @@ module Gemstash
                                              "install version #{version} or later.")
       end
 
+      def store_pidfile
+        gemstash_env.pidfile = pidfile?
+      end
+
+      def pidfile?
+        @cli.options[:pidfile]
+      end
+
       def pidfile_args
-        ["--pidfile", gemstash_env.base_file("puma.pid")]
+        ["--pidfile", gemstash_env.base_file(gemstash_env.pidfile).to_s]
       end
     end
   end

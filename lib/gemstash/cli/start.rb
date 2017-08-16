@@ -9,6 +9,7 @@ module Gemstash
     #  $ gemstash start
     class Start < Gemstash::CLI::Base
       def run
+
         prepare
         setup_logging
         store_daemonized
@@ -30,6 +31,14 @@ module Gemstash
 
       def daemonize?
         @cli.options[:daemonize]
+      end
+
+      def store_pidfile
+        gemstash_env.pidfile = pidfile?
+      end
+
+      def pidfile?
+        @cli.options[:pidfile]
       end
 
       def puma_config

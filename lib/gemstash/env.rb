@@ -69,6 +69,15 @@ module Gemstash
       @daemonized = value
     end
 
+    def pidfile=(value)
+      value = 'puma.pid' if value.nil?
+      @pidfile = value
+    end
+
+    def pidfile
+      @pidfile
+    end
+
     def config
       @config ||= Gemstash::Configuration.new
     end
@@ -94,11 +103,11 @@ module Gemstash
         raise "Base path '#{dir}' is not writable" unless File.writable?(dir)
       end
 
-      dir
+      Pathname.new(dir)
     end
 
     def base_file(path)
-      File.join(base_path, path)
+      base_path + path
     end
 
     def log_file
