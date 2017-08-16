@@ -48,6 +48,10 @@ configuration file located at `~/.gemstash/config.yml`.
 
 ## Files
 
+Gemstash can use a local file storage or an S3 bucket
+
+### Storage Adapter
+
 Storage in Gemstash defaults to `~/.gemstash` unless otherwise specified. You
 can change this in your config file via the `:base_path` key:
 ```yaml
@@ -60,6 +64,11 @@ When customizing the `base_path`, the directory must exist, otherwise Gemstash
 will fail to run. Thus, if you want to use `/var/gemstash` like in the previous
 example, make sure to `mkdir /var/gemstash` and grant access to the directory
 for the user you run Gemstash with.
+
+### S3 Adapter
+
+Storage in Gemstash can be set to use S3.  See AWS documentation for environment variables.  
+To use, you must set the `:storage_adapter` to 'S3' and set the `:gem_path`
 
 ## Database
 

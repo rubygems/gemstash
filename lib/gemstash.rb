@@ -21,6 +21,8 @@ module Gemstash
   autoload :Resource,            "gemstash/storage"
   autoload :SpecsBuilder,        "gemstash/specs_builder"
   autoload :Storage,             "gemstash/storage"
+  autoload :S3,                  "gemstash/s3"
+  autoload :S3Resource,          "gemstash/storage"
   autoload :Upstream,            "gemstash/upstream"
   autoload :Web,                 "gemstash/web"
   autoload :WebError,            "gemstash/http_client"

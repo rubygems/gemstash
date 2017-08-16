@@ -106,7 +106,7 @@ module Gemstash
       end
 
       def storage
-        @storage ||= Gemstash::Storage.for("private").for("gems")
+        @storage ||= gemstash_env.storage_adapter_class.for("private").for("gems")
       end
 
       def fetch_gem(gem_full_name)
