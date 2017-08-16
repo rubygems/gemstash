@@ -71,6 +71,8 @@ module Gemstash
     desc "start", "Starts your gemstash server"
     method_option :daemonize, :type => :boolean, :default => true, :desc =>
       "Daemonize the server"
+    method_option :pidfile, :type => :string, :default => 'puma.pid', :desc =>
+      "Specify pidfile location for puma"
     method_option :config_file, :type => :string, :desc =>
       "Config file to load when starting"
     def start
@@ -80,6 +82,8 @@ module Gemstash
     desc "status", "Check the status of your gemstash server"
     method_option :config_file, :type => :string, :desc =>
       "Config file to load when checking the status"
+    method_option :pidfile, :type => :string, :default => 'puma.pid', :desc =>
+      "Specify pidfile location for puma"
     def status
       Gemstash::CLI::Status.new(self).run
     end
@@ -87,6 +91,8 @@ module Gemstash
     desc "stop", "Stops your gemstash server"
     method_option :config_file, :type => :string, :desc =>
       "Config file to load when stopping"
+    method_option :pidfile, :type => :string, :default => 'puma.pid', :desc =>
+      "Specify pidfile location for puma"
     def stop
       Gemstash::CLI::Stop.new(self).run
     end
