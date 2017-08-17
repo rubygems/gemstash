@@ -51,6 +51,7 @@ you push your own private gems as well."
   end
 
   spec.add_development_dependency "bundler", "~> 1.11"
+  spec.add_development_dependency "pry"
   spec.add_development_dependency "citrus", "~> 3.0"
   spec.add_development_dependency "octokit", "~> 4.2"
   spec.add_development_dependency "pandoc_object_filters", "~> 0.2"
