@@ -42,7 +42,7 @@ module Gemstash
     # @param child [String] the name of the nested entry to load
     # @return [Gemstash::S3] a new storage instance for the +child+
     def for(child)
-      S3.new(File.join(@folder.key, child), root: false)
+      S3.new(S3.base_file(File.join(@folder.key, child)), root: false)
     end
 
     def self.base_file(path)
