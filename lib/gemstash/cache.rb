@@ -1,5 +1,6 @@
 require "lru_redux"
 require "forwardable"
+require "redis"
 
 module Gemstash
   # Cache object which knows about what things are cached and what keys to use
@@ -84,8 +85,8 @@ module Gemstash
     def_delegators :@cache, :delete
     def_delegators :@cache, :get
 
-    def initialize(:redis_servers)
-      @cache = Redis.new(:url => :redis_servers) #check initialization configuration
+    def initialize(redis_servers)
+      @cache = ::Redis.new(:url => redis_servers)
     end
 
     def alive!
@@ -93,19 +94,14 @@ module Gemstash
     end
 
     def get_multi(keys)
-      @cache.multi do
-        keys.each do |key|
-          found = true
-          # Atomic fetch... don't rely on nil meaning missing
-          @cache.get(key) { found = false }
-          next unless found
-          yield(key, value)
-        end
+      @cache.mget(*keys).each do |k, v|
+        next if v.nil?
+        yield(k, v)
       end
     end
 
     def set(key, value, expiry)
-      @cache.set(key, value, expiry)
+      @cache.set(key, value, :ex => expiry)
     end
 
     def flush
