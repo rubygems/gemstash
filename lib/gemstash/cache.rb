@@ -1,5 +1,6 @@
 require "lru_redux"
 require "forwardable"
+require "redis"
 
 module Gemstash
   # Cache object which knows about what things are cached and what keys to use
@@ -74,6 +75,37 @@ module Gemstash
 
     def set(key, value, expiry)
       @cache[key] = value
+    end
+  end
+
+  # Wrapper around the redis-rb gem to behave like a dalli Memcached client.
+  class RedisClient
+    extend Forwardable
+
+    def_delegators :@cache, :delete
+    def_delegators :@cache, :get
+
+    def initialize(redis_servers)
+      @cache = ::Redis.new(:url => redis_servers)
+    end
+
+    def alive!
+      @cache.ping == "PONG"
+    end
+
+    def get_multi(keys)
+      @cache.mget(*keys).each do |k, v|
+        next if v.nil?
+        yield(k, v)
+      end
+    end
+
+    def set(key, value, expiry)
+      @cache.set(key, value, :ex => expiry)
+    end
+
+    def flush
+      @cache.flushdb
     end
   end
 end
