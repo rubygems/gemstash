@@ -82,7 +82,7 @@ module Gemstash
   class RedisClient
     extend Forwardable
 
-    def_delegators :@cache, :delete
+    def_delegator :@cache, :delete, :del
     def_delegators :@cache, :get
 
     def initialize(redis_servers)
