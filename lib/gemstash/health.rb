@@ -8,7 +8,6 @@ module Gemstash
   # Gemstash. You can access the health monitor at the /health endpoint.
   module Health
     extend Gemstash::Env::Helper
- 
     # This check can be used if you don't want to read or write content during a
     # health check.
     def self.heartbeat
