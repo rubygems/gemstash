@@ -31,7 +31,15 @@ module Gemstash
     end
 
     get "/api/v1/dependencies" do
-      @gem_source.serve_dependencies
+      begin
+        @gem_source.serve_dependencies
+      rescue Gemstash::WebError => web_error
+        if web_error.code == 404
+          status 404
+        else
+          raise web_error
+        end
+      end
     end
 
     get "/api/v1/dependencies.json" do

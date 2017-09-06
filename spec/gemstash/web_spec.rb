@@ -12,6 +12,8 @@ describe Gemstash::Web do
       def for(server_url, timeout = 20)
         stubs = Faraday::Adapter::Test::Stubs.new do |stub|
           stub.get("/gems/rack") { [200, { "CONTENT-TYPE" => "octet/stream" }, "zapatito"] }
+          stub.get("/api/v1/dependencies?gems=not_found") { [404, {}, ""] }
+          stub.get("/api/v1/dependencies?gems=server_error") { [500, {}, ""] }
           stub.get("/gems/rack-1.0.0.gem") { [200, { "CONTENT-TYPE" => "octet/stream" }, "zapatito-1.0.0"] }
           stub.get("/gems/rack-1.1.0.gem") { [200, { "CONTENT-TYPE" => "octet/stream" }, "zapatito-1.1.0"] }
           stub.get("/quick/Marshal.4.8/rack.gemspec.rz") { [200, { "CONTENT-TYPE" => "octet/stream" }, "specatito"] }
@@ -139,6 +141,23 @@ describe Gemstash::Web do
         expect(last_response).not_to be_ok
         expect(last_response.body).
           to eq("Too many gems (use --full-index instead)")
+      end
+    end
+
+    context "the source returns a 404" do
+      it "returns a 404" do
+        get "#{request}?gems=not_found", {}, rack_env
+
+        expect(last_response).not_to be_ok
+        expect(last_response).to be_not_found
+      end
+    end
+
+    context "the source returns a 500" do
+      it "raises a Gemstash::WebError" do
+        expect do
+          get "#{request}?gems=server_error", {}, rack_env
+        end.to raise_error(Gemstash::WebError)
       end
     end
   end
