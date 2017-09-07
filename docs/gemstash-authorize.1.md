@@ -7,7 +7,7 @@ gemstash-authorize - Adds or removes authorization to interact with privately st
 Synopsis
 ========
 
-`gemstash authorize [permissions] [--remove] [--key SECURE_KEY] [--config-file FILE]`
+`gemstash authorize [permissions] [--remove] [--key SECURE_KEY] [--config-file FILE] [--name NAME]`
 
 Description
 ===========
@@ -21,7 +21,9 @@ Usage
 
     gemstash authorize
     gemstash authorize push yank
+    gemstash authorize push yank --name <somename>
     gemstash authorize yank --key <secure-key>
+    gemstash authorize yank --key <secure-key> --name <somename>
     gemstash authorize --remove --key <secure-key>
 
 Options
@@ -32,3 +34,5 @@ Options
 -   `--key SECURE_KEY`: Specify the API key to affect. This should be the actual key value, not a name. This option is required when using `--remove` but is optional otherwise. If adding an authorization, using this will either create or update the permissions for the specified API key. If missing, a new API key will always be generated. Note that a key can only have a maximum length of 255 chars.
 
 -   `--remove`: Remove an authorization rather than add or update one. When removing, permission values are not allowed. The `--key <secure-key>` option is required.
+
+-   `--name`: Optional, specifies an identifiable name for the respective key. Useful if you are assigning these to users or systems, and want to keep track.

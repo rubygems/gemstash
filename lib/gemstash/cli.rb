@@ -53,6 +53,8 @@ module Gemstash
       "Config file to save to"
     method_option :key, :type => :string, :desc =>
       "Authorization key to create/update/delete (optional unless deleting)"
+    method_option :name, :type => :string, :desc =>
+      "Name for the key (optional)"
     def authorize(*args)
       Gemstash::CLI::Authorize.new(self, *args).run
     end

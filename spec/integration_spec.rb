@@ -7,6 +7,7 @@ require "uri"
 describe "gemstash integration tests" do
   let(:auth) { Gemstash::ApiKeyAuthorization.new(auth_key) }
   let(:auth_key) { "test-key" }
+  let(:auth_key_name) { "somekey" }
 
   before(:all) do
     speaker_deps = [
@@ -106,7 +107,7 @@ describe "gemstash integration tests" do
 
     before do
       FileUtils.chmod(0600, File.join(env_dir, ".gem/credentials"))
-      Gemstash::Authorization.authorize(auth_key, "all")
+      Gemstash::Authorization.authorize(auth_key, "all", auth_key_name)
     end
 
     after do
@@ -280,7 +281,7 @@ describe "gemstash integration tests" do
 
     context "with private gems", db_transaction: false do
       before do
-        Gemstash::Authorization.authorize(auth_key, "all")
+        Gemstash::Authorization.authorize(auth_key, "all", auth_key_name)
         Gemstash::GemPusher.new(auth, read_gem("speaker", "0.1.0")).serve
         Gemstash::GemPusher.new(auth, read_gem("speaker", "0.1.0", platform: "java")).serve
         Gemstash::GemPusher.new(auth, read_gem("speaker", "0.2.0.pre")).serve

@@ -41,7 +41,7 @@ Instead just authorize with the new set of permissions") unless @args.empty?
           end
         end
 
-        Gemstash::Authorization.authorize(auth_key, permissions)
+        Gemstash::Authorization.authorize(auth_key, permissions, name)
       end
 
       def auth_key(allow_generate = true)
@@ -62,6 +62,14 @@ Instead just authorize with the new set of permissions") unless @args.empty?
           "all"
         else
           @args
+        end
+      end
+
+      def name
+        if @cli.options[:name].empty?
+          ""
+        else
+          @cli.options[:name]
         end
       end
     end

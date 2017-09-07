@@ -6,13 +6,15 @@ describe Gemstash::GemPusher do
   let(:auth_with_invalid_auth_key) { Gemstash::ApiKeyAuthorization.new(invalid_auth_key) }
   let(:auth_without_permission) { Gemstash::ApiKeyAuthorization.new(auth_key_without_permission) }
   let(:auth_key) { "auth-key" }
+  let(:auth_key_name) { "somekey" }
   let(:invalid_auth_key) { "invalid-auth-key" }
   let(:auth_key_without_permission) { "auth-key-without-permission" }
+  let(:auth_key_without_permission_name) { "badkey" }
   let(:storage) { Gemstash::Storage.for("private").for("gems") }
 
   before do
-    Gemstash::Authorization.authorize(auth_key, "all")
-    Gemstash::Authorization.authorize(auth_key_without_permission, ["yank"])
+    Gemstash::Authorization.authorize(auth_key, "all", auth_key_name)
+    Gemstash::Authorization.authorize(auth_key_without_permission, ["yank"], auth_key_without_permission_name)
   end
 
   describe ".serve" do

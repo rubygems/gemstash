@@ -11,7 +11,7 @@ module Gemstash
     extend Gemstash::Logging
     VALID_PERMISSIONS = %w(push yank fetch).freeze
 
-    def self.authorize(auth_key, permissions)
+    def self.authorize(auth_key, permissions, name = "")
       raise "Authorization key is required!" if auth_key.to_s.strip.empty?
       raise "Permissions are required!" if permissions.to_s.empty?
 
@@ -25,9 +25,9 @@ module Gemstash
         permissions = permissions.join(",")
       end
 
-      Gemstash::DB::Authorization.insert_or_update(auth_key, permissions)
+      Gemstash::DB::Authorization.insert_or_update(auth_key, permissions, name)
       gemstash_env.cache.invalidate_authorization(auth_key)
-      log.info "Authorization '#{auth_key}' updated with access to '#{permissions}'"
+      log.info "Authorization '#{auth_key}' updated (with name '#{name}') with access to '#{permissions}'"
     end
 
     def self.remove(auth_key)
