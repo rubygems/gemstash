@@ -149,8 +149,7 @@ module Gemstash
       end
 
       def storage
-        @storage ||= Gemstash::Storage.for("gem_cache")
-        @storage.for(upstream.host_id)
+        @storage ||= gemstash_env.storage_adapter_class.for("gem_cache")
       end
 
       def gem_fetcher
