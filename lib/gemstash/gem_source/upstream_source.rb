@@ -149,7 +149,7 @@ module Gemstash
       end
 
       def storage
-        @storage ||= gemstash_env.storage_adapter_class.for("gem_cache")
+        @storage ||= gemstash_env.storage_adapter_class.for("gem_cache").for("gem_cache")
       end
 
       def gem_fetcher
