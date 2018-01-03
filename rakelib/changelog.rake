@@ -21,7 +21,7 @@ class Changelog
   def ensure_new_version_specified
     tags = `git tag -l`
     return unless tags.include? Changelog.current_version
-    print "Are you updating the 'master' CHANELOG? [yes/no] "
+    print "Are you updating the 'master' CHANGELOG? [yes/no] "
     abort("Please update lib/gemstash/version.rb with the new version first!") unless STDIN.gets.strip.casecmp("yes") == 0
     @master_update = true
   end
@@ -48,7 +48,7 @@ class Changelog
 
   def parse_changelog
     require "citrus"
-    Citrus.load(File.expand_path("../changelog.citrus", __FILE__))
+    Citrus.load(File.expand_path("../../rake/changelog.citrus", __FILE__))
     @parsed = Changelog::Grammar.parse(File.read(changelog_file))
     @parsed_current_version = @parsed.versions.find {|version| version.number == current_version }
 
