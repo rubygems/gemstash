@@ -96,7 +96,8 @@ module Gemstash
     end
 
     def get(key)
-      YAML.load(@cache.get(key)) unless @cache.get(key).nil?
+      val = @cache.get(key)
+      YAML.load(val) unless val.nil?
     end
 
     def get_multi(keys)
