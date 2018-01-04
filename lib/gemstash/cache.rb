@@ -83,7 +83,6 @@ module Gemstash
     extend Forwardable
 
     def_delegator :@cache, :del, :delete
-    def_delegators :@cache, :get
 
     def initialize(redis_servers)
       @cache = ::Redis.new(:url => redis_servers)
@@ -93,15 +92,19 @@ module Gemstash
       @cache.ping == "PONG"
     end
 
+    def get(key)
+      YAML.load(@cache.get(key)) unless @cache.get(key).nil?
+    end
+
     def get_multi(keys)
       @cache.mget(*keys).each do |k, v|
         next if v.nil?
-        yield(k, v)
+        yield(k, YAML.load(v))
       end
     end
 
     def set(key, value, expiry)
-      @cache.set(key, value, :ex => expiry)
+      @cache.set(key, YAML.dump(value), :ex => expiry)
     end
 
     def flush
