@@ -261,6 +261,7 @@ describe Gemstash::Web do
     end
 
     context "from private gems" do
+      let(:current_env) { Gemstash::Env.current }
       let(:gem_source) { Gemstash::GemSource::PrivateSource }
       let(:storage) { current_env.storage_adapter_class.for("private").for("gems") }
 
@@ -364,6 +365,7 @@ describe Gemstash::Web do
     end
 
     context "from private gems" do
+      let(:current_env) { Gemstash::Env.current }
       let(:gem_source) { Gemstash::GemSource::PrivateSource }
       let(:storage) { current_env.storage_adapter_class.for("private").for("gems") }
 
