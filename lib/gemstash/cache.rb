@@ -39,6 +39,15 @@ module Gemstash
       @client.set("deps/v1/#{scope}/#{gem}", value, EXPIRY)
     end
 
+    def versions(scope)
+      key = "versions/#{scope}"
+      @client.get(key)
+    end
+
+    def set_version
+      @client.set("versions#{scope}", value, EXPIRY)
+    end
+
     def invalidate_gem(scope, gem)
       @client.delete("deps/v1/#{scope}/#{gem}")
       Gemstash::SpecsBuilder.invalidate_stored if scope == "private"
