@@ -7,6 +7,7 @@ module Gemstash
   autoload :CLI,                 "gemstash/cli"
   autoload :Configuration,       "gemstash/configuration"
   autoload :Dependencies,        "gemstash/dependencies"
+  autoload :Versions,             "gemstash/versions"
   autoload :Env,                 "gemstash/env"
   autoload :GemFetcher,          "gemstash/gem_fetcher"
   autoload :GemPusher,           "gemstash/gem_pusher"
