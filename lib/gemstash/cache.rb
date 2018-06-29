@@ -44,7 +44,7 @@ module Gemstash
       @client.get(key)
     end
 
-    def set_versions(scope)
+    def set_versions(scope, value)
       @client.set("versions/#{scope}", value, EXPIRY)
     end
 
