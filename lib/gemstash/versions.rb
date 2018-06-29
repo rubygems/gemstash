@@ -20,7 +20,7 @@ module Gemstash
       def initialize(scope, http_client)
         @scope = scope
         @http_client = http_client
-        @versions = []
+        @versions = ""
       end
 
       def fetch
@@ -31,7 +31,7 @@ module Gemstash
       private
 
       def fetch_from_cache
-        gemstash_env.cache.versions(@scope)
+        @versions = gemstash_env.cache.versions(@scope)
       end
     end
   end
