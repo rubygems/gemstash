@@ -44,8 +44,8 @@ module Gemstash
       @client.get(key)
     end
 
-    def set_version
-      @client.set("versions#{scope}", value, EXPIRY)
+    def set_versions(scope)
+      @client.set("versions/#{scope}", value, EXPIRY)
     end
 
     def invalidate_gem(scope, gem)
