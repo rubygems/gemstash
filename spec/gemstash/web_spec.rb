@@ -424,7 +424,7 @@ describe Gemstash::Web do
       expect(last_response.status).to eq(200)
     end
 
-    it "returns a 422 when gem already exists" do
+    it "returns a 422 when the gem already exists" do
       post "/api/v1/gems", read_gem("example", "0.1.0"), env
       expect(last_response).to be_ok
 
