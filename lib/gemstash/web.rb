@@ -1,6 +1,7 @@
 require "sinatra/base"
 require "json"
 require "gemstash"
+
 module Gemstash
   #:nodoc:
   class Web < Sinatra::Base
