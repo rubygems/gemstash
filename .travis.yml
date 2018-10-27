@@ -14,8 +14,15 @@ matrix:
     - rvm: 2.5.1
     - rvm: ruby-head
       gemfile: 'gemfiles/Gemfile.ruby-head'
-    - rvm: jruby-9.2.0.0
+
+    - language: generic
       env: JRUBY_OPTS="--client -J-XX:+TieredCompilation -J-XX:TieredStopAtLevel=1 -J-Xss2m -Xcompile.invokedynamic=false -J-Xmx1536m"
+      before_install:
+        - "rm ${HOME}/.rvm/gemsets/jruby/global.gems"
+        - "rvm install rvm use jruby-9.2.0.0 --install --binary --fuzzy"
+        - "gem install bundler"
+      install: bundle install --binstubs --jobs=3 --retry=3 --path=${BUNDLE_PATH:-vendor/bundle}
+      script: bundle exec rake
 
 bundler_args: "--binstubs --jobs=3 --retry=3"
 
