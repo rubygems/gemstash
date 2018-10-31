@@ -16,7 +16,8 @@ module Gemstash
       db_connection_options: {},
       cache_expiration: 30 * 60,
       cache_max_size: 500,
-      puma_threads: 16
+      puma_threads: 16,
+      puma_workers: 1
     }.freeze
 
     DEFAULT_FILE = File.expand_path("~/.gemstash/config.yml").freeze
@@ -61,7 +62,7 @@ module Gemstash
       when "sqlite3"
         { max_connections: 1 }.merge(self[:db_connection_options])
       when "postgres", "mysql", "mysql2"
-        { max_connections: self[:puma_threads] + 1 }.merge(self[:db_connection_options])
+        { max_connections: (self[:puma_workers] * self[:puma_threads]) + 1 }.merge(self[:db_connection_options])
       else
         raise "Unsupported DB adapter: '#{self[:db_adapter]}'"
       end

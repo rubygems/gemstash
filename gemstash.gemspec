@@ -1,4 +1,5 @@
 # coding: utf-8
+
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "gemstash/version"
@@ -37,8 +38,8 @@ you push your own private gems as well."
   spec.add_runtime_dependency "redis", "~> 3.3"
   spec.add_runtime_dependency "server_health_check-rack", "~> 0.1"
   spec.add_runtime_dependency "sequel", "~> 5.0"
-  spec.add_runtime_dependency "sinatra", "~> 1.4"
-  spec.add_runtime_dependency "thor", "~> 0.19"
+  spec.add_runtime_dependency "sinatra", ">= 1.4", "< 3.0"
+  spec.add_runtime_dependency "thor", "~> 0.20"
 
   # Run Gemstash with the mysql adapter
   # spec.add_runtime_dependency "mysql", "~> 2.9"
@@ -59,5 +60,5 @@ you push your own private gems as well."
   spec.add_development_dependency "rack-test", "~> 0.6"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.3"
-  spec.add_development_dependency "rubocop", "0.35.1"
+  spec.add_development_dependency "rubocop", "0.49"
 end

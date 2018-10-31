@@ -131,7 +131,7 @@ describe Gemstash::Web do
     end
 
     context "there are too many gems" do
-      let(:gems) { 201.times.map {|i| "gem-#{i}" }.join(",") }
+      let(:gems) { Array.new(201) {|i| "gem-#{i}" }.join(",") }
 
       it "returns a 422" do
         get "#{request}?gems=#{gems}", {}, rack_env
@@ -185,7 +185,7 @@ describe Gemstash::Web do
     end
 
     context "there are too many gems" do
-      let(:gems) { 201.times.map {|i| "gem-#{i}" }.join(",") }
+      let(:gems) { Array.new(201) {|i| "gem-#{i}" }.join(",") }
 
       it "returns a 422" do
         error = {
@@ -406,6 +406,32 @@ describe Gemstash::Web do
           expect(last_response.body).to_not match(/Example yanked gem(spec)? content/)
         end
       end
+    end
+  end
+
+  context "POST /api/v1/gems" do
+    let(:gem_source) { Gemstash::GemSource::PrivateSource }
+    let(:auth_key) { "auth-key" }
+    let(:env) { rack_env.merge("CONTENT_TYPE" => "application/octet-stream", "HTTP_AUTHORIZATION" => auth_key) }
+
+    before do
+      Gemstash::Authorization.authorize(auth_key, "all")
+    end
+
+    it "returns 200 on a successful push" do
+      post "/api/v1/gems", read_gem("example", "0.1.0"), env
+      expect(last_response).to be_ok
+      expect(last_response.status).to eq(200)
+    end
+
+    it "returns a 422 when gem already exists" do
+      post "/api/v1/gems", read_gem("example", "0.1.0"), env
+      expect(last_response).to be_ok
+
+      post "/api/v1/gems", read_gem("example", "0.1.0"), env
+      expect(last_response).to_not be_ok
+      expect(last_response.status).to eq(422)
+      expect(JSON.parse(last_response.body)).to eq("error" => "Version already exists", "code" => 422)
     end
   end
 end
