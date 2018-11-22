@@ -33,12 +33,24 @@ module Gemstash
         File.expand_path("../../puma.rb", __FILE__)
       end
 
-      def args
-        config_args + pidfile_args + daemonize_args
+      def store_pidfile
+        gemstash_env.pidfile = pidfile?
       end
 
-      def config_args
-        ["--config", puma_config]
+      def pidfile?
+        @cli.options[:pidfile]
+      end
+
+      def args
+        puma_args + pidfile_args + daemonize_args
+      end
+
+      def puma_args
+        [
+          "--config", puma_config,
+          "--workers", gemstash_env.config[:puma_workers],
+          "--threads", gemstash_env.config[:puma_threads]
+        ]
       end
 
       def daemonize_args
