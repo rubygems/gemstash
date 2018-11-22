@@ -9,7 +9,6 @@ module Gemstash
     #  $ gemstash start
     class Start < Gemstash::CLI::Base
       def run
-
         prepare
         setup_logging
         store_daemonized
@@ -33,6 +32,10 @@ module Gemstash
         @cli.options[:daemonize]
       end
 
+      def puma_config
+        File.expand_path("../../puma.rb", __FILE__)
+      end
+
       def store_pidfile
         gemstash_env.pidfile = pidfile?
       end
@@ -46,11 +49,15 @@ module Gemstash
       end
 
       def args
-        config_args + pidfile_args + daemonize_args
+        puma_args + pidfile_args + daemonize_args
       end
 
-      def config_args
-        ["--config", puma_config]
+      def puma_args
+        [
+          "--config", puma_config,
+          "--workers", gemstash_env.config[:puma_workers],
+          "--threads", gemstash_env.config[:puma_threads]
+        ]
       end
 
       def daemonize_args
