@@ -26,6 +26,7 @@ module Gemstash
         ask_database
         ask_protected_fetch
         ask_timeout
+        ask_bachend
         check_cache
         check_storage
         check_database
@@ -120,6 +121,11 @@ module Gemstash
         timeout = @cli.ask "How many seconds to wait when fetching a gem? [20]"
         timeout = Gemstash::Configuration::DEFAULTS[:fetch_timeout] if timeout.to_i < 1
         @config[:fetch_timeout] = timeout.to_i
+      end
+
+      def ask_bachend
+        say_current_config(:backend, "Current backend")
+        @config[:backend] = ask_with_default("What backend?", %w[local s3], "local")
       end
 
       def check_cache
