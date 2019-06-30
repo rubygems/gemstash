@@ -26,7 +26,7 @@ module Gemstash
         ask_database
         ask_protected_fetch
         ask_timeout
-        ask_bachend
+        ask_backend
         check_cache
         check_storage
         check_database
@@ -123,7 +123,7 @@ module Gemstash
         @config[:fetch_timeout] = timeout.to_i
       end
 
-      def ask_bachend
+      def ask_backend
         say_current_config(:backend, "Current backend")
         @config[:backend] = ask_with_default("What backend?", %w[local s3], "local")
       end
