@@ -21,7 +21,7 @@ module Gemstash
       cache_expiration: 30 * 60,
       cache_max_size: 500,
       backend: "local",
-      s3_metadata: { authorized: false, bucket_name: nil }
+      s3_metadata: {}
     }.freeze
 
     DEFAULT_FILE = File.expand_path("~/.gemstash/config.yml").freeze

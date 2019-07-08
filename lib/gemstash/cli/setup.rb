@@ -126,19 +126,32 @@ module Gemstash
 
       def ask_backend
         say_current_config(:backend, "Current backend")
+        previous_backend = @config[:backend]
         @config[:backend] = ask_with_default("What backend?", %w[local s3], "local")
-        check_aws_authorization() unless @config[:backend] == "local"
+        check_aws_authorization(previous_backend) unless @config[:backend] == "local"
       end
 
-      def check_aws_authorization
+      def check_aws_authorization(previous_backend)
         begin
           @cli.say "Checking authorization to Aws"
-          s3 = Aws::S3::Resource.new(region: 'us-west-2')
+          s3 = Aws::S3::Resource.new()
           @config[:s3_metadata] = { authorized: true }.merge(Gemstash::Configuration::DEFAULTS[:s3_metadata])
         rescue Aws::Sigv4::Errors::MissingCredentialsError => e
           @cli.say "Aws authorization failed: #{e.message}"
           @cli.say "Please refer to https://docs.aws.amazon.com/sdk-for-ruby/v3/developer-guide/setup-config.html"
+          @config[:backend] = previous_backend
           @config[:s3_metadata] = { authorized: false }.merge(Gemstash::Configuration::DEFAULTS[:s3_metadata])
+        end
+        ask_s3_bucket_metadata() unless @config[:s3_metadata][:authorized] == false
+      end
+
+      def ask_s3_bucket_metadata
+        bucket_name = @cli.ask "What is the target S3 bucket?"
+        bucket = Aws::S3::Bucket.new(bucket_name)
+        if bucket.exists?()
+          @config[:s3_metadata] = { bucket_name: bucket_name }.merge(@config[:s3_metadata])
+        else
+          @cli.say "S3 bucket: #{bucket_name} does not exist!"
         end
       end
 
