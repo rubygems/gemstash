@@ -3,6 +3,7 @@
 require "gemstash"
 require "fileutils"
 require "yaml"
+require "aws-sdk"
 
 module Gemstash
   class CLI
@@ -126,6 +127,19 @@ module Gemstash
       def ask_backend
         say_current_config(:backend, "Current backend")
         @config[:backend] = ask_with_default("What backend?", %w[local s3], "local")
+        check_aws_authorization() unless @config[:backend] == "local"
+      end
+
+      def check_aws_authorization
+        begin
+          @cli.say "Checking authorization to Aws"
+          s3 = Aws::S3::Resource.new(region: 'us-west-2')
+          @config[:s3_metadata] = { authorized: true }.merge(Gemstash::Configuration::DEFAULTS[:s3_metadata])
+        rescue Aws::Sigv4::Errors::MissingCredentialsError => e
+          @cli.say "Aws authorization failed: #{e.message}"
+          @cli.say "Please refer to https://docs.aws.amazon.com/sdk-for-ruby/v3/developer-guide/setup-config.html"
+          @config[:s3_metadata] = { authorized: false }.merge(Gemstash::Configuration::DEFAULTS[:s3_metadata])
+        end
       end
 
       def check_cache
