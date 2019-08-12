@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require "spec_helper"
 require "cgi"
 
-describe Gemstash::GemSource do
+RSpec.describe Gemstash::GemSource do
   let(:app) { double }
   let(:middleware) { Gemstash::GemSource::RackMiddleware.new(app) }
 

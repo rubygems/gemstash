@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require "spec_helper"
 require "yaml"
 
-describe Gemstash::CLI::Setup do
+RSpec.describe Gemstash::CLI::Setup do
   let(:cli) do
     result = double(options: cli_options, say: nil)
     allow(result).to receive(:set_color) {|x| x }

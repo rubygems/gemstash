@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require "spec_helper"
 
-describe Gemstash::CLI::Base do
+RSpec.describe Gemstash::CLI::Base do
   let(:cli) do
     result = double(say: nil)
     allow(result).to receive(:set_color) {|x| x }

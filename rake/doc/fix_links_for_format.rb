@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
+
 require "json"
 require "open3"
 require "pandoc_object_filters"
@@ -41,7 +43,7 @@ class DocLinkUrl
 
   def format_extension
     case FILTER.format
-    when "markdown_github"
+    when "gfm"
       ".md"
     when "html"
       ".html"
@@ -64,7 +66,7 @@ class DocLinkUrl
 
   def to_s
     case FILTER.format
-    when "markdown_github"
+    when "gfm"
       "#{relative_path}#{heading}"
     when "html"
       "#{relative_path.sub(/\.md\z/, ".html")}#{heading}"
@@ -81,7 +83,7 @@ def current_path
 end
 
 def path_to(doc)
-  default = FILTER.format == "markdown_github" ? "docs" : "."
+  default = FILTER.format == "gfm" ? "docs" : "."
   extract_meta(doc.meta["#{FILTER.format}_link_path"], default)
 end
 
@@ -101,7 +103,9 @@ end
 
 FILTER.filter do |element|
   next unless element.is_a?(PandocObjectFilters::Element::Link)
+
   match = %r{\A\./(gemstash-.*)\z}.match(element.target.url)
   next unless match
+
   element.target.url = DocLinkUrl.new(match[1]).to_s
 end

@@ -1,5 +1,8 @@
-$LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
+# frozen_string_literal: true
+
+$LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 ENV["RACK_ENV"] = "test"
+require "aruba/rspec"
 require "gemstash"
 require "dalli"
 require "fileutils"
@@ -15,7 +18,7 @@ require "support/simple_server"
 require "support/slow_simple_server"
 require "support/test_gemstash_server"
 
-TEST_BASE_PATH = File.expand_path("../../tmp/test_base", __FILE__)
+TEST_BASE_PATH = File.expand_path("../tmp/test_base", __dir__)
 FileUtils.mkpath(TEST_BASE_PATH) unless Dir.exist?(TEST_BASE_PATH)
 Pathname.new(TEST_BASE_PATH).children.each(&:rmtree)
 TEST_LOG_FILE = File.join(TEST_BASE_PATH, "server.log")
@@ -28,6 +31,8 @@ TEST_DB = Gemstash::Env.current.db
 Sequel::Model.db = TEST_DB
 
 RSpec.configure do |config|
+  config.disable_monkey_patching!
+
   config.around(:each) do |example|
     test_env.config = TEST_CONFIG unless test_env.config == TEST_CONFIG
 
@@ -55,6 +60,7 @@ RSpec.configure do |config|
 
     Pathname.new(TEST_BASE_PATH).children.each do |path|
       next if path.basename.to_s.end_with?(".db")
+
       path.rmtree
     end
 

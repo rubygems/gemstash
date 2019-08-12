@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require "spec_helper"
 require "cgi"
 
-describe Gemstash::RackEnvRewriter do
+RSpec.describe Gemstash::RackEnvRewriter do
   context "with just a prefix to drop" do
     let(:env) do
       {

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "lru_redux"
 require "forwardable"
 
@@ -6,7 +8,7 @@ module Gemstash
   # for them. Under the hood is either a Memcached client via the dalli gem, or
   # an in memory client via the lru_redux gem.
   class Cache
-    EXPIRY = 30 * 60
+    EXPIRY = Env.current.config[:cache_expiration]
     extend Forwardable
     def_delegators :@client, :flush
 
@@ -47,7 +49,7 @@ module Gemstash
 
   # Wrapper around the lru_redux gem to behave like a dalli Memcached client.
   class LruReduxClient
-    MAX_SIZE = 500
+    MAX_SIZE = Env.current.config[:cache_max_size]
     EXPIRY = Gemstash::Cache::EXPIRY
     extend Forwardable
     def_delegators :@cache, :delete
@@ -68,6 +70,7 @@ module Gemstash
         # Atomic fetch... don't rely on nil meaning missing
         value = @cache.fetch(key) { found = false }
         next unless found
+
         yield(key, value)
       end
     end

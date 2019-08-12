@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SlowSimpleServer < SimpleServer
   def initialize(hostname, port: nil)
     @port = port || SimpleServer.next_port
@@ -15,7 +17,7 @@ class SlowSimpleServer < SimpleServer
       super
     end
 
-    def do_GET(request, response) # rubocop:disable Style/MethodName
+    def do_GET(request, response) # rubocop:disable Naming/MethodName
       sleep(0.3)
       @simple_server.routes[request.path].call request, response
     end
