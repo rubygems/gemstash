@@ -31,7 +31,7 @@ module Gemstash
 
     def dependencies(scope, gems)
       key_prefix = "deps/v1/#{scope}/"
-      keys = gems.map {|g| "#{key_prefix}#{g}" }
+      keys = gems.map { |g| "#{key_prefix}#{g}" }
 
       @client.get_multi(keys) do |key, value|
         yield(key.sub(key_prefix, ""), value)
@@ -103,6 +103,7 @@ module Gemstash
     def get_multi(keys)
       @cache.mget(*keys).each do |k, v|
         next if v.nil?
+       
         yield(k, YAML.load(v))
       end
     end
