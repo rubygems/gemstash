@@ -76,7 +76,7 @@ module Gemstash
 
       def ask_cache
         say_current_config(:cache_type, "Current cache")
-        @config[:cache_type] = ask_with_default("Cache with what?", %w[memory memcached], "memory")
+        @config[:cache_type] = ask_with_default("Cache with what?", %w[memory memcached redis], "memory")
         ask_memcached_details if @config[:cache_type] == "memcached"
         ask_redis_details if @config[:cache_type] == "redis"
       end
