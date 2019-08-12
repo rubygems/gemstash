@@ -38,18 +38,18 @@ module Gemstash
 
       def puma_args
         [
-          '--config', puma_config,
-          '--workers', puma_workers,
-          '--threads', puma_threads,
+          "--config", puma_config,
+          "--workers", puma_workers,
+          "--threads", puma_threads
         ]
       end
 
       def puma_workers
-        gemstash_env.config[:puma_workers] ? gemstash_env.config[:puma_workers].to_s : '0'
+        gemstash_env.config[:puma_workers] ? gemstash_env.config[:puma_workers].to_s : "0"
       end
 
       def puma_threads
-        gemstash_env.config[:puma_threads] ? gemstash_env.config[:puma_threads].to_s : '0'
+        gemstash_env.config[:puma_threads] ? gemstash_env.config[:puma_threads].to_s : "0"
       end
 
       def puma_config
