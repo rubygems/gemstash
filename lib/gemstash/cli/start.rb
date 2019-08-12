@@ -33,14 +33,6 @@ module Gemstash
         File.expand_path("../../puma.rb", __FILE__)
       end
 
-      def store_pidfile
-        gemstash_env.pidfile = pidfile?
-      end
-
-      def pidfile?
-        @cli.options[:pidfile]
-      end
-
       def args
         puma_args + pidfile_args + daemonize_args
       end
