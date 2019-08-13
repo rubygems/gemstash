@@ -53,7 +53,7 @@ module Gemstash
       end
 
       def puma_config
-        File.expand_path('../puma.rb', __dir__)
+        File.expand_path("../puma.rb", __dir__)
       end
 
       def daemonize_args
