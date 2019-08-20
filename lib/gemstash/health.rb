@@ -46,8 +46,8 @@ module Gemstash
     end
 
     ServerHealthCheckRack::Checks.check("heartbeat") { Gemstash::Health.heartbeat }
-    # ServerHealthCheckRack::Checks.check("storage_read") { Gemstash::Health.check_storage_read }
-    # ServerHealthCheckRack::Checks.check("storage_write") { Gemstash::Health.check_storage_write }
+    ServerHealthCheckRack::Checks.check("storage_read") { Gemstash::Health.check_storage_read }
+    ServerHealthCheckRack::Checks.check("storage_write") { Gemstash::Health.check_storage_write }
     ServerHealthCheckRack::Checks.check("db_read") { Gemstash::Health.check_db_read }
     ServerHealthCheckRack::Checks.check("db_write") { Gemstash::Health.check_db_write }
     RackMiddleware = ServerHealthCheckRack::Middleware
