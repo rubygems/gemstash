@@ -3,7 +3,7 @@
 [![Build
 Status](https://travis-ci.org/rubygems/gemstash.svg?branch=master)](https://travis-ci.org/rubygems/gemstash)
 [![Code
-Climate](https://codeclimate.com/github/rubygems/gemstash/badges/gpa.svg)](https://codeclimate.com/github/rubygems/gemstash)
+Climate](https://codeclimate.com/github/bundler/gemstash/badges/gpa.svg)](https://codeclimate.com/github/bundler/gemstash)
 
 <p align="center"><img src="gemstash.png" /></p>
 
@@ -12,7 +12,7 @@ Climate](https://codeclimate.com/github/rubygems/gemstash/badges/gpa.svg)](https
 Gemstash is both a cache for remote servers such as
 https://rubygems.org, and a private gem source.
 
-If you are using [bundler](http://rubygems.io/) across many machines that
+If you are using [bundler](http://bundler.io/) across many machines that
 have access to a server within your control, you might want to use
 Gemstash.
 
@@ -118,17 +118,17 @@ You might wonder where the gems are stored. After running the commands
 above, you will find a new directory at `~/.gemstash`. This directory
 holds all the cached and private gems. It also has a server log, the
 database, and configuration for Gemstash. If you prefer, you can [point
-to a different directory](docs/gemstash-customize.7.md#files).
+to a different directory](gemstash-customize.7.md#files).
 
 Gemstash uses [SQLite](https://www.sqlite.org/) to store details about
 private gems. The database will be located in `~/.gemstash`, however you
 won’t see the database appear until you start using private gems. If you
 prefer, you can [use a different
-database](docs/gemstash-customize.7.md#database).
+database](gemstash-customize.7.md#database).
 
 Gemstash temporarily caches things like gem dependencies in memory.
 Anything cached in memory will last for 30 minutes before being
-retrieved again. You can [use memcached](docs/gemstash-customize.7.md#cache)
+retrieved again. You can [use memcached](gemstash-customize.7.md#cache)
 instead of caching in memory. Gem files are always cached permanently,
 so bundling with a `Gemfile.lock` with all gems cached will never call
 out to https://rubygems.org.
@@ -141,28 +141,28 @@ this point.
 
 Deep dive into more subjects:
 
-  - [Private gems](docs/gemstash-private-gems.7.md)
-  - [Multiple gem sources](docs/gemstash-multiple-sources.7.md)
-  - [Using Gemstash as a mirror](docs/gemstash-mirror.7.md)
+  - [Private gems](gemstash-private-gems.7.md)
+  - [Multiple gem sources](gemstash-multiple-sources.7.md)
+  - [Using Gemstash as a mirror](gemstash-mirror.7.md)
   - [Customizing the server (database, storage, caching, and
-    more)](docs/gemstash-customize.7.md)
-  - [Deploying Gemstash](docs/gemstash-deploy.7.md)
-  - [Debugging Gemstash](docs/gemstash-debugging.7.md)
+    more)](gemstash-customize.7.md)
+  - [Deploying Gemstash](gemstash-deploy.7.md)
+  - [Debugging Gemstash](gemstash-debugging.7.md)
 
 ## Reference
 
 An anatomy of various configuration and commands:
 
-  - [Configuration](docs/gemstash-configuration.5.md)
-  - [Authorize](docs/gemstash-authorize.1.md)
-  - [Start](docs/gemstash-start.1.md)
-  - [Stop](docs/gemstash-stop.1.md)
-  - [Status](docs/gemstash-status.1.md)
-  - [Setup](docs/gemstash-setup.1.md)
-  - [Version](docs/gemstash-version.1.md)
+  - [Configuration](gemstash-configuration.5.md)
+  - [Authorize](gemstash-authorize.1.md)
+  - [Start](gemstash-start.1.md)
+  - [Stop](gemstash-stop.1.md)
+  - [Status](gemstash-status.1.md)
+  - [Setup](gemstash-setup.1.md)
+  - [Version](gemstash-version.1.md)
 
 To see what has changed in recent versions of Gemstash, see the
-[CHANGELOG](https://github.com/rubygems/gemstash/blob/master/CHANGELOG.md).
+[CHANGELOG](https://github.com/bundler/gemstash/blob/master/CHANGELOG.md).
 
 ## Development
 
@@ -174,10 +174,10 @@ an interactive prompt that will allow you to experiment.
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at
-https://github.com/rubygems/gemstash. This project is intended to be a
+https://github.com/bundler/gemstash. This project is intended to be a
 safe, welcoming space for collaboration, and contributors are expected
 to adhere to the [Contributor
-Covenant](https://github.com/rubygems/gemstash/blob/master/CODE_OF_CONDUCT.md)
+Covenant](https://github.com/bundler/gemstash/blob/master/CODE_OF_CONDUCT.md)
 code of conduct.
 
 ## License
