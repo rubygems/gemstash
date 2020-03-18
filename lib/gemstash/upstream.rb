@@ -15,7 +15,7 @@ module Gemstash
     def initialize(upstream, user_agent: nil)
       @uri = URI(CGI.unescape(upstream.to_s))
       @user_agent = user_agent
-      raise "URL '#{@uri}' is not valid!" unless @uri.to_s =~ URI::DEFAULT_PARSER.make_regexp
+      raise "URL '#{@uri}' is not valid!" unless @uri.to_s&.match?(URI::DEFAULT_PARSER.make_regexp)
     end
 
     def url(path = nil, params = nil)

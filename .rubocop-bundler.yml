@@ -27,7 +27,7 @@ Layout/EndAlignment:
 Layout/AccessModifierIndentation:
   EnforcedStyle: outdent
 
-Layout/AlignParameters:
+Layout/ParameterAlignment:
   EnforcedStyle: with_fixed_indentation
 
 Layout/MultilineOperationIndentation:
@@ -103,7 +103,7 @@ Naming/HeredocDelimiterNaming:
 # This should be enabled, but test broke if so, see:
 # spec/support/simple_server.rb:149:20
 # spec/support/slow_simple_server.rb:15:20
-Naming/UncommunicativeMethodParamName:
+Naming/MethodParameterName:
   Enabled: false
 
 #alerts on some large if blocks

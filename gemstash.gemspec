@@ -18,9 +18,9 @@ you push your own private gems as well."
   spec.homepage      = "https://github.com/rubygems/gemstash"
   spec.license       = "MIT"
 
-  spec.files         = `git ls-files -z`.split("\x0").select {|f|
+  spec.files         = `git ls-files -z`.split("\x0").select do |f|
     f.match(/^(lib|exe|CHANGELOG|CODE_OF_CONDUCT|LICENSE)/)
-  }
+  end
   # we don't check in man pages, but we need to ship them because
   # we use them to generate the long-form help for each command.
   spec.files += Dir.glob("lib/gemstash/man/**/*")

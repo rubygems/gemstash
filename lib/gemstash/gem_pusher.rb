@@ -127,6 +127,6 @@ module Gemstash
       end
     end
 
-    GemPusher.send(:include, LegacyRubyGemsSupport)
+    GemPusher.include LegacyRubyGemsSupport
   end
 end

@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# frozen_string_literal: tru
+# frozen_string_literal: true
 
 require "speaker"
 Speaker.say(ARGV)

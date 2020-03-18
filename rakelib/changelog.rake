@@ -37,7 +37,7 @@ class Changelog
     return if master_update?
 
     contents = File.read(changelog_file)
-    return unless contents =~ /^## master \(unreleased\)$/
+    return unless /^## master \(unreleased\)$/.match?(contents)
 
     contents.sub!(/^## master \(unreleased\)$/, "## #{current_version} (#{current_date})")
     File.write(changelog_file, contents)
