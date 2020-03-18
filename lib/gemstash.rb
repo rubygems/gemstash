@@ -27,4 +27,9 @@ module Gemstash
   autoload :Web,                 "gemstash/web"
   autoload :WebError,            "gemstash/http_client"
   autoload :VERSION,             "gemstash/version"
+
+  class Storage # :nodoc:
+    autoload :BaseService, "gemstash/storage/base_service"
+    autoload :LocalService, "gemstash/storage/local_service"
+  end
 end

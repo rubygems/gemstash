@@ -15,13 +15,6 @@ RSpec.describe Gemstash::Storage do
     expect(Gemstash::Storage.new(@folder)).not_to be_nil
   end
 
-  it "builds the path if it does not exists" do
-    new_path = File.join(@folder, "other-path")
-    expect(Dir.exist?(new_path)).to be_falsy
-    Gemstash::Storage.new(new_path)
-    expect(Dir.exist?(new_path)).to be_truthy
-  end
-
   it "stores metadata about Gemstash and the storage engine version" do
     expect(Gemstash::Storage.metadata[:storage_version]).to eq(Gemstash::Storage::VERSION)
     expect(Gemstash::Storage.metadata[:gemstash_version]).to eq(Gemstash::VERSION)
@@ -40,11 +33,6 @@ RSpec.describe Gemstash::Storage do
 
   context "with a valid storage" do
     let(:storage) { Gemstash::Storage.new(@folder) }
-
-    it "can create a child storage from itself" do
-      storage.for("gems")
-      expect(Dir.exist?(File.join(@folder, "gems"))).to be_truthy
-    end
 
     it "returns a non existing resource when requested" do
       resource = storage.resource("an_id")
