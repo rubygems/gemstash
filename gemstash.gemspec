@@ -37,12 +37,13 @@ you push your own private gems as well."
   spec.add_runtime_dependency "faraday_middleware", "~> 0.10"
   spec.add_runtime_dependency "lru_redux", "~> 1.1"
   spec.add_runtime_dependency "puma", "~> 4.0"
-  spec.add_runtime_dependency "redis", "~> 3.3"
   spec.add_runtime_dependency "sequel", "~> 5.0"
   spec.add_runtime_dependency "server_health_check-rack", "~> 0.1"
   spec.add_runtime_dependency "sinatra", ">= 1.4", "< 3.0"
   spec.add_runtime_dependency "thor", "~> 0.20"
 
+  # Use Redis instead of memcached
+  # spec.add_runtime_dependency "redis", "~> 3.3"
   # Run Gemstash with the mysql adapter
   # spec.add_runtime_dependency "mysql", "~> 2.9"
   # Run Gemstash with the mysql2 adapter
