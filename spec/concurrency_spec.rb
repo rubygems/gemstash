@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-describe "gemstash concurrency tests" do
+RSpec.describe "gemstash concurrency tests" do
   let(:timeout) { 5 }
 
   def write_thread(resource_id, content = "unchanging")
@@ -105,10 +105,10 @@ describe "gemstash concurrency tests" do
 
         threads = []
         possible_content = [
-          ("One" * 10_000).freeze,
-          ("Two" * 10_000).freeze,
-          ("Three" * 10_000).freeze,
-          ("Four" * 10_000).freeze
+          ("One" * 10_000),
+          ("Two" * 10_000),
+          ("Three" * 10_000),
+          ("Four" * 10_000)
         ].freeze
         count = 0
         50.times do

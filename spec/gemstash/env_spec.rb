@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-describe Gemstash::Env do
+RSpec.describe Gemstash::Env do
   context ".log_file" do
     let(:dir) { __dir__ }
 
@@ -22,6 +22,28 @@ describe Gemstash::Env do
       config = Gemstash::Configuration.new(config: { log_file: :stdout })
       env = Gemstash::Env.new(config)
       expect(env.log_file).to eq($stdout)
+    end
+  end
+
+  context ".pidfile" do
+    let(:dir) { __dir__ }
+
+    it "has default pidfile path" do
+      config = Gemstash::Configuration.new(config: { base_path: dir })
+      env = Gemstash::Env.new(config)
+      expect(env.pidfile).to eq(File.join(dir, "puma.pid"))
+    end
+
+    it "supports relative path" do
+      config = Gemstash::Configuration.new(config: { base_path: dir, pidfile: "custom/puma.pid" })
+      env = Gemstash::Env.new(config)
+      expect(env.pidfile).to eq(File.join(dir, "custom", "puma.pid"))
+    end
+
+    it "supports absolute path" do
+      config = Gemstash::Configuration.new(config: { base_path: dir, pidfile: "/var/run/gemstash.pid" })
+      env = Gemstash::Env.new(config)
+      expect(env.pidfile).to eq("/var/run/gemstash.pid")
     end
   end
 

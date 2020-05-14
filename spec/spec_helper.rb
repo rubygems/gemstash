@@ -2,6 +2,7 @@
 
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 ENV["RACK_ENV"] = "test"
+require "aruba/rspec"
 require "gemstash"
 require "dalli"
 require "fileutils"
@@ -30,6 +31,8 @@ TEST_DB = Gemstash::Env.current.db
 Sequel::Model.db = TEST_DB
 
 RSpec.configure do |config|
+  config.disable_monkey_patching!
+
   config.around(:each) do |example|
     test_env.config = TEST_CONFIG unless test_env.config == TEST_CONFIG
 

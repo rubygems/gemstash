@@ -43,7 +43,7 @@ class DocLinkUrl
 
   def format_extension
     case FILTER.format
-    when "markdown_github"
+    when "gfm"
       ".md"
     when "html"
       ".html"
@@ -54,10 +54,8 @@ class DocLinkUrl
     end
   end
 
-  def relative_path
-    current = Pathname.new(current_path)
-    file = Pathname.new(path).join(filename)
-    file.relative_path_from(current).to_s
+  def full_path
+    Pathname.new(path).join(filename)
   end
 
   def heading
@@ -66,10 +64,10 @@ class DocLinkUrl
 
   def to_s
     case FILTER.format
-    when "markdown_github"
-      "#{relative_path}#{heading}"
+    when "gfm"
+      "#{full_path}#{heading}"
     when "html"
-      "#{relative_path.sub(/\.md\z/, ".html")}#{heading}"
+      "#{full_path.sub(/\.md\z/, ".html")}#{heading}"
     when "man"
       "gemstash help #{filename.sub(/\Agemstash-/, "")}"
     else
@@ -83,7 +81,7 @@ def current_path
 end
 
 def path_to(doc)
-  default = FILTER.format == "markdown_github" ? "docs" : "."
+  default = FILTER.format == "gfm" ? "docs" : "."
   extract_meta(doc.meta["#{FILTER.format}_link_path"], default)
 end
 
