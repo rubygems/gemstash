@@ -2,8 +2,6 @@
 
 require "spec_helper"
 require "yaml"
-require "pry"
-require "byebug"
 
 RSpec.describe Gemstash::S3 do
   let(:storage) { Gemstash::S3.new("gemstash/S3_storage_tests",Gemstash::Env.current).for("private").for("gems") }
