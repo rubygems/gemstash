@@ -31,6 +31,40 @@ module Gemstash
       @object_name = @folder
     end
 
+    def resource(id)
+      S3Resource.new(@folder,id,@client)
+    end
+
+    def for(child)
+      S3.new(File.join(@folder, child), @gemstash_env, root: false)
+    end
+
+    def self.for(name)
+      new(gemstash_env.base_file(name),gemstash_env)
+    end
+
+    def self.metadata
+      file = gemstash_env.base_file("metadata.yml")
+      unless File.exist?(file)
+        gemstash_env.atomic_write(file) do |f|
+          f.write({ storage_version: Gemstash::S3::VERSION,
+                    gemstash_version: Gemstash::VERSION }.to_yaml)
+        end
+      end
+
+      YAML.load_file(file)
+    end
+
+    private
+
+    def check_storage_version
+      version = Gemstash::S3.metadata[:storage_version]
+      return if version <= Gemstash::S3::VERSION
+
+      raise Gemstash::S3::VersionTooNew.new(@folder, version)
+    end
+
+
   end
   class S3Resource
     include Gemstash::Env::Helper
