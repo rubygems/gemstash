@@ -90,5 +90,158 @@ module Gemstash
       @S3resource = Aws::S3::Resource.new(client: @client).bucket(gemstash_env.config[:bucket_name])
       @properties = nil
     end
+    def save(content, properties = nil)
+      content.each do |key, value|
+        save_content(key, value)
+      end
+      update_properties(properties)
+      self
+    end
+
+    def exist?(key = nil)
+      if key
+        @S3resource.object(properties_filename).exists? && @S3resource.object(content_filename(key)).exists?
+      else
+        @S3resource.object(properties_filename).exists? && content?
+      end
+    end
+
+    def content(key)
+      @content ||= {}
+      load(key) unless @content.include?(key)
+      @content[key]
+    end
+
+    def properties
+      load_properties
+      @properties || {}
+    end
+
+    def update_properties(props)
+      load_properties(true)
+
+      deep_merge = proc do |_, old_value, new_value|
+        if old_value.is_a?(Hash) && new_value.is_a?(Hash)
+          old_value.merge(new_value, &deep_merge)
+        else
+          new_value
+        end
+      end
+
+      props = properties.merge(props || {}, &deep_merge)
+      save_properties(properties.merge(props || {}))
+      self
+    end
+
+    def property?(*keys)
+      keys.inject(node: properties, result: true) do |memo, key|
+        if memo[:result]
+          memo[:result] = memo[:node].is_a?(Hash) && memo[:node].include?(key)
+          memo[:node] = memo[:node][key] if memo[:result]
+        end
+
+        memo
+      end[:result]
+    end
+
+    def delete(key)
+      return self unless exist?(key)
+
+      begin
+        @S3resource.object(content_filename(key)).delete
+      rescue StandardError => e
+        log_error "Failed to delete stored content at #{content_filename(key)}", e, level: :warn
+      end
+
+      begin
+        @S3resource.object(properties_filename).delete unless content?
+      rescue StandardError => e
+        log_error "Failed to delete stored properties at #{properties_filename}", e, level: :warn
+      end
+
+      self
+    ensure
+      reset
+    end
+
+
+    private
+    def content?
+      return false unless @S3resource.object(@folder).exists?
+
+      entries = @S3resource.objects(prefix: (@folder)).collect().reject { |object| object.content_length == 0 || object.key == "properties.yaml" }
+      !entries.empty?
+    end
+
+    def load_properties(force = false)
+      return if @properties && !force
+      return unless @S3resource.object(properties_filename).exists?
+
+      properties_file = @S3resource.object(properties_filename).get.body
+      @properties = YAML.load(properties_file) || {}
+      check_resource_version
+    end
+
+    def save_properties(props)
+      props ||= {}
+      props = { gemstash_resource_version: Gemstash::S3Resource::VERSION }.merge(props)
+      store(properties_filename, props.to_yaml)
+      @properties = props
+    end
+
+    def load(key)
+      raise "Resource #{@name} has no #{key.inspect} content to load" unless exist?(key)
+      load_properties # Ensures storage version is checked
+      @content ||= {}
+      @content[key] = read_file(content_filename(key))
+    end
+
+    def check_resource_version
+      version = @properties[:gemstash_resource_version]
+      return if version <= Gemstash::S3Resource::VERSION
+
+      reset
+      raise Gemstash::S3Resource::VersionTooNew.new(name, folder, version)
+    end
+
+    def sanitize(name)
+      name.gsub(/[^a-zA-Z0-9_]/, "_")
+    end
+
+    def save_content(key,content)
+      store(content_filename(key), content)
+      @content ||= {}
+      @content[key] = content
+    end
+
+    def store(filename,content)
+      save_file(filename) { content }
+    end
+
+    def content_filename(key)
+      name = sanitize(key.to_s)
+      raise "Invalid content key #{key.inspect}" if name.empty?
+
+      File.join(@folder, name)
+    end
+
+    def read_file(filename)
+      @S3resource.object(filename).get().body.read
+    end
+
+    def properties_filename
+      File.join(@folder, "properties.yaml")
+    end
+
+    def save_file(filename)
+      content = yield
+      @S3resource.object(filename).put(body: content, content_encoding: "ASCII")
+    end
+
+    def reset
+      @content = nil
+      @properties = nil
+    end
+
   end
 end
