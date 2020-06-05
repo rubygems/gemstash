@@ -17,6 +17,14 @@ require "support/matchers"
 require "support/simple_server"
 require "support/slow_simple_server"
 require "support/test_gemstash_server"
+require "vcr"
+
+VCR.configure do |config|
+  config.cassette_library_dir = "fixtures/vcr_cassettes"
+  config.hook_into :webmock
+  config.configure_rspec_metadata!
+  config.allow_http_connections_when_no_cassette = true
+end
 
 TEST_BASE_PATH = File.expand_path("../tmp/test_base", __dir__)
 FileUtils.mkpath(TEST_BASE_PATH) unless Dir.exist?(TEST_BASE_PATH)
