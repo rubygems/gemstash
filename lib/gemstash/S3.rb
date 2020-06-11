@@ -64,7 +64,6 @@ module Gemstash
       raise Gemstash::S3::VersionTooNew.new(@folder, version)
     end
 
-
   end
   class S3Resource
     include Gemstash::Env::Helper
@@ -149,20 +148,22 @@ module Gemstash
 
       begin
         @S3resource.object(content_filename(key)).delete
-      rescue StandardError => e
-        log_error "Failed to delete stored content at #{content_filename(key)}", e, level: :warn
+      rescue Aws::S3::Errors::ServiceError => e
+        log_error "An error has occurred while attempting this operation #{e.context.operation_name},
+        Failed to delete stored content at #{content_filename(key)}", e, level: :warn
       end
 
       begin
         @S3resource.object(properties_filename).delete unless content?
-      rescue StandardError => e
-        log_error "Failed to delete stored properties at #{properties_filename}", e, level: :warn
+      rescue Aws::S3::Errors::ServiceError => e
+        log_error "An error has occurred while attempting this operation #{e.context.operation_name},
+        Failed to delete stored properties at #{properties_filename}", e, level: :warn
       end
 
       self
-    ensure
-      reset
-    end
+      ensure
+        reset
+      end
 
 
     private
