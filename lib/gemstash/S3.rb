@@ -34,6 +34,11 @@ module Gemstash
     def check_credentials?
       @client.get_bucket_location({bucket: @bucket_name}).location_constraint == gemstash_env.config[:region]
     end
+
+    def delete_with_prefix(prefix = @folder)
+      Aws::S3::Resource.new(client: @client).bucket(@bucket_name).objects(prefix: prefix).batch_delete!
+    end
+
     def resource(id)
       S3Resource.new(@folder,id,@client,@bucket_name)
     end
