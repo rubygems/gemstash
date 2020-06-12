@@ -8,6 +8,7 @@ require "pathname"
 module Gemstash
   class S3
     extend Gemstash::Env::Helper
+    include Gemstash::Env::Helper
     attr_reader :folder, :client, :bucket
 
     VERSION = 1
@@ -18,16 +19,15 @@ module Gemstash
       end
     end
 
-    def initialize(folder, gemstash_env, root: true)
+    def initialize(folder, root: true)
       @folder = folder
       check_storage_version if root
-      @gemstash_env = gemstash_env
       @client = Aws::S3::Client.new(
-          access_key_id: gemstash_env.config[:access_key_id],
-          secret_access_key: gemstash_env.config[:secret_access_key],
-          region: gemstash_env.config[:region],
-          stub_responses: false
+          access_key_id: gemstash_env.config[:aws_access_key_id],
+          secret_access_key: gemstash_env.config[:aws_secret_access_key],
+          region: gemstash_env.config[:region]
       )
+      @bucket_name = gemstash_env.config[:bucket_name]
       @object_name = @folder
     end
 
@@ -35,15 +35,15 @@ module Gemstash
       @client.get_bucket_location({bucket: @bucket_name}).location_constraint == gemstash_env.config[:region]
     end
     def resource(id)
-      S3Resource.new(@folder,id,@client)
+      S3Resource.new(@folder,id,@client,@bucket_name)
     end
 
     def for(child)
-      S3.new(File.join(@folder, child), @gemstash_env, root: false)
+      S3.new(File.join(@folder, child),root: false)
     end
 
     def self.for(name)
-      new(gemstash_env.base_file(name),gemstash_env)
+      new(File.join(gemstash_env.config[:s3_path],name))
     end
 
     def self.metadata
@@ -81,7 +81,7 @@ module Gemstash
                "found at #{folder}")
       end
     end
-    def initialize(folder,name,client)
+    def initialize(folder,name,client,bucket_name)
       @folder = folder
       @name = name
       safe_name = sanitize(@name)
@@ -89,9 +89,10 @@ module Gemstash
       child_folder = "#{safe_name}-#{digest}"
       @folder = File.join(@folder, child_folder)
       @client = client
-      @S3resource = Aws::S3::Resource.new(client: @client).bucket(gemstash_env.config[:bucket_name])
+      @S3resource = Aws::S3::Resource.new(client: @client).bucket(bucket_name)
       @properties = nil
     end
+
     def save(content, properties = nil)
       content.each do |key, value|
         save_content(key, value)
