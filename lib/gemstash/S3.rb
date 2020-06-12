@@ -31,6 +31,9 @@ module Gemstash
       @object_name = @folder
     end
 
+    def check_credentials?
+      @client.get_bucket_location({bucket: @bucket_name}).location_constraint == gemstash_env.config[:region]
+    end
     def resource(id)
       S3Resource.new(@folder,id,@client)
     end
