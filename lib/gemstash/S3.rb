@@ -243,7 +243,7 @@ module Gemstash
     end
 
     def read_file(filename)
-      @S3resource.object(filename).get().body.read
+      @S3resource.object(filename).get().body.read.b
     end
 
     def properties_filename
