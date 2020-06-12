@@ -20,7 +20,13 @@ module Gemstash
       puma_threads: 16,
       puma_workers: 1,
       cache_expiration: 30 * 60,
-      cache_max_size: 500
+      cache_max_size: 500,
+      storage_adapter: "local",
+      aws_access_key_id: '',
+      aws_secret_access_key: '',
+      bucket_name: '',
+      region: 'us-west-1',
+      s3_path: 'gemstash/s3_storage'
     }.freeze
 
     DEFAULT_FILE = File.expand_path("~/.gemstash/config.yml").freeze
