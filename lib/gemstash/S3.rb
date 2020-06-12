@@ -190,8 +190,14 @@ module Gemstash
     def save_properties(props)
       props ||= {}
       props = { gemstash_resource_version: Gemstash::S3Resource::VERSION }.merge(props)
-      store(properties_filename, props.to_yaml)
-      @properties = props
+      begin
+        store(properties_filename, props.to_yaml)
+      rescue Aws::S3::Errors::ServiceError => e
+        log_error "An error has occurred while attempting this operation #{e.context.operation_name},
+        Failed to update properties at #{properties_filename}", e, level: :warn
+      else
+        @properties = props
+      end
     end
 
     def load(key)
@@ -214,9 +220,15 @@ module Gemstash
     end
 
     def save_content(key,content)
-      store(content_filename(key), content)
-      @content ||= {}
-      @content[key] = content
+      begin
+        store(content_filename(key), content)
+      rescue  Aws::S3::Errors::ServiceError => e
+        log_error "An error has occurred while attempting this operation #{e.context.operation_name},
+        Failed to store content at #{content_filename(key)}", e, level: :warn
+      else
+        @content ||= {}
+        @content[key] = content
+      end
     end
 
     def store(filename,content)
