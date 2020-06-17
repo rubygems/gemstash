@@ -181,8 +181,12 @@ module Gemstash
     def load_properties(force = false)
       return if @properties && !force
       return unless @S3resource.object(properties_filename).exists?
-
-      properties_file = @S3resource.object(properties_filename).get.body
+      begin
+        properties_file = @S3resource.object(properties_filename).get.body
+      rescue  Aws::S3::Errors::ServiceError => e
+        log_error "An error has occurred while attempting this operation #{e.context.operation_name},
+        Failed to fetch content at #{properties_filename}", e, level: :warn
+      end
       @properties = YAML.load(properties_file) || {}
       check_resource_version
     end
@@ -204,7 +208,12 @@ module Gemstash
       raise "Resource #{@name} has no #{key.inspect} content to load" unless exist?(key)
       load_properties # Ensures storage version is checked
       @content ||= {}
-      @content[key] = read_file(content_filename(key))
+      begin
+        @content[key] = read_file(content_filename(key))
+      rescue Aws::S3::Errors::ServiceError => e
+        log_error "An error has occurred while attempting this operation #{e.context.operation_name},
+        Failed to load content at #{content_filename(key)}", e, level: :warn
+      end
     end
 
     def check_resource_version
