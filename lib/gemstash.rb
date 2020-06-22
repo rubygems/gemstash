@@ -27,6 +27,6 @@ module Gemstash
   autoload :Web,                 "gemstash/web"
   autoload :WebError,            "gemstash/http_client"
   autoload :VERSION,             "gemstash/version"
-  autoload :S3,                  "gemstash/S3"
-  autoload :S3Resource,          "gemstash/S3"
+  autoload :S3, "gemstash/s3_storage"
+  autoload :S3Resource, "gemstash/s3_storage"
 end

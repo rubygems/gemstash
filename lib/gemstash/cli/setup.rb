@@ -74,7 +74,7 @@ module Gemstash
         @config[:base_path] = File.expand_path(path)
       end
 
-      def ask_S3_details
+      def ask_s3_details
         aws_access_key = @cli.ask "We will need your access key and secret access key. First, paste your access key: ", echo: true
         aws_access_key = nil if aws_access_key.empty?
         aws_secret_access_key = @cli.ask "Second, paste your secret access key: ", echo: true
@@ -90,7 +90,7 @@ module Gemstash
         say_current_config(:storage_adapter, "Current storage service")
         @config[:storage_adapter] = ask_with_default("What storage service will you use?", %w[local s3], "local")
         ask_local_details if @config[:storage_adapter] == "local"
-        ask_S3_details if @config[:storage_adapter] == "s3"
+        ask_s3_details if @config[:storage_adapter] == "s3"
       end
 
       def ask_cache
@@ -158,12 +158,13 @@ module Gemstash
       end
 
       def check_storage
-        if(@config[:storage_adapter] == 'local')
+        if @config[:storage_adapter] == "local"
           check_local_storage
         else
-          check_S3
+          check_s3
         end
       end
+
       def check_local_storage
         with_new_config do
           dir = gemstash_env.config[:base_path]
@@ -185,8 +186,8 @@ module Gemstash
         end
       end
 
-      def check_S3
-        try("S3 storage service") { gemstash_env.S3_test_credentials? }
+      def check_s3
+        try("S3 storage service") { gemstash_env.s3_test_credentials? }
       end
 
       def store_config

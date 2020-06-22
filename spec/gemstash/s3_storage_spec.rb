@@ -8,36 +8,35 @@ RSpec.describe Gemstash::S3 do
   before(:all) do
     env = Gemstash::Env.new
     Gemstash::Env.current = env
-    env.config = Gemstash::Configuration.new(config: {:s3_path => 'TEMP_S3_TEST_FOLDER/gemstash/s3_storage'})
+    env.config = Gemstash::Configuration.new(config: { :s3_path => "TEMP_S3_TEST_FOLDER/gemstash/s3_storage" })
     @storage = Gemstash::S3.for("private").for("gems")
     @folder = "gemstash/s3_storage"
   end
   after(:all) do
-    VCR.use_cassette('batch delete objects') do
-      @storage.delete_with_prefix()
+    VCR.use_cassette("batch delete objects") do
+      @storage.delete_with_prefix
     end
   end
 
   context "intialize storage component" do
-    it("builds with a valid folder") { expect(Gemstash::S3.new(@folder)).not_to be_nil}
+    it("builds with a valid folder") { expect(Gemstash::S3.new(@folder)).not_to be_nil }
     it "stores metadata about Gemstash and the storage engine version" do
-      expect(Gemstash::S3.metadata[:storage_version]).to eq(Gemstash::S3::VERSION)
+      expect(Gemstash::S3.metadata[:storage_version]).to eq(Gemstash::S3::STORAGE_VERSION)
       expect(Gemstash::S3.metadata[:gemstash_version]).to eq(Gemstash::VERSION)
     end
 
     it "prevents using storage engine if the storage version is too new" do
       metadata = {
-          storage_version: 999_999,
-          gemstash_version: Gemstash::VERSION
+        storage_version: 999_999,
+        gemstash_version: Gemstash::VERSION
       }
       File.write(Gemstash::Env.current.base_file("metadata.yml"), metadata.to_yaml)
       expect { Gemstash::S3.new(@folder) }.
-          to raise_error(Gemstash::S3::VersionTooNew)
+        to raise_error(Gemstash::S3::VersionTooNew)
     end
   end
 
   context "with a valid storage" do
-
     let(:gem_contents) { read_gem("example", "0.1.0") }
     before(:context) do
     end
@@ -48,7 +47,7 @@ RSpec.describe Gemstash::S3 do
       expect(child_storage.folder).to eq(File.join(@storage.folder, "gems"))
     end
 
-    it "returns a non existing resource when requested",:vcr do
+    it "returns a non existing resource when requested", :vcr do
       resource = @storage.resource("an_id")
       expect(resource).not_to be_nil
       expect(resource).not_to exist
@@ -107,23 +106,23 @@ RSpec.describe Gemstash::S3 do
     before do
       @storage.resource(resource_id).save(content: content)
     end
-    it "loads the content from storage",:vcr do
+    it "loads the content from storage", :vcr do
       resource = @storage.resource(resource_id)
       expect(resource.content(:content)).to eq(content)
     end
 
-    it "can have properties updated",:vcr do
+    it "can have properties updated", :vcr do
       resource = @storage.resource(resource_id)
       resource.update_properties(key: "value", other: :value)
       expect(@storage.resource(resource_id).properties).
-          to eq(key: "value", other: :value, gemstash_resource_version: Gemstash::S3Resource::VERSION)
+        to eq(key: "value", other: :value, gemstash_resource_version: Gemstash::S3Resource::VERSION)
       resource = @storage.resource(resource_id)
       resource.update_properties(key: "new", new: 45)
       expect(@storage.resource(resource_id).properties).
-          to eq(key: "new", other: :value, new: 45, gemstash_resource_version: Gemstash::S3Resource::VERSION)
+        to eq(key: "new", other: :value, new: 45, gemstash_resource_version: Gemstash::S3Resource::VERSION)
     end
 
-    it "can merge nested properties",:vcr do
+    it "can merge nested properties", :vcr do
       resource = @storage.resource("46")
       resource.save({ gem: "some gem content" }, headers: { gem: { foo: "bar" } })
       resource.save({ spec: "some spec content" }, headers: { spec: { foo: "baz" } })
