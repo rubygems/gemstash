@@ -8,7 +8,8 @@ RSpec.describe Gemstash::S3 do
   before(:all) do
     env = Gemstash::Env.new
     Gemstash::Env.current = env
-    env.config = Gemstash::Configuration.new(config: { :s3_path => "TEMP_S3_TEST_FOLDER/gemstash/s3_storage" })
+    env.config = Gemstash::Configuration.new
+    env.config[:s3_path => "TEMP_S3_TEST_FOLDER/gemstash/s3_storage"]
     @storage = Gemstash::S3.for("private").for("gems")
     @folder = "gemstash/s3_storage"
   end
