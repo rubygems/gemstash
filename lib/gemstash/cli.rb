@@ -66,6 +66,8 @@ module Gemstash
       "Show detailed errors"
     method_option :config_file, :type => :string, :desc =>
       "Config file to save to"
+    method_option :s3, :type => :boolean, :default => false, :desc =>
+      "Config backend storage to Amazon S3 service"
     def setup
       Gemstash::CLI::Setup.new(self).run
     end

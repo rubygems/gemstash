@@ -19,9 +19,13 @@ module Gemstash
           @cli.say @cli.set_color("Everything is already setup!", :green)
           return
         end
-
         check_rubygems_version
-        ask_storage
+
+        if @cli.options[:s3] && @cli.options[:redo]
+          ask_s3_details
+        else
+          ask_local_details
+        end
         ask_cache
         ask_database
         ask_protected_fetch
@@ -71,6 +75,7 @@ module Gemstash
         say_current_config(:base_path, "Current base path")
         path = @cli.ask "Where should files go? [~/.gemstash]", path: true
         path = Gemstash::Configuration::DEFAULTS[:base_path] if path.empty?
+        @config[:storage_adapter] = "local"
         @config[:base_path] = File.expand_path(path)
       end
 
@@ -81,16 +86,13 @@ module Gemstash
         aws_secret_access_key = nil if aws_secret_access_key.empty?
         bucket_name = @cli.ask "On what bucket do you want the information to be stored? [Enter the bucket name]"
         bucket_name = nil if bucket_name.empty?
+        s3_path = @cli.ask "Where do you want the files to be stored? [gemstash/s3_storage]"
+        s3_path = Gemstash::Configuration::DEFAULTS[:s3_path] if s3_path.empty?
+        @config[:storage_adapter] = "s3"
+        @config[:s3_path] = s3_path
         @config[:bucket_name] = bucket_name
         @config[:aws_access_key_id] = aws_access_key
         @config[:aws_secret_access_key] = aws_secret_access_key
-      end
-
-      def ask_storage
-        say_current_config(:storage_adapter, "Current storage service")
-        @config[:storage_adapter] = ask_with_default("What storage service will you use?", %w[local s3], "local")
-        ask_local_details if @config[:storage_adapter] == "local"
-        ask_s3_details if @config[:storage_adapter] == "s3"
       end
 
       def ask_cache
