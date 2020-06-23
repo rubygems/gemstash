@@ -22,7 +22,7 @@ module Gemstash
   autoload :RackEnvRewriter,     "gemstash/rack_env_rewriter"
   autoload :Resource,            "gemstash/local_storage"
   autoload :SpecsBuilder,        "gemstash/specs_builder"
-  autoload :Storage,             "gemstash/local_storage"
+  autoload :LocalStorage, "gemstash/local_storage"
   autoload :Upstream,            "gemstash/upstream"
   autoload :Web,                 "gemstash/web"
   autoload :WebError,            "gemstash/http_client"

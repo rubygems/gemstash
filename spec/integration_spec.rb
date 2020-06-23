@@ -93,7 +93,7 @@ RSpec.describe "gemstash integration tests" do
     let(:gem_version) { "0.1.0" }
     let(:gem_contents) { read_gem(gem_name, gem_version, platform: speaker_platform) }
     let(:deps) { Gemstash::Dependencies.for_private }
-    let(:storage) { Gemstash::Storage.for("private").for("gems") }
+    let(:storage) { Gemstash::LocalStorage.for("private").for("gems") }
     let(:http_client) { Gemstash::HTTPClient.for(@gemstash.private_upstream) }
     let(:speaker_platform) { "ruby" }
 
@@ -297,7 +297,7 @@ RSpec.describe "gemstash integration tests" do
 
   describe "checking the health of Gemstash", db_transaction: false do
     let(:uri) { URI("#{@gemstash.url}/health") }
-    let(:resource) { Gemstash::Storage.for("health").resource("test") }
+    let(:resource) { Gemstash::LocalStorage.for("health").resource("test") }
     let(:resource_file) { File.join(resource.folder, "example") }
 
     context "with a healthy server" do

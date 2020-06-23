@@ -201,7 +201,7 @@ module Gemstash
       def save_metadata
         with_new_config do
           # Touch metadata to ensure it gets written
-          Gemstash::Storage.metadata
+          Gemstash::LocalStorage.metadata
         end
       end
 

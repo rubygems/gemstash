@@ -11,7 +11,7 @@ RSpec.describe "gemstash concurrency tests" do
     Thread.new do
       Thread.current[:name] = "write-thread-for-#{resource_id}"
       Gemstash::Env.current = env
-      storage = Gemstash::Storage.for("concurrent_test")
+      storage = Gemstash::LocalStorage.for("concurrent_test")
       resource = storage.resource(resource_id.to_s)
 
       if block_given?
@@ -28,7 +28,7 @@ RSpec.describe "gemstash concurrency tests" do
     Thread.new do
       Thread.current[:name] = "read-thread-for-#{resource_id}"
       Gemstash::Env.current = env
-      storage = Gemstash::Storage.for("concurrent_test")
+      storage = Gemstash::LocalStorage.for("concurrent_test")
       resource = storage.resource(resource_id.to_s)
 
       if resource.exist?(:file)

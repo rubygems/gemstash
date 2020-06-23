@@ -207,7 +207,7 @@ RSpec.describe Gemstash::Web do
     context "from the default upstream" do
       let(:current_env) { Gemstash::Env.current }
       let(:upstream) { Gemstash::Upstream.new(current_env.config[:rubygems_url]) }
-      let(:storage) { Gemstash::Storage.for("gem_cache").for(upstream.host_id) }
+      let(:storage) { Gemstash::LocalStorage.for("gem_cache").for(upstream.host_id) }
 
       it "fetches the gem file, stores, and serves it" do
         get "/gems/rack", {}, rack_env
@@ -265,7 +265,7 @@ RSpec.describe Gemstash::Web do
 
     context "from private gems" do
       let(:gem_source) { Gemstash::GemSource::PrivateSource }
-      let(:storage) { Gemstash::Storage.for("private").for("gems") }
+      let(:storage) { Gemstash::LocalStorage.for("private").for("gems") }
 
       context "with a missing gem" do
         it "halts with 404" do
@@ -311,7 +311,7 @@ RSpec.describe Gemstash::Web do
     context "from the default upstream" do
       let(:current_env) { Gemstash::Env.current }
       let(:upstream) { Gemstash::Upstream.new(current_env.config[:rubygems_url]) }
-      let(:storage) { Gemstash::Storage.for("gem_cache").for(upstream.host_id) }
+      let(:storage) { Gemstash::LocalStorage.for("gem_cache").for(upstream.host_id) }
 
       it "fetches the marshalled gemspec, stores, and serves it" do
         get "/quick/Marshal.4.8/rack.gemspec.rz", {}, rack_env
@@ -368,7 +368,7 @@ RSpec.describe Gemstash::Web do
 
     context "from private gems" do
       let(:gem_source) { Gemstash::GemSource::PrivateSource }
-      let(:storage) { Gemstash::Storage.for("private").for("gems") }
+      let(:storage) { Gemstash::LocalStorage.for("private").for("gems") }
 
       context "with a missing gem" do
         it "halts with 404" do

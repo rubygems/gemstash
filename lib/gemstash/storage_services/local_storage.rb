@@ -9,7 +9,7 @@ require "yaml"
 module Gemstash
   # The entry point into the storage engine for storing cached gems, specs, and
   # private gems.
-  class Storage
+  class LocalStorage
     extend Gemstash::Env::Helper
     VERSION = 1
 
@@ -17,7 +17,7 @@ module Gemstash
     # initialized with a newer version, this error is thrown.
     class VersionTooNewError < StandardError
       def initialize(folder, version)
-        super("Gemstash storage version #{Gemstash::Storage::VERSION} does " \
+        super("Gemstash storage version #{Gemstash::LocalStorage::VERSION} does " \
               "not support version #{version} found at #{folder}")
       end
     end
@@ -41,15 +41,15 @@ module Gemstash
     # Fetch a nested entry from this instance in the storage engine.
     #
     # @param child [String] the name of the nested entry to load
-    # @return [Gemstash::Storage] a new storage instance for the +child+
+    # @return [Gemstash::LocalStorage] a new storage instance for the +child+
     def for(child)
-      Storage.new(File.join(@folder, child), root: false)
+      LocalStorage.new(File.join(@folder, child), root: false)
     end
 
     # Fetch a base entry in the storage engine.
     #
     # @param name [String] the name of the entry to load
-    # @return [Gemstash::Storage] a new storage instance for the +name+
+    # @return [Gemstash::LocalStorage] a new storage instance for the +name+
     def self.for(name)
       new(gemstash_env.base_file(name))
     end
@@ -63,7 +63,7 @@ module Gemstash
 
       unless File.exist?(file)
         gemstash_env.atomic_write(file) do |f|
-          f.write({ storage_version: Gemstash::Storage::VERSION,
+          f.write({ storage_version: Gemstash::LocalStorage::VERSION,
                     gemstash_version: Gemstash::VERSION }.to_yaml)
         end
       end
@@ -74,10 +74,9 @@ module Gemstash
   private
 
     def check_storage_version
-      version = Gemstash::Storage.metadata[:storage_version]
-      return if version <= Gemstash::Storage::VERSION
-
-      raise Gemstash::Storage::VersionTooNewError.new(@folder, version)
+      version = Gemstash::LocalStorage.metadata[:storage_version]
+      return if version <= Gemstash::LocalStorage::VERSION
+      raise Gemstash::LocalStorage::VersionTooNew.new(@folder, version)
     end
 
     def path_valid?(path)
@@ -107,7 +106,7 @@ module Gemstash
     end
 
     # This object should not be constructed directly, but instead via
-    # {Gemstash::Storage#resource}.
+    # {Gemstash::LocalStorage#resource}.
     def initialize(folder, name)
       @base_path = folder
       @name = name
