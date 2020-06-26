@@ -2,7 +2,6 @@
 
 require "lru_redux"
 require "forwardable"
-require "redis"
 
 module Gemstash
   # Cache object which knows about what things are cached and what keys to use
@@ -88,6 +87,7 @@ module Gemstash
     def_delegator :@cache, :del, :delete
 
     def initialize(redis_servers)
+      require "redis"
       @cache = ::Redis.new(:url => redis_servers)
     end
 
