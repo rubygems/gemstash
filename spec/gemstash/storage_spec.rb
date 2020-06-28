@@ -35,7 +35,7 @@ RSpec.describe Gemstash::Storage do
 
     File.write(Gemstash::Env.current.base_file("metadata.yml"), metadata.to_yaml)
     expect { Gemstash::Storage.new(@folder) }.
-      to raise_error(Gemstash::Storage::VersionTooNew, /#{Regexp.escape(@folder)}/)
+      to raise_error(Gemstash::Storage::VersionTooNewError, /#{Regexp.escape(@folder)}/)
   end
 
   context "with a valid storage" do
@@ -67,7 +67,7 @@ RSpec.describe Gemstash::Storage do
 
     it "won't load a resource that is at a larger version than our current version" do
       storage.resource("42").save({ content: "content" }, gemstash_resource_version: 999_999)
-      expect { storage.resource("42").content(:content) }.to raise_error(Gemstash::Resource::VersionTooNew, /42/)
+      expect { storage.resource("42").content(:content) }.to raise_error(Gemstash::Resource::VersionTooNewError, /42/)
     end
 
     context "with a simple resource" do

@@ -33,7 +33,7 @@ RSpec.describe Gemstash::S3 do
       }
       File.write(Gemstash::Env.current.base_file("metadata.yml"), metadata.to_yaml)
       expect { Gemstash::S3.new(@folder) }.
-        to raise_error(Gemstash::S3::VersionTooNew)
+        to raise_error(Gemstash::S3::VersionTooNewError)
     end
   end
 
@@ -69,7 +69,7 @@ RSpec.describe Gemstash::S3 do
 
     it "won't load a resource that is at a larger version than our current version", :vcr do
       @storage.resource("43").save({ content: "content" }, gemstash_resource_version: 999_999)
-      expect { @storage.resource("43").content(:content) }.to raise_error(Gemstash::S3Resource::VersionTooNew, /43/)
+      expect { @storage.resource("43").content(:content) }.to raise_error(Gemstash::S3Resource::VersionTooNewError, /43/)
     end
   end
   context "with a simple resource" do

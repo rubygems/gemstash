@@ -19,7 +19,7 @@ module Gemstash
 
     # If the storage engine detects the base cache directory was originally
     # initialized with a newer version, this error is thrown.
-    class VersionTooNew < StandardError
+    class VersionTooNewError < StandardError
       def initialize(folder, version)
         super("Gemstash storage version #{Gemstash::S3::STORAGE_VERSION} does " \
                "not support version #{version} found at #{folder}")
@@ -76,7 +76,7 @@ module Gemstash
       version = Gemstash::S3.metadata[:storage_version]
       return if version <= Gemstash::S3::STORAGE_VERSION
 
-      raise Gemstash::S3::VersionTooNew.new(@folder, version)
+      raise Gemstash::S3::VersionTooNewError.new(@folder, version)
     end
   end
 
@@ -90,7 +90,7 @@ module Gemstash
 
     # If the storage engine detects a resource was originally saved from a newer
     # version, this error is thrown.
-    class VersionTooNew < StandardError
+    class VersionTooNewError < StandardError
       def initialize(name, folder, version)
         super("Gemstash resource version #{Gemstash::S3Resource::VERSION} does " \
                "not support version #{version} for resource #{name.inspect} " \
@@ -239,7 +239,7 @@ module Gemstash
       return if version <= Gemstash::S3Resource::VERSION
 
       reset
-      raise Gemstash::S3Resource::VersionTooNew.new(name, folder, version)
+      raise Gemstash::S3Resource::VersionTooNewError.new(name, folder, version)
     end
 
     def sanitize(name)
