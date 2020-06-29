@@ -106,7 +106,6 @@ module Gemstash
       @folder = File.join(@folder, child_folder)
       @client = client
       @s3resource = Aws::S3::Resource.new(client: @client).bucket(bucket_name)
-      @properties = nil
     end
 
     def save(content, properties = nil)
