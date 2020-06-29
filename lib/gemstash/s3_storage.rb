@@ -187,7 +187,7 @@ module Gemstash
   private
 
     def content?
-      return false unless @s3resource.object(@folder).exists?
+      return false if @s3resource.objects(prefix: @folder).map(&:key).empty?
 
       entries = @s3resource.objects(prefix: @folder).collect.reject {|object| object.content_length == 0 || object.key == "properties.yaml" }
       !entries.empty?
