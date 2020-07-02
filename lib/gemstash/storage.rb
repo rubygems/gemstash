@@ -17,8 +17,7 @@ module Gemstash
       end
     end
 
-    def initialize(storage_service,folder)
-      storage_service ||= gemstash_env.config[:storage_adapter]
+    def initialize(storage_service = gemstash_env.config[:storage_adapter], folder)
       @storage = begin
         case storage_service
            when "local"
@@ -31,28 +30,32 @@ module Gemstash
       end
     end
 
-    def resource(id)
-      @storage.resource(id)
-    end
-
     def for(child)
       @storage.for(child)
     end
 
-    def self.for(name, default = false)
-      if(default == false)
-        new(gemstash_env.base_file).for(name)
+    def self.for(name)
+      storage_service = gemstash_env.config[:storage_adapter]
+      case storage_service
+      when "local"
+        new(storage_service,gemstash_env.base_file(name))
+      when "s3"
+        new(storage_service,File.join(gemstash_env.config[:s3_path],name))
       else
-        new("local",gemstash_env.).for(name)
+        raise Gemstash::Storage::InvalidStorage.new(storage_service)
       end
     end
-  
+
     def self.metadata
       gemstash_env.storage_service.metadata
     end
-  
-    def check_credentials 
+
+    def check_credentials
       @storage.check_credentials
+    end
+
+    def resource(id)
+      @storage.resource(id)
     end
   end
 end
