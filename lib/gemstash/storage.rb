@@ -7,8 +7,8 @@ require "pathname"
 require "yaml"
 
 module Gemstash
-
   class Storage
+    extend Gemstash::Env::Helper
     include Gemstash::Env::Helper
 
     class InvalidStorage < StandardError
@@ -45,9 +45,17 @@ module Gemstash
         raise Gemstash::Storage::InvalidStorage.new(storage_service)
       end
     end
-
+    
     def self.metadata
-      gemstash_env.storage_service.metadata
+      storage_service = gemstash_env.config[:storage_adapter]
+      case storage_service
+      when "local"
+        Gemstash::LocalStorage.metadata
+      when "s3"
+        Gemstash::S3.metadata
+      else
+        raise Gemstash::Storage::InvalidStorage.new(storage_service)
+      end
     end
 
     def check_credentials
