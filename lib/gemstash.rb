@@ -29,4 +29,5 @@ module Gemstash
   autoload :VERSION,             "gemstash/version"
   autoload :S3,                  "gemstash/storage_services/s3_storage"
   autoload :S3Resource,          "gemstash/storage_services/s3_storage"
+  autoload :Storage,             "gemstash/storage"
 end

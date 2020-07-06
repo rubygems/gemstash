@@ -155,7 +155,7 @@ module Gemstash
       end
 
       def storage
-        @storage ||= Gemstash::LocalStorage.for("gem_cache")
+        @storage ||= Gemstash::Storage.for("gem_cache")
         @storage.for(upstream.host_id)
       end
 

@@ -40,11 +40,7 @@ module Gemstash
   private
 
     def storage
-      @storage ||= if gemstash_env.config[:storage_adapter] == "local"
-        Gemstash::LocalStorage.for("private").for("gems")
-      else
-        Gemstash::S3.for("private").for("gems")
-      end
+      @storage ||= Gemstash::Storage.for("private").for("gems")
     end
 
     def full_name
