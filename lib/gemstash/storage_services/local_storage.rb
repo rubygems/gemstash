@@ -76,6 +76,7 @@ module Gemstash
     def check_storage_version
       version = Gemstash::LocalStorage.metadata[:storage_version]
       return if version <= Gemstash::LocalStorage::VERSION
+
       raise Gemstash::LocalStorage::VersionTooNew.new(@folder, version)
     end
 

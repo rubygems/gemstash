@@ -47,7 +47,7 @@ RSpec.describe Gemstash::CLI::Setup do
   end
 
   context "with a storage that already indicates a newer version of gemstash" do
-    let(:metadata) { {storage_version: Gemstash::LocalStorage::VERSION, gemstash_version: "999999.0.0" } }
+    let(:metadata) { { storage_version: Gemstash::LocalStorage::VERSION, gemstash_version: "999999.0.0" } }
     let(:metadata_path) { File.join(TEST_BASE_PATH, "metadata.yml") }
 
     it "errors immediately" do

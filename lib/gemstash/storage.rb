@@ -7,26 +7,28 @@ require "pathname"
 require "yaml"
 
 module Gemstash
+  # Adapter class to abstract different storage backend.
   class Storage
     extend Gemstash::Env::Helper
     include Gemstash::Env::Helper
 
+    # Exception for invalid backend service.
     class InvalidStorage < StandardError
       def initialize(storage_service)
         super("Gemstash storage doesn't support #{storage_service} service")
       end
     end
 
-    def initialize(storage_service = gemstash_env.config[:storage_adapter], folder)
+    def initialize(folder, storage_service = gemstash_env.config[:storage_adapter])
       @storage = begin
         case storage_service
-           when "local"
-             Gemstash::LocalStorage.new(folder)
-           when "s3"
-             Gemstash::S3.new(folder)
-           else
-             raise Gemstash::Storage::InvalidStorage.new(storage_service)
-           end
+        when "local"
+          Gemstash::LocalStorage.new(folder)
+        when "s3"
+          Gemstash::S3.new(folder)
+        else
+          raise Gemstash::Storage::InvalidStorage, storage_service
+        end
       end
     end
 
@@ -38,14 +40,14 @@ module Gemstash
       storage_service = gemstash_env.config[:storage_adapter]
       case storage_service
       when "local"
-        new(storage_service,gemstash_env.base_file(name))
+        new(gemstash_env.base_file(name), storage_service)
       when "s3"
-        new(storage_service,File.join(gemstash_env.config[:s3_path],name))
+        new(File.join(gemstash_env.config[:s3_path], name), storage_service)
       else
-        raise Gemstash::Storage::InvalidStorage.new(storage_service)
+        raise Gemstash::Storage::InvalidStorage, storage_service
       end
     end
-    
+
     def self.metadata
       storage_service = gemstash_env.config[:storage_adapter]
       case storage_service
@@ -54,7 +56,7 @@ module Gemstash
       when "s3"
         Gemstash::S3.metadata
       else
-        raise Gemstash::Storage::InvalidStorage.new(storage_service)
+        raise Gemstash::Storage::InvalidStorage, storage_service
       end
     end
 
@@ -67,4 +69,3 @@ module Gemstash
     end
   end
 end
-
