@@ -35,7 +35,7 @@ RSpec.describe Gemstash::LocalStorage do
 
     File.write(Gemstash::Env.current.base_file("metadata.yml"), metadata.to_yaml)
     expect { Gemstash::LocalStorage.new(@folder) }.
-      to raise_error(Gemstash::LocalStorage::VersionTooNew, /#{Regexp.escape(@folder)}/)
+      to raise_error(Gemstash::LocalStorage::VersionTooNewError, /#{Regexp.escape(@folder)}/)
   end
 
   context "with a valid storage" do

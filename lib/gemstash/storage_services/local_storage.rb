@@ -77,7 +77,7 @@ module Gemstash
       version = Gemstash::LocalStorage.metadata[:storage_version]
       return if version <= Gemstash::LocalStorage::VERSION
 
-      raise Gemstash::LocalStorage::VersionTooNew.new(@folder, version)
+      raise Gemstash::LocalStorage::VersionTooNewError.new(@folder, version)
     end
 
     def path_valid?(path)
