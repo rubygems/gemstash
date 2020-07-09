@@ -152,7 +152,7 @@ RSpec.describe Gemstash::S3 do
     let(:content) { "zapatito" }
     let(:other_content) { "foobar" }
 
-    it "can be done in 1 save" do
+    it "can be done in 1 save", :vcr do
       resource = @storage.resource("47")
       resource.save(content: content, other_content: other_content)
       expect(resource.content(:content)).to eq(content)
@@ -163,7 +163,7 @@ RSpec.describe Gemstash::S3 do
       expect(resource.content(:other_content)).to eq(other_content)
     end
 
-    it "can be done in 2 saves" do
+    it "can be done in 2 saves", :vcr do
       resource = @storage.resource("49")
       resource.save(content: content).save(other_content: other_content)
       expect(resource.content(:content)).to eq(content)
@@ -174,7 +174,7 @@ RSpec.describe Gemstash::S3 do
       expect(resource.content(:other_content)).to eq(other_content)
     end
 
-    it "can be done in 2 saves with separate properties defined" do
+    it "can be done in 2 saves with separate properties defined", :vcr do
       resource = @storage.resource("50")
       resource.save({ content: content }, foo: "bar").save({ other_content: other_content }, bar: "baz")
       expect(resource.properties).to eq(foo: "bar", bar: "baz", gemstash_resource_version: Gemstash::Resource::VERSION)
@@ -183,7 +183,7 @@ RSpec.describe Gemstash::S3 do
       expect(resource.properties).to eq(foo: "bar", bar: "baz", gemstash_resource_version: Gemstash::Resource::VERSION)
     end
 
-    it "can be done in 2 saves with nil properties defined on second" do
+    it "can be done in 2 saves with nil properties defined on second", :vcr do
       resource = @storage.resource("51")
       resource.save({ content: content }, foo: "bar").save(other_content: other_content)
       expect(resource.properties).to eq(foo: "bar", gemstash_resource_version: Gemstash::Resource::VERSION)
@@ -192,7 +192,7 @@ RSpec.describe Gemstash::S3 do
       expect(resource.properties).to eq(foo: "bar", gemstash_resource_version: Gemstash::Resource::VERSION)
     end
 
-    it "can be done in 2 saves with separate properties defined from separate resource instances" do
+    it "can be done in 2 saves with separate properties defined from separate resource instances", :vcr do
       @storage.resource("52").save({ content: content }, foo: "bar")
       resource = @storage.resource("52")
       resource.save({ other_content: other_content }, bar: "baz")
@@ -202,7 +202,7 @@ RSpec.describe Gemstash::S3 do
       expect(resource.properties).to eq(foo: "bar", bar: "baz", gemstash_resource_version: Gemstash::Resource::VERSION)
     end
 
-    it "supports 1 file being deleted" do
+    it "supports 1 file being deleted", :vcr do
       @storage.resource("53").save({ content: content, other_content: other_content }, foo: "bar")
       resource = @storage.resource("53")
       resource.delete(:content)
@@ -215,7 +215,7 @@ RSpec.describe Gemstash::S3 do
       expect { resource.content(:content) }.to raise_error(/no :content content to load/)
     end
 
-    it "supports both files being deleted" do
+    it "supports both files being deleted", :vcr do
       @storage.resource("54").save({ content: content, other_content: other_content }, foo: "bar")
       resource = @storage.resource("54")
       resource.delete(:content).delete(:other_content)
@@ -239,7 +239,7 @@ RSpec.describe Gemstash::S3 do
       expect(File.exist?(properties_filename)).to be_falsey
     end
   end
-  context "with resource name that is unique by case only" do
+  context "with resource name that is unique by case only", :vcr do
     let(:first_resource_id) { "SomeResource" }
     let(:second_resource_id) { "someresource" }
 
@@ -257,7 +257,7 @@ RSpec.describe Gemstash::S3 do
     end
   end
 
-  context "with resource name that includes odd characters" do
+  context "with resource name that includes odd characters", :vcr do
     let(:resource_id) { ".=$&resource" }
 
     it "stores and retrieves the data" do
@@ -270,7 +270,7 @@ RSpec.describe Gemstash::S3 do
     end
   end
 
-  describe "#property?" do
+  describe "#property?", :vcr do
     let(:resource) { @storage.resource("existing") }
 
     context "with a single key" do
