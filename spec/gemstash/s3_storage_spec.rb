@@ -5,16 +5,7 @@ require "yaml"
 require "aws-sdk-s3"
 
 RSpec.describe Gemstash::S3 do
-  before(:each) do
-    config = Gemstash::Configuration.new
-    env = Gemstash::Env.new(config)
-    Thread.current[:gemstash_env] = env
-    Gemstash::Env.current = env
-  end
   before(:all) do
-    config = Gemstash::Configuration.new
-    env = Gemstash::Env.new(config)
-    Thread.current[:gemstash_env] = env
     @storage = Gemstash::S3.for("TEST_S3_SPEC_FOLDER").for("private").for("gems")
     @folder = "gemstash/s3_storage"
   end
@@ -22,11 +13,6 @@ RSpec.describe Gemstash::S3 do
     VCR.use_cassette("batch delete objects") do
       @storage.delete_with_prefix
     end
-    metadata = {
-      storage_version: 1,
-      gemstash_version: Gemstash::VERSION
-    }
-    File.write(Gemstash::Env.current.base_file("metadata.yml"), metadata.to_yaml)
   end
 
   context "intialize storage component" do
