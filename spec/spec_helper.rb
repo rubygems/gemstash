@@ -30,7 +30,11 @@ require "yaml"
 TEST_BASE_PATH = File.expand_path("../tmp/test_base", __dir__)
 TEST_CONFIG_PATH = File.expand_path("../tmp/test_base/config.yml",__dir__)
 FileUtils.mkpath(TEST_BASE_PATH) unless Dir.exist?(TEST_BASE_PATH)
-Pathname.new(TEST_BASE_PATH).children.each(&:rmtree)
+Pathname.new(TEST_BASE_PATH).children.each do |path|
+  next if path.to_s == TEST_CONFIG_PATH
+
+  path.rmtree
+end
 config_yaml_file = YAML.load_file TEST_CONFIG_PATH
 config_yaml_file[:base_path] = TEST_BASE_PATH
 File.write(TEST_CONFIG_PATH, config_yaml_file.to_yaml)
@@ -71,6 +75,7 @@ RSpec.configure do |config|
 
     Pathname.new(TEST_BASE_PATH).children.each do |path|
       next if path.basename.to_s.end_with?(".db")
+      next if path.to_s == TEST_CONFIG_PATH
 
       path.rmtree
     end
