@@ -21,7 +21,7 @@ require "vcr"
 require "yaml"
 
 TEST_BASE_PATH = File.expand_path("../tmp/test_base", __dir__)
-TEST_CONFIG_PATH = File.expand_path("../tmp/test_base/config.yml",__dir__)
+TEST_CONFIG_PATH = File.expand_path("../tmp/test_base/config.yml", __dir__)
 FileUtils.mkpath(TEST_BASE_PATH) unless Dir.exist?(TEST_BASE_PATH)
 Pathname.new(TEST_BASE_PATH).children.each do |path|
   next if path.to_s == TEST_CONFIG_PATH
@@ -92,13 +92,13 @@ RSpec.configure do |config|
   config.include LogHelpers
   config.raise_errors_for_deprecations!
 
-  VCR.configure do |config|
-    config.cassette_library_dir = "fixtures/vcr_cassettes"
-    config.hook_into :webmock
-    config.configure_rspec_metadata!
-    config.filter_sensitive_data("<REDACTED_ACCESS_KEY>"){ config_yaml_file[:aws_access_key_id] }
-    config.filter_sensitive_data("<REDACTED_SECRET_ACCESS_KEY>"){ config_yaml_file[:aws_secret_access_key] }
-    config.filter_sensitive_data("<REDACTED_BUCKET_NAME>"){ config_yaml_file[:bucket_name] }
-    config.allow_http_connections_when_no_cassette = false
+  VCR.configure do |vcr_config|
+    vcr_config.cassette_library_dir = "fixtures/vcr_cassettes"
+    vcr_config.hook_into :webmock
+    vcr_config.configure_rspec_metadata!
+    vcr_config.filter_sensitive_data("<REDACTED_ACCESS_KEY>") { config_yaml_file[:aws_access_key_id] }
+    vcr_config.filter_sensitive_data("<REDACTED_SECRET_ACCESS_KEY>") { config_yaml_file[:aws_secret_access_key] }
+    vcr_config.filter_sensitive_data("<REDACTED_BUCKET_NAME>") { config_yaml_file[:bucket_name] }
+    vcr_config.allow_http_connections_when_no_cassette = false
   end
 end
