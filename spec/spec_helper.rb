@@ -25,14 +25,17 @@ VCR.configure do |config|
   config.configure_rspec_metadata!
   config.allow_http_connections_when_no_cassette = true
 end
+require "yaml"
 
 TEST_BASE_PATH = File.expand_path("../tmp/test_base", __dir__)
+TEST_CONFIG_PATH = File.expand_path("../tmp/test_base/config.yml",__dir__)
 FileUtils.mkpath(TEST_BASE_PATH) unless Dir.exist?(TEST_BASE_PATH)
 Pathname.new(TEST_BASE_PATH).children.each(&:rmtree)
+config_yaml_file = YAML.load_file TEST_CONFIG_PATH
+config_yaml_file[:base_path] = TEST_BASE_PATH
+File.write(TEST_CONFIG_PATH, config_yaml_file.to_yaml)
 TEST_LOG_FILE = File.join(TEST_BASE_PATH, "server.log")
-TEST_CONFIG = Gemstash::Configuration.new(config: {
-                                            :base_path => TEST_BASE_PATH
-                                          })
+TEST_CONFIG = Gemstash::Configuration.new(file: TEST_CONFIG_PATH)
 Gemstash::Env.current = Gemstash::Env.new(TEST_CONFIG)
 Thread.current[:test_gemstash_env_set] = true
 TEST_DB = Gemstash::Env.current.db
