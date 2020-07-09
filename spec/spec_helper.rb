@@ -99,6 +99,6 @@ RSpec.configure do |config|
     vcr_config.filter_sensitive_data("<REDACTED_ACCESS_KEY>") { config_yaml_file[:aws_access_key_id] }
     vcr_config.filter_sensitive_data("<REDACTED_SECRET_ACCESS_KEY>") { config_yaml_file[:aws_secret_access_key] }
     vcr_config.filter_sensitive_data("<REDACTED_BUCKET_NAME>") { config_yaml_file[:bucket_name] }
-    vcr_config.allow_http_connections_when_no_cassette = false
+    vcr_config.allow_http_connections_when_no_cassette = true
   end
 end
