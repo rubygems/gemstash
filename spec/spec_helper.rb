@@ -18,13 +18,6 @@ require "support/simple_server"
 require "support/slow_simple_server"
 require "support/test_gemstash_server"
 require "vcr"
-
-VCR.configure do |config|
-  config.cassette_library_dir = "fixtures/vcr_cassettes"
-  config.hook_into :webmock
-  config.configure_rspec_metadata!
-  config.allow_http_connections_when_no_cassette = true
-end
 require "yaml"
 
 TEST_BASE_PATH = File.expand_path("../tmp/test_base", __dir__)
@@ -98,4 +91,14 @@ RSpec.configure do |config|
   config.include FileHelpers
   config.include LogHelpers
   config.raise_errors_for_deprecations!
+
+  VCR.configure do |config|
+    config.cassette_library_dir = "fixtures/vcr_cassettes"
+    config.hook_into :webmock
+    config.configure_rspec_metadata!
+    config.filter_sensitive_data("<REDACTED_ACCESS_KEY>"){ config_yaml_file[:aws_access_key_id] }
+    config.filter_sensitive_data("<REDACTED_SECRET_ACCESS_KEY>"){ config_yaml_file[:aws_secret_access_key] }
+    config.filter_sensitive_data("<REDACTED_BUCKET_NAME>"){ config_yaml_file[:bucket_name] }
+    config.allow_http_connections_when_no_cassette = false
+  end
 end
