@@ -179,7 +179,7 @@ module Gemstash
     end
 
     def storage_service
-      @storage_service ||= Object.const_get(config[:storage_adapter]).new
+      @storage_service ||= Object.const_get("#{config[:storage_adapter]}").new
     rescue NameError
       raise "Invalid storage service: '#{config[:storage_adapter]}'"
     end

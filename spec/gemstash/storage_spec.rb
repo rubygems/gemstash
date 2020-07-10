@@ -20,6 +20,7 @@ RSpec.describe Gemstash::Storage do
     expect(Dir.exist?(new_path)).to be_falsy
     storage = Gemstash::Storage.new(new_path)
     expect(Dir.exist?(new_path)).to be_falsy
+
     resource = storage.resource("something")
     resource = resource.save(content: "some content")
     expect(Dir.exist?(new_path)).to be_truthy

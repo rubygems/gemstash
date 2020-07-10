@@ -21,7 +21,7 @@ module Gemstash
       puma_workers: 1,
       cache_expiration: 30 * 60,
       cache_max_size: 500,
-      storage_adapter: "local"
+      storage_adapter: "Gemstash::Storage::LocalService"
     }.freeze
 
     DEFAULT_FILE = File.expand_path("~/.gemstash/config.yml").freeze
