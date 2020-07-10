@@ -6,8 +6,10 @@ require "aws-sdk-s3"
 
 RSpec.describe Gemstash::S3 do
   before(:all) do
-    @storage = Gemstash::S3.for("TEST_S3_SPEC_FOLDER").for("private").for("gems")
-    @folder = "gemstash/s3_storage"
+    VCR.use_cassette("initialize S3 storage variable") do
+      @storage = Gemstash::S3.for("TEST_S3_SPEC_FOLDER").for("private").for("gems")
+      @folder = "gemstash/s3_storage"
+    end
   end
   after(:all) do
     VCR.use_cassette("batch delete objects") do
