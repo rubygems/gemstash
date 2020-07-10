@@ -1,6 +1,5 @@
 ---
 :s3_path: gemstash/s3_storage
-:bucket_name: 
-:aws_access_key_id: 
-:aws_secret_access_key: 
-:base_path: "/Users/quangnguyen/Documents/Google_folders/RubyWork/gemstash/tmp/test_base"
+:bucket_name: enter-your-bucket-name
+:aws_access_key_id: enter-your-access-key
+:aws_secret_access_key: enter-your-secret-access-key
