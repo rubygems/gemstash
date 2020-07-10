@@ -179,14 +179,9 @@ module Gemstash
     end
 
     def storage_service
-      @storage_service ||= begin
-        case config[:storage_adapter]
-        when "local"
-          Storage::LocalService.new
-        else
-          raise "Invalid storage service: '#{config[:storage_adapter]}'"
-        end
-      end
+      @storage_service ||= Object.const_get(config[:storage_adapter]).new
+    rescue NameError
+      raise "Invalid storage service: '#{config[:storage_adapter]}'"
     end
   end
 end
