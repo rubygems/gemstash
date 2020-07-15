@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "digest"
+require "forwardable"
 require "uri"
 
 module Gemstash
