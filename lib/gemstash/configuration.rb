@@ -22,7 +22,9 @@ module Gemstash
       cache_expiration: 30 * 60,
       cache_max_size: 500,
       storage_adapter: "local",
-      s3_path: "gemstash/s3_storage"
+      s3_path: "gemstash/s3_storage",
+      gcloud_path: "gemstash/gcloud_storage",
+      google_cloud_keyfile: ""
     }.freeze
 
     DEFAULT_FILE = File.expand_path("~/.gemstash/config.yml").freeze
