@@ -23,6 +23,8 @@ module Gemstash
 
         if @cli.options[:s3] && @cli.options[:redo]
           ask_s3_details
+        elsif @cli.options[:gcloud] && @cli.options[:redo]
+           ask_gcloud_details
         else
           ask_local_details
         end
@@ -96,6 +98,19 @@ module Gemstash
         @config[:bucket_name] = bucket_name
         @config[:aws_access_key_id] = aws_access_key
         @config[:aws_secret_access_key] = aws_secret_access_key
+      end
+
+      def ask_gcloud_details
+        google_cloud_keyfile = @cli.ask "We will need a directory path to your keyfile. Paste the file path: ", echo:true
+        google_cloud_keyfile = nil if google_cloud_keyfile.empty?
+        bucket_name = @cli.ask "On what bucket do you want the information to be stored? [Enter the bucket name]"
+        bucket_name = nil if bucket_name.empty?
+        gcloud_path = @cli.ask "Where do you want the files to be stored? [gemstash/s3_storage]"
+        gcloud_path = Gemstash::Configuration::DEFAULTS[:gcloud_path] if gcloud_path.empty?
+        @config[:storage_adapter] = "gcloud"
+        @config[:google_cloud_keyfile]
+        @config[:bucket_name] = bucket_name
+        @config[:gcloud_path] = gcloud_path
       end
 
       def ask_cache
@@ -189,6 +204,10 @@ module Gemstash
             FileUtils.mkpath(dir)
           end
         end
+      end
+
+      def check_gcloud
+        try("Google Cloud Storage service") { gemstash_env.gcloud_test_crendentials? }
       end
 
       def check_s3
