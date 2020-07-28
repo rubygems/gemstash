@@ -68,6 +68,8 @@ module Gemstash
       "Config file to save to"
     method_option :s3, :type => :boolean, :default => false, :desc =>
       "Config backend storage to Amazon S3 service"
+    method_option :gcloud, :type => :boolean, :default => false, :desc =>
+        "Config backend storage to Google Cloud Storage service"
     def setup
       Gemstash::CLI::Setup.new(self).run
     end
