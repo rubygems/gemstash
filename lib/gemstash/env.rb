@@ -181,5 +181,9 @@ module Gemstash
     def s3_test_credentials?
       Gemstash::S3.new("test").check_credentials?
     end
+
+    def gcloud_test_credentials?
+      Gemstash::GoogleCloudStorage.new("test").check_credentials?
+    end
   end
 end
