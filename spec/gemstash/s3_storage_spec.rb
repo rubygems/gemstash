@@ -13,7 +13,7 @@ RSpec.describe Gemstash::S3 do
   end
   after(:all) do
     VCR.use_cassette("batch delete objects") do
-      @storage.delete_with_prefix
+      delete_with_prefix(@storage.s3_resource_object, @storage.folder)
     end
   end
 

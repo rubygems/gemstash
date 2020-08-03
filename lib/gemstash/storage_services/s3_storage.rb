@@ -13,7 +13,7 @@ module Gemstash
   class S3
     extend Gemstash::Env::Helper
     include Gemstash::Env::Helper
-    attr_reader :folder, :client, :bucket
+    attr_reader :folder, :client
 
     STORAGE_VERSION = 1
 
@@ -42,8 +42,8 @@ module Gemstash
       @client.get_bucket_location(bucket: @bucket_name).location_constraint == gemstash_env.config[:region]
     end
 
-    def delete_with_prefix(prefix = @folder)
-      Aws::S3::Resource.new(client: @client).bucket(@bucket_name).objects(prefix: prefix).batch_delete!
+    def s3_resource_object
+      Aws::S3::Resource.new(client: @client).bucket(@bucket_name)
     end
 
     def resource(id)

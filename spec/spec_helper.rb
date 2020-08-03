@@ -17,6 +17,7 @@ require "support/matchers"
 require "support/simple_server"
 require "support/slow_simple_server"
 require "support/test_gemstash_server"
+require "support/s3_helpers"
 require "vcr"
 require "yaml"
 
@@ -85,6 +86,7 @@ RSpec.configure do |config|
   config.filter_run :focus
   config.run_all_when_everything_filtered = true
 
+  config.include S3Helpers
   config.include EnvHelpers
   config.include DBHelpers
   config.include ExecHelpers
