@@ -13,6 +13,7 @@ module Gemstash
     autoload :Start,     "gemstash/cli/start"
     autoload :Status,    "gemstash/cli/status"
     autoload :Stop,      "gemstash/cli/stop"
+    autoload :Info,      "gemstash/cli/info"
 
     # Thor::Error for the CLI, which colors the message red.
     class Error < Thor::Error
@@ -102,6 +103,11 @@ module Gemstash
       say "Gemstash version #{Gemstash::VERSION}"
     end
     map %w[-v --version] => :version
+
+    desc "info", "Check current gemstash instance info"
+    def info
+      Gemstash::CLI::Info.new(self).run
+    end
 
   private
 
