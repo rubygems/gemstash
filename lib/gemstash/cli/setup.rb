@@ -225,9 +225,9 @@ module Gemstash
       def try(thing)
         @cli.say "Checking that the #{thing} is available"
         with_new_config { yield }
-      rescue Aws::S3::Errors::ServiceError => e
+      rescue LoadError => e
         say_error "Error checking #{thing}", e
-        raise Gemstash::CLI::Error.new(@cli, e.message)
+        raise Gemstash::CLI::Error.new(@cli, "#{e.message}")
       rescue StandardError => e
         say_error "Error checking #{thing}", e
         raise Gemstash::CLI::Error.new(@cli, "The #{thing} is not available")

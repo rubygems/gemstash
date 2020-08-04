@@ -4,7 +4,11 @@ require "gemstash"
 require "digest"
 require "fileutils"
 require "yaml"
-require "aws-sdk-s3"
+begin
+  require "aws-sdk-s3"
+rescue LoadError => e
+  raise LoadError.new("The aws-sdk-s3 gem was not installed. Please install the gem and try again.")
+end
 require "pathname"
 
 module Gemstash

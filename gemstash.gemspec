@@ -32,7 +32,6 @@ you push your own private gems as well."
   spec.required_ruby_version = ">= 2.4"
 
   spec.add_runtime_dependency "activesupport", ">= 4.2", "< 6"
-  spec.add_runtime_dependency "aws-sdk-s3", "~> 1.67"
   spec.add_runtime_dependency "dalli", "~> 2.7"
   spec.add_runtime_dependency "faraday", "~> 0.9"
   spec.add_runtime_dependency "faraday_middleware", "~> 0.10"
@@ -42,6 +41,9 @@ you push your own private gems as well."
   spec.add_runtime_dependency "server_health_check-rack", "~> 0.1"
   spec.add_runtime_dependency "sinatra", ">= 1.4", "< 3.0"
   spec.add_runtime_dependency "thor", "~> 0.20"
+
+  # Use Amazon S3 Storage instead of local storage
+  # spec.add_runtime_dependency "aws-sdk-s3", "~> 1.67"
 
   # Use Redis instead of memcached
   # spec.add_runtime_dependency "redis", "~> 3.3"
@@ -69,4 +71,5 @@ you push your own private gems as well."
   spec.add_development_dependency "rubocop-performance", "~> 1.1.0"
   spec.add_development_dependency "vcr", "~> 6.0.0"
   spec.add_development_dependency "webmock", "~> 3.8.3"
+  spec.add_development_dependency "aws-sdk-s3", "~> 1.67"
 end
