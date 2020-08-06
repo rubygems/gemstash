@@ -19,7 +19,7 @@ RSpec.describe Gemstash::S3 do
 
   context "intialize storage component" do
     it("builds with a valid folder") {
-      Gemstash::S3.new("haha")
+      Gemstash::S3.new("test")
       expect(Gemstash::S3.new(@folder)).not_to be_nil
     }
     it "stores metadata about Gemstash and the storage engine version" do
