@@ -86,10 +86,13 @@ module Gemstash
         aws_secret_access_key = nil if aws_secret_access_key.empty?
         bucket_name = @cli.ask "On what bucket do you want the information to be stored? [Enter the bucket name]"
         bucket_name = nil if bucket_name.empty?
+        region = @cli.ask "What AWS region is your bucket located in?"
+        region = nil if region.empty?
         s3_path = @cli.ask "Where do you want the files to be stored? [gemstash/s3_storage]"
         s3_path = Gemstash::Configuration::DEFAULTS[:s3_path] if s3_path.empty?
         @config[:storage_adapter] = "s3"
         @config[:s3_path] = s3_path
+        @config[:region] = region
         @config[:bucket_name] = bucket_name
         @config[:aws_access_key_id] = aws_access_key
         @config[:aws_secret_access_key] = aws_secret_access_key
