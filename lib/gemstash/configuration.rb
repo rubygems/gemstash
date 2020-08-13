@@ -22,10 +22,6 @@ module Gemstash
       cache_expiration: 30 * 60,
       cache_max_size: 500,
       storage_adapter: "local",
-      aws_access_key_id: "",
-      aws_secret_access_key: "",
-      bucket_name: "",
-      region: "us-west-1",
       s3_path: "gemstash/s3_storage"
     }.freeze
 
