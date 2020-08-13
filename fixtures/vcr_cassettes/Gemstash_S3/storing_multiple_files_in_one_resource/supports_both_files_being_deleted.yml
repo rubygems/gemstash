@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: put
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/content
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/content
     body:
       encoding: UTF-8
       string: zapatito
@@ -12,7 +12,7 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Content-Encoding:
       - ASCII
       Expect:
@@ -20,15 +20,15 @@ http_interactions:
       Content-Md5:
       - hh/h8/TWHbd+09sX/zdcbg==
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080803Z
+      - 20200813T135313Z
       X-Amz-Content-Sha256:
       - f14497d773bff71d485b9f96b7ce9c8a94cb35ed96e37908b75ac4824bef1c11
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
         SignedHeaders=content-encoding;content-md5;host;user-agent;x-amz-content-sha256;x-amz-date,
-        Signature=79a2df86ab865c13ddf4aa7abd5d13c76c183c23e4387cd25f60d0b5d1253404
+        Signature=dc27be13a585926d2dd31af48e8f8c1f02efb134bd2552bcc0c2a283c409ac65
       Content-Length:
       - '8'
       Accept:
@@ -39,11 +39,11 @@ http_interactions:
       message: OK
     headers:
       X-Amz-Id-2:
-      - SEkGNbpA/wAWc90HFE3YpNQmJj7vZcu3QCvKOWiIVz5V4MJ7+18KK+h37OnIKIoJvRSXHPWtVyA=
+      - k+tFy+lF84H4xMmDU1kgoqtpFMRHva2zFqlE4eWgbbiV0wZINaBe8POOoBtkuv36qDtV/7ZBwjY=
       X-Amz-Request-Id:
-      - FCFA13A58813880D
+      - DA160039CC2E20A6
       Date:
-      - Fri, 10 Jul 2020 08:08:04 GMT
+      - Thu, 13 Aug 2020 13:53:15 GMT
       Etag:
       - '"861fe1f3f4d61db77ed3db17ff375c6e"'
       Content-Length:
@@ -53,10 +53,10 @@ http_interactions:
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 10 Jul 2020 08:08:04 GMT
+  recorded_at: Thu, 13 Aug 2020 13:53:14 GMT
 - request:
     method: put
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/other_content
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/other_content
     body:
       encoding: UTF-8
       string: foobar
@@ -66,7 +66,7 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Content-Encoding:
       - ASCII
       Expect:
@@ -74,15 +74,15 @@ http_interactions:
       Content-Md5:
       - OFj2IjCsPJFfMAxmQxLGPw==
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080804Z
+      - 20200813T135314Z
       X-Amz-Content-Sha256:
       - c3ab8ff13720e8ad9047dd39466b3c8974e592c2fa383d4a3960714caef0c4f2
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
         SignedHeaders=content-encoding;content-md5;host;user-agent;x-amz-content-sha256;x-amz-date,
-        Signature=b0c5adf32efbdd0d1a132a2fd7abef5ff4f0c67c6c1aea63f5a690386189ad29
+        Signature=61763cb30f28ec9dd793792a098f64c7dbf5af2c10b1c37e9622379754ec9ca2
       Content-Length:
       - '6'
       Accept:
@@ -93,11 +93,11 @@ http_interactions:
       message: OK
     headers:
       X-Amz-Id-2:
-      - H3BKgFMjzFz9/JRPvXjz60YLlIBTfSUcMraCbD70h8hBOr9VpmcmLf+KwTjUv1vgaVVT0FUhmO8=
+      - DMYXrci8JbazBhJ5TZ2yGH5veppzuOxZWDv0XMGYyczOSBqpe8XYQwLFOmTbb+HEaYcf9TE0zLo=
       X-Amz-Request-Id:
-      - 44601778820D68F4
+      - 5D9F8A7B333BD9CD
       Date:
-      - Fri, 10 Jul 2020 08:08:05 GMT
+      - Thu, 13 Aug 2020 13:53:16 GMT
       Etag:
       - '"3858f62230ac3c915f300c664312c63f"'
       Content-Length:
@@ -107,10 +107,10 @@ http_interactions:
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 10 Jul 2020 08:08:05 GMT
+  recorded_at: Thu, 13 Aug 2020 13:53:15 GMT
 - request:
     method: head
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
     body:
       encoding: UTF-8
       string: ''
@@ -120,16 +120,16 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080805Z
+      - 20200813T135315Z
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=55f9db14faad4ef91d00024c04ca0c37b1bdc670626f174041f0a7f8f9ab7835
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=2386ca43aaf95fbc03b0dcfa98e709efcd251a0baeb50e09f7da2bbce207d269
       Content-Length:
       - '0'
       Accept:
@@ -140,24 +140,24 @@ http_interactions:
       message: Not Found
     headers:
       X-Amz-Request-Id:
-      - C31EF5C2AD63647D
+      - 30C3A2E33BDA88DA
       X-Amz-Id-2:
-      - 8RKBmT6ycB5fFwb9DD1eT0m5YziSeJgC+mXK4k+RZl+4k2qYnrxAUdSHIAM0s3ut2bW9+hLDqnc=
+      - N7zohvUGfst5d10HMPJlLGWvCbjZPRd05eRK8uRoca50fSC3MI8sMhVeXfbb8rWVCtYidTTCU/c=
       Content-Type:
       - application/xml
       Transfer-Encoding:
       - chunked
       Date:
-      - Fri, 10 Jul 2020 08:08:05 GMT
+      - Thu, 13 Aug 2020 13:53:16 GMT
       Server:
       - AmazonS3
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 10 Jul 2020 08:08:06 GMT
+  recorded_at: Thu, 13 Aug 2020 13:53:16 GMT
 - request:
     method: head
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
     body:
       encoding: UTF-8
       string: ''
@@ -167,16 +167,16 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080806Z
+      - 20200813T135316Z
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=ad6720e103a8caa51e17cc1b955de65ca3f1f6099f76085a2ddd30510880eff9
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=d5b7b689ede34c429a01db3993abfebe197513de85a01c196accfed4df29e1f7
       Content-Length:
       - '0'
       Accept:
@@ -187,24 +187,24 @@ http_interactions:
       message: Not Found
     headers:
       X-Amz-Request-Id:
-      - DXDQFG6T1YFP5Y1R
+      - 8FB579D0E2FA090B
       X-Amz-Id-2:
-      - x1h+9/Wt4S45mwqLpo5zsXbrZQ19Hv6QCvranylQMvropi0Twe/c2Ef7KWY9+j+frSL5yk+COP4=
+      - tdtPftqrim6NWjkL7CFsfN85D8AXKTak2wDaBH1tWagCvGjjkX+zN2PVQ4O8u2/wp4lV77l/OFc=
       Content-Type:
       - application/xml
       Transfer-Encoding:
       - chunked
       Date:
-      - Fri, 10 Jul 2020 08:08:06 GMT
+      - Thu, 13 Aug 2020 13:53:16 GMT
       Server:
       - AmazonS3
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 10 Jul 2020 08:08:07 GMT
+  recorded_at: Thu, 13 Aug 2020 13:53:17 GMT
 - request:
     method: head
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
     body:
       encoding: UTF-8
       string: ''
@@ -214,16 +214,16 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080807Z
+      - 20200813T135317Z
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=a6276de8c8cf13f07f7a5c8d1251fc3381d2bdaa4590e7357841c6fbffd6a92d
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=f281ca921a83d0bec857b905ab53ee8dd530d73b2a9972ec23bcb81c3a2d54a8
       Content-Length:
       - '0'
       Accept:
@@ -234,24 +234,24 @@ http_interactions:
       message: Not Found
     headers:
       X-Amz-Request-Id:
-      - 452A047061A8E1ED
+      - 2812D790128145B2
       X-Amz-Id-2:
-      - AvdDc2ENt86ySXIk8xweKqNLt7qpLgs0qlKqA+QsUUoILiG0LW4fN7waYD4PY8Z3aZQwAIfUgU4=
+      - 1u9tJwLDLK8UqUZUPXgcIeDsUBqUcu1fSUuoS7uX3AqLJrGIxtTLPj9yLxZKrNRWEupmgxPwwqs=
       Content-Type:
       - application/xml
       Transfer-Encoding:
       - chunked
       Date:
-      - Fri, 10 Jul 2020 08:08:07 GMT
+      - Thu, 13 Aug 2020 13:53:17 GMT
       Server:
       - AmazonS3
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 10 Jul 2020 08:08:08 GMT
+  recorded_at: Thu, 13 Aug 2020 13:53:18 GMT
 - request:
     method: put
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
     body:
       encoding: UTF-8
       string: |
@@ -264,7 +264,7 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Content-Encoding:
       - ASCII
       Expect:
@@ -272,15 +272,15 @@ http_interactions:
       Content-Md5:
       - FjJ9FiGMbyvwwWqipQZxEg==
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080808Z
+      - 20200813T135318Z
       X-Amz-Content-Sha256:
       - 8ebdf8cfdcd69134ba52b630714e0d08516b96267eb9bc0127d156566d6f639d
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
         SignedHeaders=content-encoding;content-md5;host;user-agent;x-amz-content-sha256;x-amz-date,
-        Signature=66df4e4263e94d32d9cbca29cbd74cd011d2c5d2c1e135061111c1e04e0ce5d0
+        Signature=91482abc521dcdf78b10b414e413920cd4cb749feab8314e63fc91a8d38a5a59
       Content-Length:
       - '44'
       Accept:
@@ -291,11 +291,11 @@ http_interactions:
       message: OK
     headers:
       X-Amz-Id-2:
-      - WuRcB+8CU5ALpQ/e7idciB83HZNdpiA4IJPsKgCFXR0963IZ5ZcWGF1LrGcnASqY6fx0BWicGVw=
+      - KQAUPs5qG4RZqwC4SzobOB0gXw8yZTJe4mvGeNP8hFOUTnnGxxvm/pHU6MKKg/8XGSzvcOZkFdM=
       X-Amz-Request-Id:
-      - 79268B4E0AD6D7D6
+      - D83D6686A5DD90F1
       Date:
-      - Fri, 10 Jul 2020 08:08:10 GMT
+      - Thu, 13 Aug 2020 13:53:19 GMT
       Etag:
       - '"16327d16218c6f2bf0c16aa2a5067112"'
       Content-Length:
@@ -305,10 +305,10 @@ http_interactions:
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 10 Jul 2020 08:08:09 GMT
+  recorded_at: Thu, 13 Aug 2020 13:53:19 GMT
 - request:
     method: head
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
     body:
       encoding: UTF-8
       string: ''
@@ -318,16 +318,16 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080809Z
+      - 20200813T135319Z
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=49ec7a533fcb072d4a72742cf74b8b0ff40bcc4a0b05dc7bd941a16186b39eef
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=2509c0b74218002f9113b0cd207203b4c724c41104a311e692ae683654f0b848
       Content-Length:
       - '0'
       Accept:
@@ -338,13 +338,13 @@ http_interactions:
       message: OK
     headers:
       X-Amz-Id-2:
-      - U/KmVNq3uiVHkoDDPx/N0ubSop3hnTw9r0dL2PsM67WwVJf/iXmQxHHam4JrUGsyvl+9yepaCjs=
+      - ZVftSk4sps5+D8QMGCMR+QDdcrYECNnoBNKEcqJJYJRgBvKS0gbVo50onrNmTu8BSg4+mqRikbw=
       X-Amz-Request-Id:
-      - EC3D8FC0359FE809
+      - 0EF706CC6CB482AE
       Date:
-      - Fri, 10 Jul 2020 08:08:11 GMT
+      - Thu, 13 Aug 2020 13:53:20 GMT
       Last-Modified:
-      - Fri, 10 Jul 2020 08:08:10 GMT
+      - Thu, 13 Aug 2020 13:53:19 GMT
       Etag:
       - '"16327d16218c6f2bf0c16aa2a5067112"'
       Content-Encoding:
@@ -360,10 +360,10 @@ http_interactions:
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 10 Jul 2020 08:08:10 GMT
+  recorded_at: Thu, 13 Aug 2020 13:53:19 GMT
 - request:
     method: head
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/content
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/content
     body:
       encoding: UTF-8
       string: ''
@@ -373,16 +373,16 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080810Z
+      - 20200813T135319Z
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=8e93fbb34795d64d94a4e98b70d601f3c07bbaf0c463ec5083027856c03d3caa
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=7720a2655d1ea45eccb11647c05362526ab36cfa3fbb6d91b0d22c86ed32a184
       Content-Length:
       - '0'
       Accept:
@@ -393,13 +393,13 @@ http_interactions:
       message: OK
     headers:
       X-Amz-Id-2:
-      - TmpcLYkilk7rNjkgVKjvzfh4p6w0LCw7llT1+j30hrWIfdgXCS85BG5bjGyTeCX3/obfVSGJXyA=
+      - 2l/yeb7jmlRI+jBaDfenVN9krYQzuP1P7PYaFTrJQOfHNQmayfHR+5nLGVaZLqD7GhOqMIi3Zrw=
       X-Amz-Request-Id:
-      - A451CA6D58382BAE
+      - 0CB66E2804051257
       Date:
-      - Fri, 10 Jul 2020 08:08:12 GMT
+      - Thu, 13 Aug 2020 13:53:21 GMT
       Last-Modified:
-      - Fri, 10 Jul 2020 08:08:04 GMT
+      - Thu, 13 Aug 2020 13:53:15 GMT
       Etag:
       - '"861fe1f3f4d61db77ed3db17ff375c6e"'
       Content-Encoding:
@@ -415,10 +415,10 @@ http_interactions:
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 10 Jul 2020 08:08:11 GMT
+  recorded_at: Thu, 13 Aug 2020 13:53:20 GMT
 - request:
     method: delete
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/content
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/content
     body:
       encoding: UTF-8
       string: ''
@@ -428,16 +428,16 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080811Z
+      - 20200813T135320Z
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=18ab25d65220faf948028e048eef59d01219f34e582db72a65ed2724ddb9f25a
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=69206286c315bf86a7652f375c5730edd0bb69db804ee15447294ede7f43209f
       Content-Length:
       - '0'
       Accept:
@@ -448,20 +448,20 @@ http_interactions:
       message: No Content
     headers:
       X-Amz-Id-2:
-      - mn/NTYBCaP2dynSwrthyYM33FBgQVkf9nZ8sjaolDSS6AYqqyKqX72Li6RsEPwm2p4Lw80SQlfc=
+      - FGXzJT6od1WynHRfZIQVzXuP/YWsbSL/RmqJF4QKD7DzzxqUlw9roOvso4V20bd4DMaid8I1PLw=
       X-Amz-Request-Id:
-      - E56432F200E990A2
+      - 47F6D73A4D9D733A
       Date:
-      - Fri, 10 Jul 2020 08:08:13 GMT
+      - Thu, 13 Aug 2020 13:53:22 GMT
       Server:
       - AmazonS3
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 10 Jul 2020 08:08:12 GMT
+  recorded_at: Thu, 13 Aug 2020 13:53:21 GMT
 - request:
     method: get
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/?list-type=2&prefix=gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/?list-type=2&prefix=gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436
     body:
       encoding: UTF-8
       string: ''
@@ -471,16 +471,16 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080812Z
+      - 20200813T135321Z
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=aee855b00d898a50bebc111ce5a5ea8af4732779424df7877ed9d535e513fc9d
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=5bb9db88b3fcc32e8ae881274281c830f0b70b21cd91e1db91586f84d4ade51f
       Content-Length:
       - '0'
       Accept:
@@ -491,13 +491,13 @@ http_interactions:
       message: OK
     headers:
       X-Amz-Id-2:
-      - tjZcJ30WROhiS0h0LNoY7/TmAIohiOiB9nItPvH5c5WfV119KQKmsO299cik5MKjUF/2I2OZ6TE=
+      - LTA/wBLLqtC6cDJ2/jE29oUr+tYrWPdzt18goZNWtxoaI6BewHTKuPJ4jBleR/iFdRGRLBcfdbQ=
       X-Amz-Request-Id:
-      - CA9F685DAAD29141
+      - BCB5A79E5727B15A
       Date:
-      - Fri, 10 Jul 2020 08:08:14 GMT
+      - Thu, 13 Aug 2020 13:53:24 GMT
       X-Amz-Bucket-Region:
-      - us-west-1
+      - "<REDACTED_REGION_NAME>"
       Content-Type:
       - application/xml
       Transfer-Encoding:
@@ -508,11 +508,11 @@ http_interactions:
       encoding: UTF-8
       string: |-
         <?xml version="1.0" encoding="UTF-8"?>
-        <ListBucketResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Name><REDACTED_BUCKET_NAME></Name><Prefix>gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436</Prefix><KeyCount>2</KeyCount><MaxKeys>1000</MaxKeys><IsTruncated>false</IsTruncated><Contents><Key>gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/other_content</Key><LastModified>2020-07-10T08:08:05.000Z</LastModified><ETag>&quot;3858f62230ac3c915f300c664312c63f&quot;</ETag><Size>6</Size><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml</Key><LastModified>2020-07-10T08:08:10.000Z</LastModified><ETag>&quot;16327d16218c6f2bf0c16aa2a5067112&quot;</ETag><Size>44</Size><StorageClass>STANDARD</StorageClass></Contents></ListBucketResult>
-  recorded_at: Fri, 10 Jul 2020 08:08:13 GMT
+        <ListBucketResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Name><REDACTED_BUCKET_NAME></Name><Prefix>gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436</Prefix><KeyCount>2</KeyCount><MaxKeys>1000</MaxKeys><IsTruncated>false</IsTruncated><Contents><Key>gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/other_content</Key><LastModified>2020-08-13T13:53:16.000Z</LastModified><ETag>&quot;3858f62230ac3c915f300c664312c63f&quot;</ETag><Size>6</Size><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml</Key><LastModified>2020-08-13T13:53:19.000Z</LastModified><ETag>&quot;16327d16218c6f2bf0c16aa2a5067112&quot;</ETag><Size>44</Size><StorageClass>STANDARD</StorageClass></Contents></ListBucketResult>
+  recorded_at: Thu, 13 Aug 2020 13:53:23 GMT
 - request:
     method: get
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/?list-type=2&prefix=gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/?list-type=2&prefix=gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436
     body:
       encoding: UTF-8
       string: ''
@@ -522,16 +522,16 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080813Z
+      - 20200813T135323Z
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=b92d57b2ee58ccf6ebfb4e96fa7d9e635397c03a63c373eaf2ded777c88e9b80
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=1fed225f3d7d12de9952d451f919e9cf699f2766da247ea3cbe584630bfd3d1e
       Content-Length:
       - '0'
       Accept:
@@ -542,13 +542,13 @@ http_interactions:
       message: OK
     headers:
       X-Amz-Id-2:
-      - RUr1Hb9O7ci+2WFb8E1YPICpqs8CDePFoqh8Qrrlz/6p7TI3boGtm83+KDqLCX5DG9SSnaDjoJ4=
+      - sLN1YrmJcA+fc7bSF5QXuy5NS3zfj0AYxMJtsA11/MMdDHl2tdphCj+zRMY3iwl6lrt4/Qw5qFk=
       X-Amz-Request-Id:
-      - 2FE639479983499A
+      - DE8047425D1069A4
       Date:
-      - Fri, 10 Jul 2020 08:08:14 GMT
+      - Thu, 13 Aug 2020 13:53:24 GMT
       X-Amz-Bucket-Region:
-      - us-west-1
+      - "<REDACTED_REGION_NAME>"
       Content-Type:
       - application/xml
       Transfer-Encoding:
@@ -559,11 +559,11 @@ http_interactions:
       encoding: UTF-8
       string: |-
         <?xml version="1.0" encoding="UTF-8"?>
-        <ListBucketResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Name><REDACTED_BUCKET_NAME></Name><Prefix>gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436</Prefix><KeyCount>2</KeyCount><MaxKeys>1000</MaxKeys><IsTruncated>false</IsTruncated><Contents><Key>gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/other_content</Key><LastModified>2020-07-10T08:08:05.000Z</LastModified><ETag>&quot;3858f62230ac3c915f300c664312c63f&quot;</ETag><Size>6</Size><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml</Key><LastModified>2020-07-10T08:08:10.000Z</LastModified><ETag>&quot;16327d16218c6f2bf0c16aa2a5067112&quot;</ETag><Size>44</Size><StorageClass>STANDARD</StorageClass></Contents></ListBucketResult>
-  recorded_at: Fri, 10 Jul 2020 08:08:13 GMT
+        <ListBucketResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Name><REDACTED_BUCKET_NAME></Name><Prefix>gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436</Prefix><KeyCount>2</KeyCount><MaxKeys>1000</MaxKeys><IsTruncated>false</IsTruncated><Contents><Key>gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/other_content</Key><LastModified>2020-08-13T13:53:16.000Z</LastModified><ETag>&quot;3858f62230ac3c915f300c664312c63f&quot;</ETag><Size>6</Size><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml</Key><LastModified>2020-08-13T13:53:19.000Z</LastModified><ETag>&quot;16327d16218c6f2bf0c16aa2a5067112&quot;</ETag><Size>44</Size><StorageClass>STANDARD</StorageClass></Contents></ListBucketResult>
+  recorded_at: Thu, 13 Aug 2020 13:53:24 GMT
 - request:
     method: head
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
     body:
       encoding: UTF-8
       string: ''
@@ -573,16 +573,16 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080813Z
+      - 20200813T135324Z
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=d3167f2bafd9924e663ccf475eafa89c02df9b81a93451d3ebeafabb8e7b3aed
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=59fdab91954073d8e256808348c8253bed1bb7de21b79ce56fff10dd80b4991f
       Content-Length:
       - '0'
       Accept:
@@ -593,13 +593,13 @@ http_interactions:
       message: OK
     headers:
       X-Amz-Id-2:
-      - 3Yy+tIFzv897wHYOaT0ZOlf15Gl3n2Mrx1u4g4FPNa1MJL8o98PwHwTVyxKT77Nx+UbXEkKiPwU=
+      - kjk4Gegf0BzXoaVGQvFKXPnSwJaN7ev7X7pRFyoA4CN98n8itRDauveTFuqc6cYLn/kSKCv8C3A=
       X-Amz-Request-Id:
-      - 2F75598D3C92E788
+      - 65F6EDC9CB33D04D
       Date:
-      - Fri, 10 Jul 2020 08:08:15 GMT
+      - Thu, 13 Aug 2020 13:53:25 GMT
       Last-Modified:
-      - Fri, 10 Jul 2020 08:08:10 GMT
+      - Thu, 13 Aug 2020 13:53:19 GMT
       Etag:
       - '"16327d16218c6f2bf0c16aa2a5067112"'
       Content-Encoding:
@@ -615,10 +615,10 @@ http_interactions:
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 10 Jul 2020 08:08:14 GMT
+  recorded_at: Thu, 13 Aug 2020 13:53:24 GMT
 - request:
     method: head
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/other_content
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/other_content
     body:
       encoding: UTF-8
       string: ''
@@ -628,16 +628,16 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080814Z
+      - 20200813T135324Z
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=6a9d0e2a77efdbbab0ce699c6fee549dc42e0476396d80635e5d399dbaa1a9ca
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=80c1d07093d725383f53612cfcdd86e136775dad2b1e260fe752bb4a447cc195
       Content-Length:
       - '0'
       Accept:
@@ -648,13 +648,13 @@ http_interactions:
       message: OK
     headers:
       X-Amz-Id-2:
-      - xhy+Fc1jqK0cIOXIfgcJRqmkwqNPtf+S3wqIpWAvueW/ozaA2wvYh3CspAu19tVrsscLgNCg7vM=
+      - sm86I77ajmiobaXx6+tdz25EB1aZZuBnGVtxzs++1oQgm6UxtFKY0psOOiVRYbgDttoJtiAUa6c=
       X-Amz-Request-Id:
-      - 7C6DE095DEE80FB2
+      - 43A4315C3A16DE55
       Date:
-      - Fri, 10 Jul 2020 08:08:16 GMT
+      - Thu, 13 Aug 2020 13:53:26 GMT
       Last-Modified:
-      - Fri, 10 Jul 2020 08:08:05 GMT
+      - Thu, 13 Aug 2020 13:53:16 GMT
       Etag:
       - '"3858f62230ac3c915f300c664312c63f"'
       Content-Encoding:
@@ -670,10 +670,10 @@ http_interactions:
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 10 Jul 2020 08:08:15 GMT
+  recorded_at: Thu, 13 Aug 2020 13:53:25 GMT
 - request:
     method: delete
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/other_content
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/other_content
     body:
       encoding: UTF-8
       string: ''
@@ -683,16 +683,16 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080815Z
+      - 20200813T135325Z
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=2f3e3d4a393e74a62b58fc8b39b126852c46cf05a79d52809897689c97af921d
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=38e2f5864694363b07f7c18f7aef81d735d309f199561f5f4196efe51b735d41
       Content-Length:
       - '0'
       Accept:
@@ -703,20 +703,20 @@ http_interactions:
       message: No Content
     headers:
       X-Amz-Id-2:
-      - UoOeNOzKmQ3DKo/G8Tfi8al8xxbzPuXrX7bm1Td+cKgx1Vp+1D6U8Nlf7dsSyh19/HJPmXyJbRc=
+      - AHrx0hG9RxRZwXXblwgFfwK/wKLJZNtTv0jVZ6ZqPnElQNOjWmwvuEBaVtkjL5Fn3O8URA2xCHc=
       X-Amz-Request-Id:
-      - 3V6JEQ9K8K4N2SFM
+      - E7099711B45ABA2B
       Date:
-      - Fri, 10 Jul 2020 08:08:19 GMT
+      - Thu, 13 Aug 2020 13:53:27 GMT
       Server:
       - AmazonS3
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 10 Jul 2020 08:08:18 GMT
+  recorded_at: Thu, 13 Aug 2020 13:53:26 GMT
 - request:
     method: get
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/?list-type=2&prefix=gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/?list-type=2&prefix=gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436
     body:
       encoding: UTF-8
       string: ''
@@ -726,16 +726,16 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080818Z
+      - 20200813T135326Z
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=e9bdaba75c8bc8720c289bde3046cdf22c709b5cb35c5cb0336d689793ef9347
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=1fc2b7f8f0b4ff34b3f51dc3d31bb3bf4be74e768378951384f6d0bfa50cf39c
       Content-Length:
       - '0'
       Accept:
@@ -746,13 +746,13 @@ http_interactions:
       message: OK
     headers:
       X-Amz-Id-2:
-      - 80oty44vgreLEO3/4gbk4UNExrskP9yv5SQ6Mgj91EFPWVUKcXelInOjvoEeA1eWowotX6NuKRU=
+      - FtaQF2IbQpCfu40HrC9obSB3UJd9RKR9Id7duF/qXmQLnmxPx7wAPzJbCNbwanX7Ia24CiOv1v4=
       X-Amz-Request-Id:
-      - 19D688841E5E8FCF
+      - 6EB7C250EFA2A687
       Date:
-      - Fri, 10 Jul 2020 08:08:20 GMT
+      - Thu, 13 Aug 2020 13:53:28 GMT
       X-Amz-Bucket-Region:
-      - us-west-1
+      - "<REDACTED_REGION_NAME>"
       Content-Type:
       - application/xml
       Transfer-Encoding:
@@ -763,11 +763,11 @@ http_interactions:
       encoding: UTF-8
       string: |-
         <?xml version="1.0" encoding="UTF-8"?>
-        <ListBucketResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Name><REDACTED_BUCKET_NAME></Name><Prefix>gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436</Prefix><KeyCount>1</KeyCount><MaxKeys>1000</MaxKeys><IsTruncated>false</IsTruncated><Contents><Key>gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml</Key><LastModified>2020-07-10T08:08:10.000Z</LastModified><ETag>&quot;16327d16218c6f2bf0c16aa2a5067112&quot;</ETag><Size>44</Size><StorageClass>STANDARD</StorageClass></Contents></ListBucketResult>
-  recorded_at: Fri, 10 Jul 2020 08:08:19 GMT
+        <ListBucketResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Name><REDACTED_BUCKET_NAME></Name><Prefix>gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436</Prefix><KeyCount>1</KeyCount><MaxKeys>1000</MaxKeys><IsTruncated>false</IsTruncated><Contents><Key>gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml</Key><LastModified>2020-08-13T13:53:19.000Z</LastModified><ETag>&quot;16327d16218c6f2bf0c16aa2a5067112&quot;</ETag><Size>44</Size><StorageClass>STANDARD</StorageClass></Contents></ListBucketResult>
+  recorded_at: Thu, 13 Aug 2020 13:53:27 GMT
 - request:
     method: get
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/?list-type=2&prefix=gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/?list-type=2&prefix=gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436
     body:
       encoding: UTF-8
       string: ''
@@ -777,16 +777,16 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080819Z
+      - 20200813T135327Z
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=ca626a94a4f850a6a9f95f3abf18b13c14df5264b2c252bace5e364f481434e0
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=8d6248f2ac894a7a8e42e456246d108513581b493a58ebbb1333afb1e42260a2
       Content-Length:
       - '0'
       Accept:
@@ -797,13 +797,13 @@ http_interactions:
       message: OK
     headers:
       X-Amz-Id-2:
-      - klXSmJ2fiIdXpJ9I0CekO03ySR+UMi2zvA0DaWe0crs/a5RXmkxvftJle8/sB3MCLs0jUwv50mk=
+      - HMITnzgbM2dgn1T2oF3msT6rr1aI3exaWCnDvxbI+WqVbn1iQ1JfHM+SaaSAQMNnAEgQYB7OPZk=
       X-Amz-Request-Id:
-      - AF692A5B09773BFF
+      - AD642073A435007E
       Date:
-      - Fri, 10 Jul 2020 08:08:21 GMT
+      - Thu, 13 Aug 2020 13:53:29 GMT
       X-Amz-Bucket-Region:
-      - us-west-1
+      - "<REDACTED_REGION_NAME>"
       Content-Type:
       - application/xml
       Transfer-Encoding:
@@ -814,11 +814,11 @@ http_interactions:
       encoding: UTF-8
       string: |-
         <?xml version="1.0" encoding="UTF-8"?>
-        <ListBucketResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Name><REDACTED_BUCKET_NAME></Name><Prefix>gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436</Prefix><KeyCount>1</KeyCount><MaxKeys>1000</MaxKeys><IsTruncated>false</IsTruncated><Contents><Key>gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml</Key><LastModified>2020-07-10T08:08:10.000Z</LastModified><ETag>&quot;16327d16218c6f2bf0c16aa2a5067112&quot;</ETag><Size>44</Size><StorageClass>STANDARD</StorageClass></Contents></ListBucketResult>
-  recorded_at: Fri, 10 Jul 2020 08:08:20 GMT
+        <ListBucketResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Name><REDACTED_BUCKET_NAME></Name><Prefix>gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436</Prefix><KeyCount>1</KeyCount><MaxKeys>1000</MaxKeys><IsTruncated>false</IsTruncated><Contents><Key>gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml</Key><LastModified>2020-08-13T13:53:19.000Z</LastModified><ETag>&quot;16327d16218c6f2bf0c16aa2a5067112&quot;</ETag><Size>44</Size><StorageClass>STANDARD</StorageClass></Contents></ListBucketResult>
+  recorded_at: Thu, 13 Aug 2020 13:53:28 GMT
 - request:
     method: delete
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
     body:
       encoding: UTF-8
       string: ''
@@ -828,16 +828,16 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080820Z
+      - 20200813T135328Z
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=badc624075e595494664834097dc771c7c9362182a90f89c859ff0e767f67ba3
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=3fd55bc57311c12bd58eccf2f6dd67e7557620d87aca90fc3bc5a3e7d12525b8
       Content-Length:
       - '0'
       Accept:
@@ -848,20 +848,20 @@ http_interactions:
       message: No Content
     headers:
       X-Amz-Id-2:
-      - Ml+pGXnCLpjH3IJekfUeUoM5UlVwUnwvZBKvtqZprAGLP1IcIKjN+wRkar6teb0FaiqaY46nLwY=
+      - fRNiqlmE5JTLP7/UEo8D59ogQvDyP251JqirNWZAKUm5acfFS7wCBjgl1pXBoLNb6E0cRLqWOZo=
       X-Amz-Request-Id:
-      - 8NAKENBT7W2NDM5W
+      - 0HFG5Q0S6RDG5R6J
       Date:
-      - Fri, 10 Jul 2020 08:08:21 GMT
+      - Thu, 13 Aug 2020 13:53:29 GMT
       Server:
       - AmazonS3
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 10 Jul 2020 08:08:21 GMT
+  recorded_at: Thu, 13 Aug 2020 13:53:29 GMT
 - request:
     method: head
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
     body:
       encoding: UTF-8
       string: ''
@@ -871,16 +871,16 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080821Z
+      - 20200813T135329Z
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=d54871d2890355e6e7f45f2eab5e3bb41dbfade8fdd87d9e8895e06844b93d4e
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=f184192ae77889abfc82b53339ce1633daa55bda9403df437c63c9ee6c12ad16
       Content-Length:
       - '0'
       Accept:
@@ -891,24 +891,24 @@ http_interactions:
       message: Not Found
     headers:
       X-Amz-Request-Id:
-      - 74A364466B5536B8
+      - C99D6313F078548D
       X-Amz-Id-2:
-      - PreBoPpRICmmXi5lms9CwQ91xdK8tawa8MvrmxuyRFzwh9khnQOpYGfoeeVnkkYzUULeqmbiC4U=
+      - qAuuJsabIPGLLKdRfQfNNNpjU2rhuFNS+yszfs5FYgJq+L6m5OwH/UFR24P/wz9YtkQDlH4Fswg=
       Content-Type:
       - application/xml
       Transfer-Encoding:
       - chunked
       Date:
-      - Fri, 10 Jul 2020 08:08:20 GMT
+      - Thu, 13 Aug 2020 13:53:29 GMT
       Server:
       - AmazonS3
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 10 Jul 2020 08:08:21 GMT
+  recorded_at: Thu, 13 Aug 2020 13:53:29 GMT
 - request:
     method: head
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
     body:
       encoding: UTF-8
       string: ''
@@ -918,16 +918,16 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080821Z
+      - 20200813T135329Z
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=d54871d2890355e6e7f45f2eab5e3bb41dbfade8fdd87d9e8895e06844b93d4e
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=f184192ae77889abfc82b53339ce1633daa55bda9403df437c63c9ee6c12ad16
       Content-Length:
       - '0'
       Accept:
@@ -938,24 +938,24 @@ http_interactions:
       message: Not Found
     headers:
       X-Amz-Request-Id:
-      - A0BA45454D6D0AB4
+      - BAE3245ED8CF6B5F
       X-Amz-Id-2:
-      - xi/KLa7Xbv/n9Qz1CJsg3grVO6h0iAm+rT2BThli3N+3U3A05KJvkAt/ORd4HItPeYmYJeQzDAk=
+      - 1x4CSRxaHGwJ6kr7rcZqDdHc7GPZj1zh0fUbifMxIY18MDc3QqY+0aZI9ITEPawtwbc+W4iAGvo=
       Content-Type:
       - application/xml
       Transfer-Encoding:
       - chunked
       Date:
-      - Fri, 10 Jul 2020 08:08:22 GMT
+      - Thu, 13 Aug 2020 13:53:29 GMT
       Server:
       - AmazonS3
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 10 Jul 2020 08:08:23 GMT
+  recorded_at: Thu, 13 Aug 2020 13:53:30 GMT
 - request:
     method: head
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
     body:
       encoding: UTF-8
       string: ''
@@ -965,16 +965,16 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080823Z
+      - 20200813T135330Z
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=1e404a3e3caf5230419d9caa61add47795c201f13bb2073c2847c333485c1fb5
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=406d60a0b68a3c317f16e6efd4db795e85d22bb592e237f9fe8e5cbeba5667d0
       Content-Length:
       - '0'
       Accept:
@@ -985,24 +985,24 @@ http_interactions:
       message: Not Found
     headers:
       X-Amz-Request-Id:
-      - 21A746E7BB1998E3
+      - B7707D0529AE04D1
       X-Amz-Id-2:
-      - v/ZBxtjwxTe80aJPmLi7CpMqzMlq3aiUQYi44uIFmGnhefVzDcAlWVHwMXdxl4yEqMdNOfkKfeA=
+      - UjVjoLKvfD9vTYKXdnA+gGygpJ73KKC8TQDTwEhkocjXW4/k9JFn0/RJq+Jh6Eg9J6KdJkevBlU=
       Content-Type:
       - application/xml
       Transfer-Encoding:
       - chunked
       Date:
-      - Fri, 10 Jul 2020 08:08:24 GMT
+      - Thu, 13 Aug 2020 13:53:31 GMT
       Server:
       - AmazonS3
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 10 Jul 2020 08:08:25 GMT
+  recorded_at: Thu, 13 Aug 2020 13:53:31 GMT
 - request:
     method: head
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
     body:
       encoding: UTF-8
       string: ''
@@ -1012,16 +1012,16 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080825Z
+      - 20200813T135331Z
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=9c518f6e7a0bbc18817f641935340f92b552886b092275be1dd79c378244c830
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=8278f71ad27b89ed550998ab7f3f21de1d4b5baee147a603ca85c4d12246768d
       Content-Length:
       - '0'
       Accept:
@@ -1032,24 +1032,24 @@ http_interactions:
       message: Not Found
     headers:
       X-Amz-Request-Id:
-      - FB00E3465209FF8F
+      - 424637B1941D2A5A
       X-Amz-Id-2:
-      - aYwYkY60RrXGKYZMO3mmtEQxKfe/F9FFdWK614f1ah7kEf2oiPKvv5YTTAvAEBARbO5ZcajOQgc=
+      - LXngdiv+sLGQ9I/9LZy7K80xLPuX3i776/6XXgxAvKWT983pGJGSZSTJj+BELCjpkdmUgAz+NAo=
       Content-Type:
       - application/xml
       Transfer-Encoding:
       - chunked
       Date:
-      - Fri, 10 Jul 2020 08:08:25 GMT
+      - Thu, 13 Aug 2020 13:53:31 GMT
       Server:
       - AmazonS3
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 10 Jul 2020 08:08:25 GMT
+  recorded_at: Thu, 13 Aug 2020 13:53:32 GMT
 - request:
     method: head
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
     body:
       encoding: UTF-8
       string: ''
@@ -1059,16 +1059,16 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080825Z
+      - 20200813T135332Z
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=9c518f6e7a0bbc18817f641935340f92b552886b092275be1dd79c378244c830
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=4d4c1c7c18b92988675689263b5a3a3c1f63e00f1120cea6d671c87cf4d5c1ae
       Content-Length:
       - '0'
       Accept:
@@ -1079,24 +1079,24 @@ http_interactions:
       message: Not Found
     headers:
       X-Amz-Request-Id:
-      - AE6C23EB89AF807A
+      - CCDFF037BC29B211
       X-Amz-Id-2:
-      - K46DqR8+GJdpEdOwSEAT2HoU1fUiAt/jwSmRECVeTn8GnKhvdNZDNT2DKBNNhWeVU0NEH409Jok=
+      - mPgUmh8CM3ZIHradooUG76hTkw2vky2VmW6tGo8UQk7h6oKB5AuPkLqo5E9nGJhLDMoh24TAxyg=
       Content-Type:
       - application/xml
       Transfer-Encoding:
       - chunked
       Date:
-      - Fri, 10 Jul 2020 08:08:26 GMT
+      - Thu, 13 Aug 2020 13:53:32 GMT
       Server:
       - AmazonS3
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 10 Jul 2020 08:08:26 GMT
+  recorded_at: Thu, 13 Aug 2020 13:53:33 GMT
 - request:
     method: head
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
     body:
       encoding: UTF-8
       string: ''
@@ -1106,16 +1106,16 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080826Z
+      - 20200813T135333Z
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=483a029ebcea5a5a41bb0759add294213c498efbb7295cb9bc98169aac425166
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=a7547521b450177568523e8fd10013214fd3d90387e661ec2f8af038d2ae452b
       Content-Length:
       - '0'
       Accept:
@@ -1126,24 +1126,24 @@ http_interactions:
       message: Not Found
     headers:
       X-Amz-Request-Id:
-      - 461C4BF834B9CFEB
+      - 2QDM7Q9M8H0GCG9J
       X-Amz-Id-2:
-      - NZxlvxPg8rcvZRZdw9oJKS2cbfxCjl5JLevtPdAhc7SFdEOdlpbBtmYlJmR1DkhLaSLHnmDfYis=
+      - tIjvH4oFoo4FelrNYuRzzEZAT2LQ/3E/Y/A4gBGVKQ0ofnxbQQKg6S4fhV1m6jI1EF+jGrQhg6g=
       Content-Type:
       - application/xml
       Transfer-Encoding:
       - chunked
       Date:
-      - Fri, 10 Jul 2020 08:08:26 GMT
+      - Thu, 13 Aug 2020 13:53:33 GMT
       Server:
       - AmazonS3
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 10 Jul 2020 08:08:27 GMT
+  recorded_at: Thu, 13 Aug 2020 13:53:34 GMT
 - request:
     method: head
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
     body:
       encoding: UTF-8
       string: ''
@@ -1153,16 +1153,16 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080827Z
+      - 20200813T135334Z
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=2de9005f595db920f76a779df8151d625d4f42700e136d9e8255a7ee49070de3
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=10470fbdd7672bbb98cbf6bca47ae78f7aee20eb8e351c9797c0d596677df2fc
       Content-Length:
       - '0'
       Accept:
@@ -1173,24 +1173,24 @@ http_interactions:
       message: Not Found
     headers:
       X-Amz-Request-Id:
-      - B7680F26B59592C6
+      - 5C509B8C6C95ABC2
       X-Amz-Id-2:
-      - wugM1EisemHEJC/9r4jnTE2BH4kVVrOlfaL1ew4HbTlCUGkF7z9s/Yuw2x5IhH+gHtpqlulT/ig=
+      - ST1xXMQsiopb2tvW5OAe9qDyFGJrRBoOYwtCowHfWFaN8MW7yhdtsPYRZ4qLlDcX1VutDpen+sk=
       Content-Type:
       - application/xml
       Transfer-Encoding:
       - chunked
       Date:
-      - Fri, 10 Jul 2020 08:08:27 GMT
+      - Thu, 13 Aug 2020 13:53:34 GMT
       Server:
       - AmazonS3
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 10 Jul 2020 08:08:28 GMT
+  recorded_at: Thu, 13 Aug 2020 13:53:34 GMT
 - request:
     method: head
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
     body:
       encoding: UTF-8
       string: ''
@@ -1200,16 +1200,16 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080828Z
+      - 20200813T135334Z
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=a2f3ebf5134aa775d63b6e69ffee21bc15037c288ec987e5957eccd5da5ce2cd
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=10470fbdd7672bbb98cbf6bca47ae78f7aee20eb8e351c9797c0d596677df2fc
       Content-Length:
       - '0'
       Accept:
@@ -1220,24 +1220,24 @@ http_interactions:
       message: Not Found
     headers:
       X-Amz-Request-Id:
-      - 6A5D8567D42FBF30
+      - D3CD4001685C2413
       X-Amz-Id-2:
-      - TKOf9o2/HCGVOKRub2Pd6io194AU1wpYQNgG4E85PbfGzRnfIDLN6M09sldX9c+lgvN6AzJtSpU=
+      - Cc8Y6eiPF41liUWQWnj0F/XxiK5GEtRjlkbi1oNPU/PRTrOT5QdOPkafrj9TLr014O+TGi+PJOY=
       Content-Type:
       - application/xml
       Transfer-Encoding:
       - chunked
       Date:
-      - Fri, 10 Jul 2020 08:08:28 GMT
+      - Thu, 13 Aug 2020 13:53:35 GMT
       Server:
       - AmazonS3
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 10 Jul 2020 08:08:29 GMT
+  recorded_at: Thu, 13 Aug 2020 13:53:36 GMT
 - request:
     method: head
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
     body:
       encoding: UTF-8
       string: ''
@@ -1247,16 +1247,16 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080829Z
+      - 20200813T135336Z
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=3bcf2853284784a542b285de092f59aa51e02c269c57e57b9dd28e9dc507f70f
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=050786e76bb0f217bca418b4a7fd8aaa356eed84046791399d7ba2a9401f5a21
       Content-Length:
       - '0'
       Accept:
@@ -1267,24 +1267,24 @@ http_interactions:
       message: Not Found
     headers:
       X-Amz-Request-Id:
-      - C0A179C7A2565DCE
+      - 0T1ZFJ9Q4P3X5TCR
       X-Amz-Id-2:
-      - zm0+U0JLI9h6qQx6Swlox1Osdxp9saivmM8mgxt4frjeRzzon16EP8sAeYR72K/nzAFHQXXWi0A=
+      - v+iwJr2kod4TdYxymNg9Y4EL70jmNpf1wdsctmUM/krqZf0e/dBmOElan5C4DVZZ975qtbr+Az4=
       Content-Type:
       - application/xml
       Transfer-Encoding:
       - chunked
       Date:
-      - Fri, 10 Jul 2020 08:08:28 GMT
+      - Thu, 13 Aug 2020 13:53:36 GMT
       Server:
       - AmazonS3
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 10 Jul 2020 08:08:29 GMT
+  recorded_at: Thu, 13 Aug 2020 13:53:37 GMT
 - request:
     method: head
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
     body:
       encoding: UTF-8
       string: ''
@@ -1294,16 +1294,16 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080829Z
+      - 20200813T135337Z
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=3bcf2853284784a542b285de092f59aa51e02c269c57e57b9dd28e9dc507f70f
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=8aeaf34139a761c63bbd032c9e64b024b26b08a46c8f5856f110c3b81928bd4e
       Content-Length:
       - '0'
       Accept:
@@ -1314,24 +1314,24 @@ http_interactions:
       message: Not Found
     headers:
       X-Amz-Request-Id:
-      - 742D3B6E69D26B96
+      - EA3038311D84B86C
       X-Amz-Id-2:
-      - sivgPcZQJOcSqDD2lhxVSgdHMsI6lXtP1POa41Cb6Vl4QEArhV/hG4Vo193rNr1hJJJ2JCdtL/M=
+      - "/uvFqzW9uBKAXqh3+r1sBAY3Ba7vnMsM3dxZHUtWhicjriW28ZtHXzwz+pr4ihLPwkc5ge39nM4="
       Content-Type:
       - application/xml
       Transfer-Encoding:
       - chunked
       Date:
-      - Fri, 10 Jul 2020 08:08:30 GMT
+      - Thu, 13 Aug 2020 13:53:36 GMT
       Server:
       - AmazonS3
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 10 Jul 2020 08:08:30 GMT
+  recorded_at: Thu, 13 Aug 2020 13:53:37 GMT
 - request:
     method: head
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
     body:
       encoding: UTF-8
       string: ''
@@ -1341,16 +1341,16 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080830Z
+      - 20200813T135337Z
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=ee065071044165f7052197772026da002a68ea751bdd53a73a126e32e35862ad
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=8aeaf34139a761c63bbd032c9e64b024b26b08a46c8f5856f110c3b81928bd4e
       Content-Length:
       - '0'
       Accept:
@@ -1361,24 +1361,24 @@ http_interactions:
       message: Not Found
     headers:
       X-Amz-Request-Id:
-      - BB32246994409093
+      - DCFCEF2B3AB92053
       X-Amz-Id-2:
-      - sv1InaEaunWCgq0hkZzJBlQ54iqyEZxRr/Gc1dDO5oaG7mmFme/OLlwer4c2Ipv0eSTjs8dVYAc=
+      - gTEggjurHDIclMO2CtMKEWzErZDhvsZnPpWMWC26F6RQ94Ma3MS1nBXmgI5bS9BBrxsTMc+WQIg=
       Content-Type:
       - application/xml
       Transfer-Encoding:
       - chunked
       Date:
-      - Fri, 10 Jul 2020 08:08:30 GMT
+      - Thu, 13 Aug 2020 13:53:38 GMT
       Server:
       - AmazonS3
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 10 Jul 2020 08:08:31 GMT
+  recorded_at: Thu, 13 Aug 2020 13:53:38 GMT
 - request:
     method: head
-    uri: https://<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
+    uri: https://<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com/gemstash/s3_storage/TEST_S3_SPEC_FOLDER/private/gems/54-a684eceee76fc522773286a895bc8436/properties.yaml
     body:
       encoding: UTF-8
       string: ''
@@ -1388,16 +1388,16 @@ http_interactions:
       Accept-Encoding:
       - ''
       User-Agent:
-      - aws-sdk-ruby3/3.100.0 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.69.0
+      - aws-sdk-ruby3/3.104.3 ruby/2.6.3 x86_64-darwin19 aws-sdk-s3/1.75.0
       Host:
-      - "<REDACTED_BUCKET_NAME>.s3.us-west-1.amazonaws.com"
+      - "<REDACTED_BUCKET_NAME>.s3.<REDACTED_REGION_NAME>.amazonaws.com"
       X-Amz-Date:
-      - 20200710T080831Z
+      - 20200813T135338Z
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       Authorization:
-      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200710/us-west-1/s3/aws4_request,
-        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=d4ba471ea9209401cf232e0d80ed467c8c8f446188a2ba25e306746e4273ee4c
+      - AWS4-HMAC-SHA256 Credential=<REDACTED_ACCESS_KEY>/20200813/<REDACTED_REGION_NAME>/s3/aws4_request,
+        SignedHeaders=host;user-agent;x-amz-content-sha256;x-amz-date, Signature=06a44668b0a73e86f61f7c80dd1652c31fea726b1df707ef69f65686aa5b7da3
       Content-Length:
       - '0'
       Accept:
@@ -1408,19 +1408,19 @@ http_interactions:
       message: Not Found
     headers:
       X-Amz-Request-Id:
-      - 6D27463CBAFD8B26
+      - A5C27C0553ECEC9F
       X-Amz-Id-2:
-      - N45Mjo8kUmASC1WSKpl1SV/wp5yFEqyucm217Oun6hKz3sT2+khgDWy/L0Sirs8ksAkkDcrOfgs=
+      - N6Ukj/UNo/sRIfx2iiCml+xh6J/TO2jZx0cLlaEDbe6W7t7m7sCS13c1ihpzb9DpC78jcc//c8I=
       Content-Type:
       - application/xml
       Transfer-Encoding:
       - chunked
       Date:
-      - Fri, 10 Jul 2020 08:08:31 GMT
+      - Thu, 13 Aug 2020 13:53:38 GMT
       Server:
       - AmazonS3
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Fri, 10 Jul 2020 08:08:32 GMT
+  recorded_at: Thu, 13 Aug 2020 13:53:39 GMT
 recorded_with: VCR 6.0.0
