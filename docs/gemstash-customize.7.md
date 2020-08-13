@@ -66,10 +66,10 @@ key:
 
 If the 's3' storage setup is selected, gemstash will require you to input the
 `:aws_access_key` and `:aws_secret_access_key` required to access your storage unit.
-Then you'll also need to provide the `bucket_name` in which specifies the bucket where
-you want the files to be stored on S3. Finally, you can provide your own directory path at `s3_path`
-in which you want to the files to be stored on S3. The file path defaults to `gemstash/s3_storage` 
-which will create gemstash > s3_storage directory on your S3 storage unit. Here's an example configuration
+Then you'll also need to provide the `:bucket_name` in which specifies the bucket where
+you want the files to be stored on S3 and the `:region` that your bucket is located in. Finally, you can provide your 
+own directory path at `:s3_path` in which you want to the files to be stored on S3. The file path defaults to `gemstash/s3_storage` 
+which will create a gemstash > s3_storage directory on your S3 storage unit. Here's an example configuration
 to use Amazon S3 Storage.
 
 ``` yaml
@@ -79,6 +79,7 @@ to use Amazon S3 Storage.
 :aws_access_key: "KSADMJAIMOPHNMQPJIZ3"
 :aws_secret_access_key: "4xmoqgPOMicvU7ksj+1bIdDIkfmZ2fdVQBdz/66W"
 :bucket_name: "my_private_gem_server"
+:region: "us-west-1"
 ```
 
 When customizing the `base_path`, the directory must exist, otherwise
