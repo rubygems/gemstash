@@ -61,6 +61,10 @@ module Gemstash
       @config[key]
     end
 
+    def keys
+      @config.keys
+    end
+
     # @return [Hash] Sequel connection configuration hash
     def database_connection_config
       case self[:db_adapter]
