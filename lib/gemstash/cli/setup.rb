@@ -230,7 +230,7 @@ module Gemstash
         with_new_config { yield }
       rescue LoadError => e
         say_error "Error checking #{thing}", e
-        raise Gemstash::CLI::Error.new(@cli, "#{e.message}")
+        raise Gemstash::CLI::Error.new(@cli, e.message.to_s)
       rescue StandardError => e
         say_error "Error checking #{thing}", e
         raise Gemstash::CLI::Error.new(@cli, "The #{thing} is not available")

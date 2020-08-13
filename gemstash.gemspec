@@ -59,6 +59,7 @@ you push your own private gems as well."
   end
 
   spec.add_development_dependency "aruba", [">= 0.14"]
+  spec.add_development_dependency "aws-sdk-s3", "~> 1.67"
   spec.add_development_dependency "bundler", [">= 1.11", "< 3.0"]
   spec.add_development_dependency "citrus", "~> 3.0"
   spec.add_development_dependency "octokit", "~> 4.2"
@@ -71,5 +72,4 @@ you push your own private gems as well."
   spec.add_development_dependency "rubocop-performance", "~> 1.1.0"
   spec.add_development_dependency "vcr", "~> 6.0.0"
   spec.add_development_dependency "webmock", "~> 3.8.3"
-  spec.add_development_dependency "aws-sdk-s3", "~> 1.67"
 end

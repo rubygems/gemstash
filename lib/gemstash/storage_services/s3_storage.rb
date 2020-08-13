@@ -6,8 +6,8 @@ require "fileutils"
 require "yaml"
 begin
   require "aws-sdk-s3"
-rescue LoadError => e
-  raise LoadError.new("The aws-sdk-s3 gem was not installed. Please install the gem and try again.")
+rescue LoadError
+  raise LoadError, "The aws-sdk-s3 gem was not installed. Please install the gem and try again."
 end
 require "pathname"
 
