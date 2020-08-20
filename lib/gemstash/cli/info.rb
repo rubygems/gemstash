@@ -5,7 +5,7 @@ require "puma/control_cli"
 
 module Gemstash
   class CLI
-    # This implements the command line setup task:
+    # This implements the command line info task:
     #  $ gemstash info
     class Info < Gemstash::CLI::Base
       include Gemstash::Env::Helper
