@@ -4,22 +4,38 @@ require "spec_helper"
 
 RSpec.describe Gemstash::CLI::Info do
   let(:defaults) do
-    default = ""
-    Gemstash::Configuration::DEFAULTS.map do |key, value|
-      default << "#{key}: #{value}" << "\n"
-    end
-    default
+    <<~DEFAULT
+      cache_type: memory
+      base_path: #{File.expand_path("~/.gemstash")}
+      db_adapter: sqlite3
+      bind: tcp://0.0.0.0:9292
+      rubygems_url: https://rubygems.org
+      ignore_gemfile_source: false
+      protected_fetch: false
+      fetch_timeout: 20
+      db_connection_options: {}
+      puma_threads: 16
+      puma_workers: 1
+      cache_expiration: 1800
+      cache_max_size: 500
+    DEFAULT
   end
   let(:with_protected_fetch_true) do
-    default = ""
-    Gemstash::Configuration::DEFAULTS.map do |key, value|
-      if key == :protected_fetch
-        default << "#{key}: true" << "\n"
-      else
-        default << "#{key}: #{value}" << "\n"
-      end
-    end
-    default
+    <<~DEFAULT
+      cache_type: memory
+      base_path: #{File.expand_path("~/.gemstash")}
+      db_adapter: sqlite3
+      bind: tcp://0.0.0.0:9292
+      rubygems_url: https://rubygems.org
+      ignore_gemfile_source: false
+      protected_fetch: true
+      fetch_timeout: 20
+      db_connection_options: {}
+      puma_threads: 16
+      puma_workers: 1
+      cache_expiration: 1800
+      cache_max_size: 500
+    DEFAULT
   end
   let(:cli) do
     result = double(options: cli_options)
