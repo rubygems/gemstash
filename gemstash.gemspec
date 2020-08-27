@@ -42,6 +42,9 @@ you push your own private gems as well."
   spec.add_runtime_dependency "sinatra", ">= 1.4", "< 3.0"
   spec.add_runtime_dependency "thor", "~> 0.20"
 
+  # Use Amazon S3 Storage instead of local storage
+  # spec.add_runtime_dependency "aws-sdk-s3", "~> 1.67"
+
   # Use Redis instead of memcached
   # spec.add_runtime_dependency "redis", "~> 3.3"
   # Run Gemstash with the mysql adapter
@@ -56,6 +59,7 @@ you push your own private gems as well."
   end
 
   spec.add_development_dependency "aruba", [">= 0.14"]
+  spec.add_development_dependency "aws-sdk-s3", "~> 1.67"
   spec.add_development_dependency "bundler", [">= 1.11", "< 3.0"]
   spec.add_development_dependency "citrus", "~> 3.0"
   spec.add_development_dependency "octokit", "~> 4.2"
@@ -66,4 +70,6 @@ you push your own private gems as well."
   spec.add_development_dependency "rspec", "~> 3.3"
   spec.add_development_dependency "rubocop", "= 0.67.2"
   spec.add_development_dependency "rubocop-performance", "~> 1.1.0"
+  spec.add_development_dependency "vcr", "~> 6.0.0"
+  spec.add_development_dependency "webmock", "~> 3.8.3"
 end

@@ -3,7 +3,7 @@
 require "spec_helper"
 require "yaml"
 
-RSpec.describe Gemstash::Storage do
+RSpec.describe Gemstash::LocalStorage do
   before do
     @folder = Dir.mktmpdir
   end
@@ -12,19 +12,19 @@ RSpec.describe Gemstash::Storage do
   end
 
   it "builds with a valid folder" do
-    expect(Gemstash::Storage.new(@folder)).not_to be_nil
+    expect(Gemstash::LocalStorage.new(@folder)).not_to be_nil
   end
 
   it "builds the path if it does not exists" do
     new_path = File.join(@folder, "other-path")
     expect(Dir.exist?(new_path)).to be_falsy
-    Gemstash::Storage.new(new_path)
+    Gemstash::LocalStorage.new(new_path)
     expect(Dir.exist?(new_path)).to be_truthy
   end
 
   it "stores metadata about Gemstash and the storage engine version" do
-    expect(Gemstash::Storage.metadata[:storage_version]).to eq(Gemstash::Storage::VERSION)
-    expect(Gemstash::Storage.metadata[:gemstash_version]).to eq(Gemstash::VERSION)
+    expect(Gemstash::LocalStorage.metadata[:storage_version]).to eq(Gemstash::LocalStorage::VERSION)
+    expect(Gemstash::LocalStorage.metadata[:gemstash_version]).to eq(Gemstash::VERSION)
   end
 
   it "prevents using storage engine if the storage version is too new" do
@@ -34,12 +34,12 @@ RSpec.describe Gemstash::Storage do
     }
 
     File.write(Gemstash::Env.current.base_file("metadata.yml"), metadata.to_yaml)
-    expect { Gemstash::Storage.new(@folder) }.
-      to raise_error(Gemstash::Storage::VersionTooNew, /#{Regexp.escape(@folder)}/)
+    expect { Gemstash::LocalStorage.new(@folder) }.
+      to raise_error(Gemstash::LocalStorage::VersionTooNewError, /#{Regexp.escape(@folder)}/)
   end
 
   context "with a valid storage" do
-    let(:storage) { Gemstash::Storage.new(@folder) }
+    let(:storage) { Gemstash::LocalStorage.new(@folder) }
 
     it "can create a child storage from itself" do
       storage.for("gems")
@@ -67,7 +67,7 @@ RSpec.describe Gemstash::Storage do
 
     it "won't load a resource that is at a larger version than our current version" do
       storage.resource("42").save({ content: "content" }, gemstash_resource_version: 999_999)
-      expect { storage.resource("42").content(:content) }.to raise_error(Gemstash::Resource::VersionTooNew, /42/)
+      expect { storage.resource("42").content(:content) }.to raise_error(Gemstash::Resource::VersionTooNewError, /42/)
     end
 
     context "with a simple resource" do
