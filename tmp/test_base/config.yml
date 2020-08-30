@@ -1,0 +1,6 @@
+---
+:s3_path: gemstash/s3_storage
+:bucket_name: enter-your-bucket-name
+:aws_access_key_id: enter-your-access-key
+:aws_secret_access_key: enter-your-secret-access-key
+:region: enter-bucket-region

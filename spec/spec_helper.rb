@@ -17,14 +17,23 @@ require "support/matchers"
 require "support/simple_server"
 require "support/slow_simple_server"
 require "support/test_gemstash_server"
+require "support/s3_helpers"
+require "vcr"
+require "yaml"
 
 TEST_BASE_PATH = File.expand_path("../tmp/test_base", __dir__)
+TEST_CONFIG_PATH = File.expand_path("../tmp/test_base/config.yml", __dir__)
 FileUtils.mkpath(TEST_BASE_PATH) unless Dir.exist?(TEST_BASE_PATH)
-Pathname.new(TEST_BASE_PATH).children.each(&:rmtree)
+Pathname.new(TEST_BASE_PATH).children.each do |path|
+  next if path.to_s == TEST_CONFIG_PATH
+
+  path.rmtree
+end
+config_yaml_file = YAML.load_file TEST_CONFIG_PATH
+config_yaml_file[:base_path] = TEST_BASE_PATH
+File.write(TEST_CONFIG_PATH, config_yaml_file.to_yaml)
 TEST_LOG_FILE = File.join(TEST_BASE_PATH, "server.log")
-TEST_CONFIG = Gemstash::Configuration.new(config: {
-                                            :base_path => TEST_BASE_PATH
-                                          })
+TEST_CONFIG = Gemstash::Configuration.new(file: TEST_CONFIG_PATH)
 Gemstash::Env.current = Gemstash::Env.new(TEST_CONFIG)
 Thread.current[:test_gemstash_env_set] = true
 TEST_DB = Gemstash::Env.current.db
@@ -60,6 +69,7 @@ RSpec.configure do |config|
 
     Pathname.new(TEST_BASE_PATH).children.each do |path|
       next if path.basename.to_s.end_with?(".db")
+      next if path.to_s == TEST_CONFIG_PATH
 
       path.rmtree
     end
@@ -76,10 +86,22 @@ RSpec.configure do |config|
   config.filter_run :focus
   config.run_all_when_everything_filtered = true
 
+  config.include S3Helpers
   config.include EnvHelpers
   config.include DBHelpers
   config.include ExecHelpers
   config.include FileHelpers
   config.include LogHelpers
   config.raise_errors_for_deprecations!
+
+  VCR.configure do |vcr_config|
+    vcr_config.cassette_library_dir = "fixtures/vcr_cassettes"
+    vcr_config.hook_into :webmock
+    vcr_config.configure_rspec_metadata!
+    vcr_config.filter_sensitive_data("<REDACTED_ACCESS_KEY>") { config_yaml_file[:aws_access_key_id] }
+    vcr_config.filter_sensitive_data("<REDACTED_SECRET_ACCESS_KEY>") { config_yaml_file[:aws_secret_access_key] }
+    vcr_config.filter_sensitive_data("<REDACTED_BUCKET_NAME>") { config_yaml_file[:bucket_name] }
+    vcr_config.filter_sensitive_data("<REDACTED_REGION_NAME>") { config_yaml_file[:region] }
+    vcr_config.allow_http_connections_when_no_cassette = true
+  end
 end
