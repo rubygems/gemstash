@@ -45,8 +45,8 @@ module Gemstash
       @gem_source.serve_dependencies_json
     end
 
-    get "/api/v1/versions" do
-      @gem_source.serve_dependencies_json
+    get "/api/v1/versions/:name" do
+      @gem_source.serve_gem_versions(params[:name])
     end
     
     post "/api/v1/gems" do
