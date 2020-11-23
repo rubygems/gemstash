@@ -45,6 +45,10 @@ module Gemstash
       @gem_source.serve_dependencies_json
     end
 
+    get "/api/v1/versions" do
+      @gem_source.serve_dependencies_json
+    end
+    
     post "/api/v1/gems" do
       @gem_source.serve_add_gem
     end
