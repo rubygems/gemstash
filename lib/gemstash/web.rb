@@ -48,7 +48,7 @@ module Gemstash
     get "/api/v1/versions/:name" do
       @gem_source.serve_gem_versions(params[:name])
     end
-    
+
     post "/api/v1/gems" do
       @gem_source.serve_add_gem
     end

@@ -151,6 +151,7 @@ module Gemstash
           end
 
           yield(gem, value)
+        end
       end
     end
   end

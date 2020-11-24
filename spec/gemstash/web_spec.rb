@@ -224,6 +224,7 @@ RSpec.describe Gemstash::Web do
         get "/api/v1/versions/rack.json", {}, rack_env
         get "/api/v1/versions/rack.json", {}, rack_env
       end
+    end
 
     context "from private gems" do
       let(:gem_source) { Gemstash::GemSource::PrivateSource }
