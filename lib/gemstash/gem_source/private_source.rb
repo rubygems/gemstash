@@ -139,11 +139,10 @@ module Gemstash
             ON version.rubygem_id = rubygem.id
           WHERE rubygem.name = ?
             AND version.indexed = ?", gem.to_a, true].to_a
-        results.group_by {|r| r[:name] }.each do |gem, rows|
+        results.group_by {|r| r[:name] }.each do |rows|
           requirements = rows.group_by {|r| [r[:number], r[:platform]] }
 
-          value = requirements.map do |(version, platform), r|
-
+          value = requirements.map do |(version, platform)|
             {
               :number => version,
               :platform => platform
