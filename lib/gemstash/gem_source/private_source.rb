@@ -142,11 +142,11 @@ module Gemstash
         results.group_by {|r| r[:name] }.each do |gem, rows|
           requirements = rows.group_by {|r| [r[:number], r[:platform]] }
 
-          value = requirements.map do |version, r|
+          value = requirements.map do |(version, platform), r|
 
             {
-              :number => version.first,
-              :platform => version.last
+              :number => version,
+              :platform => platform
             }
           end
 
