@@ -22,7 +22,7 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
           bundler: none
       - name: Install Dependencies
-        run: bin/setup
+        run: gem install bundler && bin/setup
       - name: Run Rubocop
         run: rake rubocop
       - name: Run Tests
