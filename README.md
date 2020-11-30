@@ -169,7 +169,7 @@ To see what has changed in recent versions of Gemstash, see the
 
 After checking out the repo, run `bin/setup` to install dependencies.
 Then, run `rake` to run RuboCop and the tests. While developing, you can
-run `bin/gemstash` to run Gemstash. You can also run `bin/console` for
+run `bin/gemstash start` to run Gemstash. You can also run `bin/console` for
 an interactive prompt that will allow you to experiment.
 
 ## Contributing
