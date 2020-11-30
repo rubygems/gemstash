@@ -105,7 +105,7 @@ RSpec.describe Gemstash::GemPusher do
       end
     end
 
-    context "with an exsiting gem name" do
+    context "with an existing gem name" do
       before do
         gem_id = insert_rubygem "example"
         insert_version gem_id, "0.0.1"
