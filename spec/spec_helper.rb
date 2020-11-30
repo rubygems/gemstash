@@ -29,9 +29,18 @@ Pathname.new(TEST_BASE_PATH).children.each do |path|
 
   path.rmtree
 end
-config_yaml_file = YAML.load_file TEST_CONFIG_PATH
+config_yaml_file = YAML.load(":s3_path: gemstash/s3_storage")
+config_yaml_file[:bucket_name] = "enter-your-bucket-name"
+config_yaml_file[:aws_access_key_id] = "enter-your-access-key"
+config_yaml_file[:aws_secret_access_key] = "enter-your-secret-access-key"
+config_yaml_file[:region] = "enter-bucket-region"
 config_yaml_file[:base_path] = TEST_BASE_PATH
-File.write(TEST_CONFIG_PATH, config_yaml_file.to_yaml)
+
+config_yaml_file_to_compare = YAML.load_file TEST_CONFIG_PATH if File.exist?(TEST_CONFIG_PATH)
+
+File.write(TEST_CONFIG_PATH, config_yaml_file.to_yaml) unless File.exist?(TEST_CONFIG_PATH) &&
+  config_yaml_file_to_compare == config_yaml_file
+
 TEST_LOG_FILE = File.join(TEST_BASE_PATH, "server.log")
 TEST_CONFIG = Gemstash::Configuration.new(file: TEST_CONFIG_PATH)
 Gemstash::Env.current = Gemstash::Env.new(TEST_CONFIG)
