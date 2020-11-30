@@ -16,6 +16,8 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler: none
+      - name: increase ulimit
+        run: ulimit -n 8192
       - name: Install Dependencies
         run: gem install bundler && bin/setup
       - name: Run Rubocop
