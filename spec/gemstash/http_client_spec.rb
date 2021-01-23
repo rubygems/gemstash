@@ -165,7 +165,7 @@ RSpec.describe Gemstash::HTTPClient do
       end
 
       it "times out with a small fetch_timeout value" do
-        config = Gemstash::Configuration.new(config: { fetch_timeout: 0.1 })
+        config = Gemstash::Configuration.new(config: { fetch_timeout: 0.05 })
         Gemstash::Env.current = Gemstash::Env.new(config)
         client = Gemstash::HTTPClient.for(Gemstash::Upstream.new(@slow_server.url))
         expect do
