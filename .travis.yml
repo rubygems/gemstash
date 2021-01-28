@@ -2,9 +2,8 @@
     - rvm: ruby-head
       gemfile: 'gemfiles/Gemfile.ruby-head'
   include:
-    - rvm: 2.4.7
-    - rvm: 2.5.6
-    - rvm: 2.6.4
+    - rvm: 2.6.6
+    - rvm: 2.7.2
     - rvm: ruby-head
       gemfile: 'gemfiles/Gemfile.ruby-head'
 
