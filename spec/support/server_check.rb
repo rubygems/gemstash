@@ -23,10 +23,13 @@ class ServerCheck
     Socket.tcp("127.0.0.1", @port, nil, nil, connect_timeout: 1).close
     true
   rescue Errno::EBADF
+    puts "*********************** Errno::EBADF"
     false
   rescue Errno::ECONNREFUSED
+    puts "*********************** Errno::ECONNREFUSED"
     false
   rescue Errno::ETIMEDOUT
+    puts "*********************** Errno::ETIMEDOUT"
     true
   end
 end
