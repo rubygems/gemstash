@@ -19,7 +19,7 @@ jobs:
       - name: increase ulimit
         run: ulimit -n 8192
       - name: Install Dependencies
-        run: gem install bundler && bin/setup
+        run: gem install bundler -v 1.17.3 && bin/setup
       - name: Run Rubocop
         run: rake rubocop
       - name: Run Tests
