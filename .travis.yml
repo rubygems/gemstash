@@ -16,6 +16,7 @@
         - rm -f ${HOME}/.rvm/gemsets/jruby/global.gems
         - rvm use ${JRUBY_VERSION} --install --binary --fuzzy
         - gem uninstall bundler
+        - sudo apt-get purge -y bundler
         - gem install bundler -v 1.17.3
       install: bundle install --binstubs --jobs=3 --retry=3 --path=${BUNDLE_PATH:-vendor/bundle}
       script: bundle exec rake
