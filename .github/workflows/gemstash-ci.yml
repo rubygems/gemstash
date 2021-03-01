@@ -1,4 +1,4 @@
-name: Gemstash-Tests
+name: Tests
 
 on: [push, pull_request]
 
@@ -21,8 +21,6 @@ jobs:
         run: ulimit -n 8192
       - name: Install Dependencies
         run: gem install bundler -v 1.17.3 && bin/setup
-      - name: Run Rubocop
-        run: rake rubocop
       - name: Run Tests
         run: bundle exec rspec --exclude-pattern "spec/integration_spec.rb"
       - name: Run Integration Tests
