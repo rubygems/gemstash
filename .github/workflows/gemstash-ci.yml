@@ -24,6 +24,6 @@ jobs:
       - name: Run Rubocop
         run: rake rubocop
       - name: Run Tests
-        run: bundle exec rake spec ./spec/integration_spec.rb
+        run: bundle exec rspec --exclude-pattern "spec/integration_spec.rb"
     timeout-minutes: 60
 
