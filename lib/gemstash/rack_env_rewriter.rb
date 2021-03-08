@@ -51,7 +51,7 @@ module Gemstash
         @params ||= begin
           check_match
           @path_info_match.names.inject({}) do |result, name|
-            result[name] = @path_info_match[name]
+            result[name] = CGI.unescape(@path_info_match[name])
             result
           end
         end

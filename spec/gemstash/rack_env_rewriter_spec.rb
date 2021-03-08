@@ -49,7 +49,7 @@ RSpec.describe Gemstash::RackEnvRewriter do
       context = rewriter.for(env)
       expect(context.matches?).to be_truthy
       context.rewrite
-      expect(context.captures["upstream_url"]).to eq(escaped_upstream_url)
+      expect(context.captures["upstream_url"]).to eq(upstream_url)
       expect(env["REQUEST_URI"]).to eq("/some/path?arg=abc")
       expect(env["PATH_INFO"]).to eq("/some/path")
     end
