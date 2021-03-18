@@ -24,6 +24,7 @@ gemstash-configuration
 :protected_fetch: true
 :fetch_timeout: 10
 :log_file: gemstash.log
+:fips: false
 ```
 
 # Base Path
@@ -246,3 +247,18 @@ Any valid file name, or `:stdout` to log to `$stdout`
 
 *Note: Using `:stdout` for the `:log_file` requires [running with
 `--no-daemonize`](docs/gemstash-start.1.md#options).*
+
+# FIPS
+
+`:fips`
+
+Whether or not to use FIPS compliant ciphers. Controls whether
+cached files are named using an MD5 hash or a SHA256 hash.
+
+## Default value
+
+`false`
+
+## Valid values
+
+Boolean values `true` or `false`
