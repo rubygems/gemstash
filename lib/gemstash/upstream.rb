@@ -43,7 +43,7 @@ module Gemstash
   private
 
     def hash
-      Digest::MD5.hexdigest(to_s)
+      Gemstash::Env.current.config.digest_class.hexdigest(to_s)
     end
 
     #:nodoc:

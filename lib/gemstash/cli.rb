@@ -76,6 +76,8 @@ module Gemstash
     desc "start", "Starts your gemstash server"
     method_option :daemonize, :type => :boolean, :default => true, :desc =>
       "Daemonize the server"
+    method_option :fips, :type => :boolean, :default => false, :desc =>
+      "Choose crypto compliant with FIPS"
     method_option :config_file, :type => :string, :desc =>
       "Config file to load when starting"
     def start

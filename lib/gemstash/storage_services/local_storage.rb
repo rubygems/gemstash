@@ -118,7 +118,7 @@ module Gemstash
       trie_parents = safe_name[0...3].downcase.split("")
       # The digest is included in case the name differs only by case
       # Some file systems are case insensitive, so such collisions will be a problem
-      digest = Digest::MD5.hexdigest(@name)
+      digest = Gemstash::Env.current.config.digest_class.hexdigest(@name)
       child_folder = "#{safe_name}-#{digest}"
       @folder = File.join(@base_path, *trie_parents, child_folder)
       @properties = nil

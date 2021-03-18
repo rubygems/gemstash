@@ -12,6 +12,7 @@ module Gemstash
         prepare
         setup_logging
         store_daemonized
+        store_fips
         @cli.say("Starting gemstash!", :green)
         Puma::CLI.new(args, Gemstash::Logging::StreamLogger.puma_events).run
       end
@@ -28,8 +29,16 @@ module Gemstash
         Gemstash::Env.daemonized = daemonize?
       end
 
+      def store_fips
+        Gemstash::Env.current.config[:fips] = fips?
+      end
+
       def daemonize?
         @cli.options[:daemonize]
+      end
+
+      def fips?
+        @cli.options[:fips]
       end
 
       def puma_config
