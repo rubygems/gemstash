@@ -8,6 +8,7 @@ module Gemstash
   class Configuration
     DEFAULTS = {
       cache_type: "memory",
+      fips: false,
       base_path: File.expand_path("~/.gemstash"),
       db_adapter: "sqlite3",
       bind: "tcp://0.0.0.0:9292",
@@ -75,6 +76,14 @@ module Gemstash
         { max_connections: (self[:puma_workers] * self[:puma_threads]) + 1 }.merge(self[:db_connection_options])
       else
         raise "Unsupported DB adapter: '#{self[:db_adapter]}'"
+      end
+    end
+
+    def digest_class
+      @digest_class ||= if self[:fips]
+        Digest::SHA256
+      else
+        Digest::MD5
       end
     end
 

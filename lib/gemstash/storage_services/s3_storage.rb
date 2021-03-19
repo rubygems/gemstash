@@ -105,7 +105,7 @@ module Gemstash
       @folder = folder
       @name = name
       safe_name = sanitize(@name)
-      digest = Digest::MD5.hexdigest(@name)
+      digest = Gemstash::Env.current.config.digest_class.hexdigest(@name)
       child_folder = "#{safe_name}-#{digest}"
       @folder = File.join(@folder, child_folder)
       @client = client
