@@ -4,4 +4,3 @@
 :aws_access_key_id: enter-your-access-key
 :aws_secret_access_key: enter-your-secret-access-key
 :region: enter-bucket-region
-:base_path: "/Users/bklopfenstein/repos/gemstash/tmp/test_base"
