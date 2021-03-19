@@ -6,6 +6,7 @@ RSpec.describe Gemstash::CLI::Info do
   let(:defaults) do
     <<~DEFAULT
       cache_type: memory
+      fips: false
       base_path: #{File.expand_path("~/.gemstash")}
       db_adapter: sqlite3
       bind: tcp://0.0.0.0:9292
@@ -18,11 +19,14 @@ RSpec.describe Gemstash::CLI::Info do
       puma_workers: 1
       cache_expiration: 1800
       cache_max_size: 500
+      storage_adapter: local
+      s3_path: gemstash/s3_storage
     DEFAULT
   end
   let(:with_protected_fetch_true) do
     <<~DEFAULT
       cache_type: memory
+      fips: false
       base_path: #{File.expand_path("~/.gemstash")}
       db_adapter: sqlite3
       bind: tcp://0.0.0.0:9292
@@ -35,6 +39,8 @@ RSpec.describe Gemstash::CLI::Info do
       puma_workers: 1
       cache_expiration: 1800
       cache_max_size: 500
+      storage_adapter: local
+      s3_path: gemstash/s3_storage
     DEFAULT
   end
   let(:cli) do
