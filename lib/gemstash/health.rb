@@ -17,13 +17,13 @@ module Gemstash
 
     def self.check_storage_read
       if check_storage_write
-        content = Gemstash::LocalStorage.for("health").resource("test").content(:example)
+        content = Gemstash::Storage.for("health").resource("test").content(:example)
         content =~ /\Acontent-\d+\z/
       end
     end
 
     def self.check_storage_write
-      resource = Gemstash::LocalStorage.for("health").resource("test")
+      resource = Gemstash::Storage.for("health").resource("test")
       resource.save(example: "content-#{Time.now.to_i}")
       true
     end

@@ -3,6 +3,7 @@
 require "gemstash"
 require "rubygems/package"
 require "stringio"
+
 #:nodoc:
 module Gemstash
   # Class that supports pushing a new gem to the private repository of gems.

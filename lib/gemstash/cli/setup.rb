@@ -19,13 +19,9 @@ module Gemstash
           @cli.say @cli.set_color("Everything is already setup!", :green)
           return
         end
-        check_rubygems_version
 
-        if @cli.options[:s3] && @cli.options[:redo]
-          ask_s3_details
-        else
-          ask_local_details
-        end
+        check_rubygems_version
+        ask_storage
         ask_cache
         ask_database
         ask_protected_fetch
@@ -71,31 +67,11 @@ module Gemstash
         result
       end
 
-      def ask_local_details
+      def ask_storage
         say_current_config(:base_path, "Current base path")
         path = @cli.ask "Where should files go? [~/.gemstash]", path: true
         path = Gemstash::Configuration::DEFAULTS[:base_path] if path.empty?
-        @config[:storage_adapter] = "local"
         @config[:base_path] = File.expand_path(path)
-      end
-
-      def ask_s3_details
-        aws_access_key = @cli.ask "We will need your access key and secret access key. First, paste your access key: ", echo: true
-        aws_access_key = nil if aws_access_key.empty?
-        aws_secret_access_key = @cli.ask "Second, paste your secret access key: ", echo: true
-        aws_secret_access_key = nil if aws_secret_access_key.empty?
-        bucket_name = @cli.ask "On what bucket do you want the information to be stored? [Enter the bucket name]"
-        bucket_name = nil if bucket_name.empty?
-        region = @cli.ask "What AWS region is your bucket located in?"
-        region = nil if region.empty?
-        s3_path = @cli.ask "Where do you want the files to be stored? [gemstash/s3_storage]"
-        s3_path = Gemstash::Configuration::DEFAULTS[:s3_path] if s3_path.empty?
-        @config[:storage_adapter] = "s3"
-        @config[:s3_path] = s3_path
-        @config[:region] = region
-        @config[:bucket_name] = bucket_name
-        @config[:aws_access_key_id] = aws_access_key
-        @config[:aws_secret_access_key] = aws_secret_access_key
       end
 
       def ask_cache
@@ -163,14 +139,6 @@ module Gemstash
       end
 
       def check_storage
-        if @config[:storage_adapter] == "local"
-          check_local_storage
-        else
-          check_s3
-        end
-      end
-
-      def check_local_storage
         with_new_config do
           dir = gemstash_env.config[:base_path]
 
@@ -189,10 +157,6 @@ module Gemstash
             FileUtils.mkpath(dir)
           end
         end
-      end
-
-      def check_s3
-        try("S3 storage service") { gemstash_env.s3_test_credentials? }
       end
 
       def store_config
@@ -228,9 +192,6 @@ module Gemstash
       def try(thing)
         @cli.say "Checking that the #{thing} is available"
         with_new_config { yield }
-      rescue LoadError => e
-        say_error "Error checking #{thing}", e
-        raise Gemstash::CLI::Error.new(@cli, e.message.to_s)
       rescue StandardError => e
         say_error "Error checking #{thing}", e
         raise Gemstash::CLI::Error.new(@cli, "The #{thing} is not available")

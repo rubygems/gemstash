@@ -35,7 +35,7 @@ RSpec.describe Gemstash::CLI::Setup do
       expect(File.exist?(cli_options[:config_file])).to be_falsey
       # This is expected to touch the metadata file, which we don't want to
       # write out (it would go in ~/.gemstash rather than our test path)
-      expect(Gemstash::LocalStorage).to receive(:metadata)
+      expect(Gemstash::Storage).to receive(:metadata)
       Gemstash::CLI::Setup.new(cli).run
       expect(File.exist?(cli_options[:config_file])).to be_truthy
       config = YAML.load_file(cli_options[:config_file])
@@ -47,7 +47,7 @@ RSpec.describe Gemstash::CLI::Setup do
   end
 
   context "with a storage that already indicates a newer version of gemstash" do
-    let(:metadata) { { storage_version: Gemstash::LocalStorage::VERSION, gemstash_version: "999999.0.0" } }
+    let(:metadata) { { storage_version: Gemstash::Storage::VERSION, gemstash_version: "999999.0.0" } }
     let(:metadata_path) { File.join(TEST_BASE_PATH, "metadata.yml") }
 
     it "errors immediately" do

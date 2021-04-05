@@ -18,43 +18,43 @@ RSpec.describe Gemstash::CLI::Base do
     let(:base) { Gemstash::CLI::Base.new(cli) }
 
     it "allows loading when stored metadata is the same version" do
-      allow(Gemstash::LocalStorage).to receive(:metadata).and_return(gemstash_version: "1.0.0")
+      allow(Gemstash::Storage).to receive(:metadata).and_return(gemstash_version: "1.0.0")
       stub_const("Gemstash::VERSION", "1.0.0")
       base.send(:check_gemstash_version)
     end
 
     it "allows loading when stored metadata is prerelease of the same version" do
-      allow(Gemstash::LocalStorage).to receive(:metadata).and_return(gemstash_version: "1.0.0.pre.1")
+      allow(Gemstash::Storage).to receive(:metadata).and_return(gemstash_version: "1.0.0.pre.1")
       stub_const("Gemstash::VERSION", "1.0.0")
       base.send(:check_gemstash_version)
     end
 
     it "blocks loading when this version is a prerelease of the stored metadata version" do
-      allow(Gemstash::LocalStorage).to receive(:metadata).and_return(gemstash_version: "1.0.0")
+      allow(Gemstash::Storage).to receive(:metadata).and_return(gemstash_version: "1.0.0")
       stub_const("Gemstash::VERSION", "1.0.0.pre.1")
       expect { base.send(:check_gemstash_version) }.to raise_error(Gemstash::CLI::Error, /does not support version/)
     end
 
     it "allows loading when stored metadata is older" do
-      allow(Gemstash::LocalStorage).to receive(:metadata).and_return(gemstash_version: "0.1.0")
+      allow(Gemstash::Storage).to receive(:metadata).and_return(gemstash_version: "0.1.0")
       stub_const("Gemstash::VERSION", "1.0.0")
       base.send(:check_gemstash_version)
     end
 
     it "allows loading when stored metadata is prerelease of an older version" do
-      allow(Gemstash::LocalStorage).to receive(:metadata).and_return(gemstash_version: "0.1.0.pre.1")
+      allow(Gemstash::Storage).to receive(:metadata).and_return(gemstash_version: "0.1.0.pre.1")
       stub_const("Gemstash::VERSION", "1.0.0")
       base.send(:check_gemstash_version)
     end
 
     it "blocks loading when stored metadata is newer" do
-      allow(Gemstash::LocalStorage).to receive(:metadata).and_return(gemstash_version: "1.1.0")
+      allow(Gemstash::Storage).to receive(:metadata).and_return(gemstash_version: "1.1.0")
       stub_const("Gemstash::VERSION", "1.0.0")
       expect { base.send(:check_gemstash_version) }.to raise_error(Gemstash::CLI::Error, /does not support version/)
     end
 
     it "blocks loading when stored metadata is prerelease of a newer version" do
-      allow(Gemstash::LocalStorage).to receive(:metadata).and_return(gemstash_version: "1.1.0.pre.1")
+      allow(Gemstash::Storage).to receive(:metadata).and_return(gemstash_version: "1.1.0.pre.1")
       stub_const("Gemstash::VERSION", "1.0.0")
       expect { base.send(:check_gemstash_version) }.to raise_error(Gemstash::CLI::Error, /does not support version/)
     end

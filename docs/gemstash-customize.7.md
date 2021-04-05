@@ -44,17 +44,8 @@ Once all checks have passed, Gemstash will store your answers in the
 configuration file located at `~/.gemstash/config.yml`.
 
 ## Files
-The `:storage_adapter` configuration key specifies what type of storage service 
-you will be using. The default `:storage_adapter` is `local`. Currently gemstash offers support with two types of storage service
-`s3` and `local`, which represent for Amazon S3 storage and local storage, respectively.
-This key always default to `local` unless an `--s3` option is forced
-along with `--redo` option during `gemstash setup`. It should look like this
-```
-gemstash setup --redo --s3
-```
 
-Storage in Gemstash defaults to the 'local' storage service which stores all your
-files in the `~/.gemstash` directory on your local machine unless otherwise
+Storage in Gemstash defaults to `~/.gemstash` unless otherwise
 specified. You can change this in your config file via the `:base_path`
 key:
 
@@ -62,24 +53,6 @@ key:
 # ~/.gemstash/config.yml
 ---
 :base_path: "/var/gemstash"
-```
-
-If the 's3' storage setup is selected, gemstash will require you to input the
-`:aws_access_key` and `:aws_secret_access_key` required to access your storage unit.
-Then you'll also need to provide the `:bucket_name` in which specifies the bucket where
-you want the files to be stored on S3 and the `:region` that your bucket is located in. Finally, you can provide your 
-own directory path at `:s3_path` in which you want to the files to be stored on S3. The file path defaults to `gemstash/s3_storage` 
-which will create a gemstash > s3_storage directory on your S3 storage unit. Here's an example configuration
-to use Amazon S3 Storage.
-
-``` yaml
-# ~/.gemstash/config.yml
----
-:s3_path: "gemstash/s3_storage/MY_PERSONAL_WORKSPACE"
-:aws_access_key: "KSADMJAIMOPHNMQPJIZ3"
-:aws_secret_access_key: "4xmoqgPOMicvU7ksj+1bIdDIkfmZ2fdVQBdz/66W"
-:bucket_name: "my_private_gem_server"
-:region: "us-west-1"
 ```
 
 When customizing the `base_path`, the directory must exist, otherwise
