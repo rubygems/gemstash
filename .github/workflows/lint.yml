@@ -1,0 +1,21 @@
+name: Lint
+
+on: [push, pull_request]
+
+jobs:
+  rubocop:
+    name: Rubocop
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 2.6.4
+        bundler: none
+        bundler-cache: true
+
+    - name: Install Dependencies
+      run: gem install bundler -v 1.17.3 && bin/setup
+    - name: Rubocop
+      run: bundle exec rubocop
+
