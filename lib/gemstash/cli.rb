@@ -13,7 +13,6 @@ module Gemstash
     autoload :Start,     "gemstash/cli/start"
     autoload :Status,    "gemstash/cli/status"
     autoload :Stop,      "gemstash/cli/stop"
-    autoload :Info,      "gemstash/cli/info"
 
     # Thor::Error for the CLI, which colors the message red.
     class Error < Thor::Error
@@ -67,8 +66,6 @@ module Gemstash
       "Show detailed errors"
     method_option :config_file, :type => :string, :desc =>
       "Config file to save to"
-    method_option :s3, :type => :boolean, :default => false, :desc =>
-      "Config backend storage to Amazon S3 service"
     def setup
       Gemstash::CLI::Setup.new(self).run
     end
@@ -101,11 +98,6 @@ module Gemstash
       say "Gemstash version #{Gemstash::VERSION}"
     end
     map %w[-v --version] => :version
-
-    desc "info", "Check current gemstash instance info"
-    def info
-      Gemstash::CLI::Info.new(self).run
-    end
 
   private
 

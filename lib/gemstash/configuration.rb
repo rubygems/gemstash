@@ -20,9 +20,7 @@ module Gemstash
       puma_threads: 16,
       puma_workers: 1,
       cache_expiration: 30 * 60,
-      cache_max_size: 500,
-      storage_adapter: "local",
-      s3_path: "gemstash/s3_storage"
+      cache_max_size: 500
     }.freeze
 
     DEFAULT_FILE = File.expand_path("~/.gemstash/config.yml").freeze
@@ -60,10 +58,6 @@ module Gemstash
 
     def [](key)
       @config[key]
-    end
-
-    def keys
-      @config.keys
     end
 
     # @return [Hash] Sequel connection configuration hash

@@ -177,9 +177,5 @@ module Gemstash
         end
       end
     end
-
-    def s3_test_credentials?
-      Gemstash::S3.new("test").check_credentials?
-    end
   end
 end
