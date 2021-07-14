@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: gemstash
+  description: Fork of public Gemstash project
+  annotations:
+    github.com/project-slug: gusto/gemstash
+spec:
+  type: service
+  owner: dex
+  lifecycle: production
+  system: gemstash
+  dependsOn: []
