@@ -14,13 +14,15 @@ module Gemstash
         list_config
       end
 
-    private
+      private
 
       def list_config
-        @config = gemstash_env.config
-        @config.keys.map do |key|
-          @cli.say "#{key}: #{@config[key]}"
+        config = gemstash_env.config
+        config_str = "".dup
+        config.keys.map do |key|
+          config_str << "#{key}: #{config[key]}\n"
         end
+        config_str
       end
     end
   end
