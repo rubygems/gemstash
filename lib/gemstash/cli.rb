@@ -102,7 +102,7 @@ module Gemstash
 
     desc "info", "Check current gemstash instance info"
     def info
-      Gemstash::CLI::Info.new(self).run
+      say Gemstash::CLI::Info.new(self).run
     end
 
   private
