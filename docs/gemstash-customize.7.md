@@ -166,7 +166,7 @@ configuration key.
 ```
 
 More details on [protected\_fetch are
-here](docs/gemstash-private-gems.7.md#protected-fetching).
+here](gemstash-private-gems.7.md#protected-fetching).
 
 ## Fetch Timeout
 
