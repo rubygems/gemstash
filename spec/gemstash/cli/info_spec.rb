@@ -6,7 +6,7 @@ RSpec.describe Gemstash::CLI::Info do
   let(:default_config) do
     {
       cache_type: "memory",
-      base_path: "#{File.expand_path('~/.gemstash')}",
+      base_path: File.expand_path("~/.gemstash").to_s,
       db_adapter: "sqlite3",
       bind: "tcp://0.0.0.0:9292",
       rubygems_url: "https://rubygems.org",
@@ -30,7 +30,7 @@ RSpec.describe Gemstash::CLI::Info do
   before do
     @test_env = test_env
     Gemstash::Env.current = Gemstash::Env.new(TEST_CONFIG)
-    defaults = Gemstash::Configuration::DEFAULTS.merge(base_path: TEST_BASE_PATH)
+    Gemstash::Configuration::DEFAULTS.merge(base_path: TEST_BASE_PATH)
     stub_const("Gemstash::Configuration::DEFAULTS", default_config)
     config_file_path = File.join(TEST_BASE_PATH, "info_spec_config.yml")
     File.open(config_file_path, "w+") {|f| f.write(default_config.to_yaml) }
@@ -40,7 +40,6 @@ RSpec.describe Gemstash::CLI::Info do
     Gemstash::Env.current = @test_env
   end
 
-
   let(:cli_options) do
     {
       config_file: File.join(TEST_BASE_PATH, "info_spec_config.yml")
@@ -48,9 +47,8 @@ RSpec.describe Gemstash::CLI::Info do
   end
 
   it "Prints the current current Gemstash configuration" do
-    expected_output = "".dup
-    default_config.keys.map { |k| expected_output << "#{k}: #{default_config[k]}\n" }
+    expected_output = +""
+    default_config.keys.map {|k| expected_output << "#{k}: #{default_config[k]}\n" }
     expect(Gemstash::CLI::Info.new(cli).run).to eq(expected_output)
   end
-
 end
