@@ -29,7 +29,7 @@ module ExecHelpers
     end
 
     def exec
-      @output, @status = Open3.capture2e(patched_env, command, *args, chdir: dir)
+      @output, @status = Open3.capture2(patched_env, command, *args, chdir: dir)
     end
 
     def successful?
