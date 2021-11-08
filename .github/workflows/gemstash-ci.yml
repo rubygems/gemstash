@@ -7,21 +7,17 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       fail-fast: false
-      matrix:
-        ruby: [2.4, 2.5, 2.6, jruby-9.2.20.0]
+      matrix: # Quote "3.0" to avoid 3.0 converted to "3"
+        ruby: [2.6, 2.7, "3.0", jruby-9.2]
     steps:
       - uses: actions/checkout@v2
       - name: Setup ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
-          bundler: none
-      - name: Update rubygems
-        run: gem update --system
+          bundler-cache: true # 'bundle install' and cache
       - name: increase ulimit
         run: ulimit -n 8192
-      - name: Install Dependencies
-        run: gem install bundler -v 1.17.3 && bin/setup
       - name: Run Tests
         run: bundle exec rspec --exclude-pattern "spec/integration_spec.rb"
       - name: Run Integration Tests
