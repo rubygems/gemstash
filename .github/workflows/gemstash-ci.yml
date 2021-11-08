@@ -7,8 +7,8 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       fail-fast: false
-      matrix: # Quote "3.0" to avoid 3.0 converted to "3"
-        ruby: [2.4, 2.5, 2.6, 2.7, "3.0", jruby-9.2]
+      matrix:
+        ruby: [2.4, 2.5, 2.6, 2.7, jruby-9.2]
     steps:
       - uses: actions/checkout@v2
       - name: Setup ruby
