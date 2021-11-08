@@ -16,7 +16,6 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler: none
-          wait-on: tcp://0.0.0.0:9041, tcp://0.0.0.0:9042, tcp://0.0.0.0:9043, tcp://0.0.0.0:9044
       - name: Update rubygems
         run: gem update --system
       - name: increase ulimit
