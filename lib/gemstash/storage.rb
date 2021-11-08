@@ -68,7 +68,7 @@ module Gemstash
         end
       end
 
-      YAML.load_file(file)
+      YAML.safe_load_file(file, permitted_classes: [Symbol])
     end
 
   private
@@ -280,7 +280,7 @@ module Gemstash
       return if @properties && !force
       return unless File.exist?(properties_filename)
 
-      @properties = YAML.load_file(properties_filename) || {}
+      @properties = YAML.safe_load_file(properties_filename, permitted_classes: [Symbol]) || {}
       check_resource_version
     end
 
