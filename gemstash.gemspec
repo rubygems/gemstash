@@ -54,14 +54,4 @@ you push your own private gems as well."
   else
     spec.add_runtime_dependency "sqlite3", "~> 1.3"
   end
-
-  spec.add_development_dependency "aruba", [">= 0.14"]
-  spec.add_development_dependency "bundler"
-  spec.add_development_dependency "citrus", "~> 3.0"
-  spec.add_development_dependency "octokit", "~> 4.2"
-  spec.add_development_dependency "pandoc_object_filters", "~> 0.2"
-  spec.add_development_dependency "rack-test", "~> 1.1"
-  spec.add_development_dependency "rake", "~> 12.3"
-  spec.add_development_dependency "redis", "~> 3.3"
-  spec.add_development_dependency "rspec", "~> 3.3"
 end
