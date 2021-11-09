@@ -3,6 +3,14 @@
 source "https://rubygems.org"
 
 gemspec
+gem "aruba", ">= 0.14"
+gem "citrus", "~> 3.0"
+gem "octokit", "~> 4.2"
+gem "pandoc_object_filters", "~> 0.2"
+gem "rack-test", "~> 1.1"
+gem "rake", "~> 12.3"
+gem "redis", "~> 3.3"
+gem "rspec", "~> 3.3"
 
 group :linting do
   gem "rubocop", "= 0.67.2"
