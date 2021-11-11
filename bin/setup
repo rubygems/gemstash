@@ -2,4 +2,4 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-bundle _1.17.3_ install
+bundle install
