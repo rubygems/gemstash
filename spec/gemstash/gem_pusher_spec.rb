@@ -142,6 +142,35 @@ RSpec.describe Gemstash::GemPusher do
       end
     end
 
+    describe 'pre-release versions' do
+      it 'is able to store pre-releases' do
+        Gemstash::GemPusher.new(auth, read_gem("example", "0.1.0.pre")).serve
+        Gemstash::GemPusher.new(auth, read_gem("example", "0.1.0.pre2")).serve
+        Gemstash::GemPusher.new(auth, read_gem("example", "0.1.0")).serve
+
+        expect(deps.fetch(%w[example])).to match_dependencies([
+          {
+            name: "example",
+            number: "0.1.0.pre",
+            platform: "ruby",
+            dependencies: [["sqlite3", "~> 1.3"], ["thor", "~> 0.19"]]
+          },
+          {
+            name: "example",
+            number: "0.1.0.pre2",
+            platform: "ruby",
+            dependencies: [["sqlite3", "~> 1.3"], ["thor", "~> 0.19"]]
+          },
+          {
+            name: "example",
+            number: "0.1.0",
+            platform: "ruby",
+            dependencies: [["sqlite3", "~> 1.3"], ["thor", "~> 0.19"]]
+          }
+        ])
+      end
+    end
+
     context "with a yanked version" do
       before do
         gem_id = insert_rubygem "example"
