@@ -23,10 +23,18 @@ RSpec.describe Gemstash::Upstream do
     expect(upstream_uri.password).to be_nil
   end
 
-  it "supports url auth in the uri" do
+  it "supports user:pass url auth in the uri" do
     upstream_uri = Gemstash::Upstream.new("https://myuser:mypassword@rubygems.org/")
     expect(upstream_uri.user).to eq("myuser")
     expect(upstream_uri.password).to eq("mypassword")
+    expect(upstream_uri.auth?).to be_truthy
+  end
+
+  it "supports api_key url auth in the uri" do
+    upstream_uri = Gemstash::Upstream.new("https://api_key@rubygems.org/")
+    expect(upstream_uri.user).to eq("api_key")
+    expect(upstream_uri.password).to be_nil
+    expect(upstream_uri.auth?).to be_truthy
   end
 
   it "distinguishes between ports, auths, and paths" do

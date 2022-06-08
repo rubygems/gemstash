@@ -32,7 +32,7 @@ module Gemstash
     end
 
     def auth?
-      !user.to_s.empty? && !password.to_s.empty?
+      !user.to_s.empty? || !password.to_s.empty?
     end
 
     # Utilized as the parent directory for cached gems
