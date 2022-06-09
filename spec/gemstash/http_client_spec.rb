@@ -22,20 +22,20 @@ RSpec.describe Gemstash::HTTPClient do
     @other_server.stop
   end
 
-  describe '#for' do
-    context 'when user:pass auth is in the upstream url' do
+  describe "#for" do
+    context "when user:pass auth is in the upstream url" do
       let(:upstream) { Gemstash::Upstream.new("https://username:password@localhost/") }
       subject { Gemstash::HTTPClient.for(upstream).client.headers }
       it { is_expected.to include("Authorization" => "Basic dXNlcm5hbWU6cGFzc3dvcmQ=") }
     end
 
-    context 'when api_key auth is in the upstream url' do
+    context "when api_key auth is in the upstream url" do
       let(:upstream) { Gemstash::Upstream.new("https://api_key@localhost/") }
       subject { Gemstash::HTTPClient.for(upstream).client.headers }
       it { is_expected.to include("Authorization" => "Basic YXBpX2tleTo=") }
     end
 
-    context 'when no auth is included in the upstream url' do
+    context "when no auth is included in the upstream url" do
       let(:upstream) { Gemstash::Upstream.new("https://localhost/") }
       subject { Gemstash::HTTPClient.for(upstream).client.headers }
       it { is_expected.to_not include("Authorization") }
