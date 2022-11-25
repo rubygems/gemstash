@@ -4,7 +4,7 @@
 
 Stashing private gems in your Gemstash server requires a bit of
 additional setup. If you haven’t read through the [Quickstart
-Guide](../readme.md#quickstart-guide), you should do that first. By the
+Guide](../../../#quickstart-guide), you should do that first. By the
 end of this guide, you will be able to interact with your Gemstash
 server to store and retrieve your private gems.
 
