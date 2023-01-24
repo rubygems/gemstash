@@ -17,7 +17,11 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true # 'bundle install' and cache
       - run: gem update --system
-        if: "${{ matrix.ruby == '2.6' || matrix.ruby == '2.5' || matrix.ruby == '2.4' || matrix.ruby == 'jruby-9.2' }}"
+        if: "${{ matrix.ruby == '2.6' }}"
+      - run: |
+          gem install rubygems-update -v "~> 3.3.26"
+          update_rubygems
+        if: "${{ matrix.ruby == '2.5' || matrix.ruby == '2.4' || matrix.ruby == 'jruby-9.2' }}"
       - name: increase ulimit
         run: ulimit -n 8192
       - name: Run Tests
