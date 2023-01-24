@@ -47,7 +47,7 @@ module Gemstash
       end
 
       def serve_versions
-        halt 403, "Not yet supported"
+        halt 404, "Not yet supported"
       end
 
       def serve_info(name)
