@@ -17,7 +17,7 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true # 'bundle install' and cache
       - run: gem update --system
-        if: "${{ matrix.ruby == 'jruby-9.4' }}"
+        if: "${{ matrix.ruby == '3.2' || matrix.ruby == 'jruby-9.4' }}"
       - name: increase ulimit
         run: ulimit -n 8192
       - name: Run Tests
