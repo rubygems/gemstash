@@ -11,3 +11,4 @@
 /lib/gemstash/man/
 .ruby-version
 gemfiles/Gemfile.ruby-head.lock
+.rspec_examples
