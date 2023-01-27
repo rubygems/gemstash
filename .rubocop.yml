@@ -2,6 +2,7 @@ inherit_from: .rubocop-bundler.yml
 require:
   - rubocop-performance
 AllCops:
+  NewCops: disable
   Exclude:
     - bin/**/*
     - tmp/**/*
@@ -9,3 +10,4 @@ AllCops:
     - gemfiles/**/*
   DisplayCopNames: true
   TargetRubyVersion: 2.7
+  SuggestExtensions: false
