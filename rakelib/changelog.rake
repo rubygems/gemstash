@@ -25,7 +25,7 @@ class Changelog
     return unless tags.include? Changelog.current_version
 
     print "Are you updating the 'master' CHANGELOG? [yes/no] "
-    abort("Please update lib/gemstash/version.rb with the new version first!") unless STDIN.gets.strip.casecmp("yes").zero?
+    abort("Please update lib/gemstash/version.rb with the new version first!") unless $stdin.gets.strip.casecmp("yes").zero?
     @master_update = true
   end
 
@@ -88,7 +88,7 @@ class Changelog
         puts "And store it at: #{token_path}"
         puts "Otherwise you might hit rate limits while running this"
         print "Continue without token? [yes/no] "
-        abort("Please create your token and retry") unless STDIN.gets.strip.casecmp("yes").zero?
+        abort("Please create your token and retry") unless $stdin.gets.strip.casecmp("yes").zero?
         options = {}
       end
 
@@ -178,7 +178,7 @@ class Changelog
     else
       puts "Cannot find GitHub link for author: #{commit.commit.author.name}"
       print "What is their GitHub username? "
-      username = STDIN.gets.strip
+      username = $stdin.gets.strip
       @author_links[commit.commit.author.name] = "[@#{username}](https://github.com/#{username})"
     end
   end

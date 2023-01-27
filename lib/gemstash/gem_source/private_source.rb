@@ -57,7 +57,7 @@ module Gemstash
       def serve_marshal(id)
         authorization.protect(self) do
           auth.check("fetch") if gemstash_env.config[:protected_fetch]
-          gem_full_name = id.sub(/\.gemspec\.rz\z/, "")
+          gem_full_name = id.delete_suffix(".gemspec.rz")
           gem = fetch_gem(gem_full_name)
           halt 404 unless gem.exist?(:spec)
           content_type "application/octet-stream"
@@ -72,7 +72,7 @@ module Gemstash
       def serve_gem(id)
         authorization.protect(self) do
           auth.check("fetch") if gemstash_env.config[:protected_fetch]
-          gem_full_name = id.sub(/\.gem\z/, "")
+          gem_full_name = id.delete_suffix(".gem")
           gem = fetch_gem(gem_full_name)
           content_type "application/octet-stream"
           gem.content(:gem)

@@ -24,7 +24,7 @@ module Gemstash
 
       unless path.to_s.empty?
         base = "#{base}/" unless base.end_with?("/")
-        path = path[1..-1] if path.to_s.start_with?("/")
+        path = path[1..] if path.to_s.start_with?("/")
       end
 
       params = "?#{params}" if !params.nil? && !params.empty?
