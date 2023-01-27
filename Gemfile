@@ -17,8 +17,8 @@ platform :jruby do
 end
 
 group :linting do
-  gem "rubocop", "= 0.67.2"
-  gem "rubocop-performance", "~> 1.1.0"
+  gem "rubocop", "~> 1.44"
+  gem "rubocop-performance", "~> 1.5"
 end
 
 gem "webrick" if RUBY_VERSION >= "3"
