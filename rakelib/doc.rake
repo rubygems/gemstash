@@ -42,7 +42,7 @@ class Doc
   end
 
   def root_dir
-    @root_dir ||= Pathname.new(::File.expand_path("../..", __FILE__))
+    @root_dir ||= Pathname.new(::File.expand_path("..", __dir__))
   end
 
   # Represents a single documentation file being converted

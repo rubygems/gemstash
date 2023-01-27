@@ -30,7 +30,7 @@ module Gemstash
           raise Gemstash::CLI::Error.new(@cli, "To remove individual permissions, you do not need --remove
 Instead just authorize with the new set of permissions")
         end
-        Gemstash::Authorization.remove(auth_key(false))
+        Gemstash::Authorization.remove(auth_key(allow_generate: false))
       end
 
       def save_authorization
@@ -46,7 +46,7 @@ Instead just authorize with the new set of permissions")
         Gemstash::Authorization.authorize(auth_key, permissions)
       end
 
-      def auth_key(allow_generate = true)
+      def auth_key(allow_generate: true)
         if @cli.options[:key]
           @cli.options[:key]
         elsif allow_generate

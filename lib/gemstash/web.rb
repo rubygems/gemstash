@@ -5,7 +5,7 @@ require "json"
 require "gemstash"
 
 module Gemstash
-  #:nodoc:
+  # :nodoc:
   class Web < Sinatra::Base
     ruby2_keywords def initialize(options = {})
       raise ArgumentError unless options.is_a?(Hash)

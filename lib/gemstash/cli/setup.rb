@@ -189,9 +189,9 @@ module Gemstash
         gemstash_env.reset
       end
 
-      def try(thing)
+      def try(thing, &block)
         @cli.say "Checking that the #{thing} is available"
-        with_new_config { yield }
+        with_new_config(&block)
       rescue StandardError => e
         say_error "Error checking #{thing}", e
         raise Gemstash::CLI::Error.new(@cli, "The #{thing} is not available")

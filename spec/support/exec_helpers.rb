@@ -73,9 +73,10 @@ module ExecHelpers
 
     def clear_ruby_env
       {
+        "BUNDLER_SETUP" => nil,
+        "GEM_PATH" => original_gem_path,
         "RUBYLIB" => nil,
-        "RUBYOPT" => nil,
-        "GEM_PATH" => original_gem_path
+        "RUBYOPT" => nil
       }
     end
 

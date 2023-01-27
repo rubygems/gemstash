@@ -94,6 +94,7 @@ module Gemstash
     include Gemstash::Env::Helper
     include Gemstash::Logging
     attr_reader :name, :folder
+
     VERSION = 1
 
     # If the storage engine detects a resource was originally saved from a newer
@@ -195,7 +196,7 @@ module Gemstash
     # @param props [Hash] the properties to add
     # @return [Gemstash::Resource] self for chaining purposes
     def update_properties(props)
-      load_properties(true)
+      load_properties(force: true)
 
       deep_merge = proc do |_, old_value, new_value|
         if old_value.is_a?(Hash) && new_value.is_a?(Hash)
@@ -276,7 +277,7 @@ module Gemstash
       @content[key] = read_file(content_filename(key))
     end
 
-    def load_properties(force = false)
+    def load_properties(force: false)
       return if @properties && !force
       return unless File.exist?(properties_filename)
 

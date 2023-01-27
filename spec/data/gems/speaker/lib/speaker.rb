@@ -3,7 +3,7 @@
 require "speaker/version"
 require "speaker/platform"
 
-#:nodoc:
+# :nodoc:
 module Speaker
   def self.usage
     warn "Usage: speaker [hi|bye]"
@@ -14,9 +14,10 @@ module Speaker
     usage if argv.size != 1
     phrases = []
 
-    if argv.first == "hi"
+    case argv.first
+    when "hi"
       phrases << "Hello world"
-    elsif argv.first == "bye"
+    when "bye"
       phrases << "Goodbye moon"
     else
       usage

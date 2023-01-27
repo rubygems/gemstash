@@ -18,9 +18,9 @@ you push your own private gems as well."
   spec.homepage      = "https://github.com/rubygems/gemstash"
   spec.license       = "MIT"
 
-  spec.files         = `git ls-files -z`.split("\x0").select {|f|
+  spec.files         = `git ls-files -z`.split("\x0").select do |f|
     f.match(/^(lib|exe|CHANGELOG|CODE_OF_CONDUCT|LICENSE)/)
-  }
+  end
   # we don't check in man pages, but we need to ship them because
   # we use them to generate the long-form help for each command.
   spec.files += Dir.glob("lib/gemstash/man/**/*")
@@ -29,13 +29,14 @@ you push your own private gems as well."
   spec.executables   = spec.files.grep(%r{^exe/}) {|f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.required_ruby_version = ">= 2.4"
+  spec.required_ruby_version = ">= 2.7"
 
   spec.add_runtime_dependency "activesupport", ">= 4.2", "< 6"
   spec.add_runtime_dependency "dalli", "~> 2.7"
   spec.add_runtime_dependency "faraday", "~> 0.9"
   spec.add_runtime_dependency "faraday_middleware", "~> 0.10"
   spec.add_runtime_dependency "lru_redux", "~> 1.1"
+  spec.add_runtime_dependency "psych", ">= 3.2.1"
   spec.add_runtime_dependency "puma", "~> 4.0"
   spec.add_runtime_dependency "sequel", "~> 5.0"
   spec.add_runtime_dependency "server_health_check-rack", "~> 0.1"

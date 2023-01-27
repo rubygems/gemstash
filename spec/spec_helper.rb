@@ -75,6 +75,7 @@ RSpec.configure do |config|
   # Tag examples with focus: true to run only those
   config.filter_run :focus
   config.run_all_when_everything_filtered = true
+  config.example_status_persistence_file_path = ".rspec_examples"
 
   config.include EnvHelpers
   config.include DBHelpers

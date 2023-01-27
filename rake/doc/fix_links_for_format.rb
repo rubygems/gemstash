@@ -69,7 +69,7 @@ class DocLinkUrl
     when "html"
       "#{full_path.sub(/\.md\z/, ".html")}#{heading}"
     when "man"
-      "gemstash help #{filename.sub(/\Agemstash-/, "")}"
+      "gemstash help #{filename.delete_prefix("gemstash-")}"
     else
       raise "Unknown format: #{FILTER.format}"
     end

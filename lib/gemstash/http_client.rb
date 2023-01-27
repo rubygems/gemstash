@@ -5,7 +5,7 @@ require "faraday"
 require "faraday_middleware"
 
 module Gemstash
-  #:nodoc:
+  # :nodoc:
   class WebError < StandardError
     attr_reader :code
 
@@ -15,14 +15,14 @@ module Gemstash
     end
   end
 
-  #:nodoc:
+  # :nodoc:
   class ConnectionError < WebError
     def initialize(message)
       super(message, 502) # Bad Gateway
     end
   end
 
-  #:nodoc:
+  # :nodoc:
   class HTTPClient
     extend Gemstash::Env::Helper
     include Gemstash::Logging
