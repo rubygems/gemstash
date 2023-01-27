@@ -2,8 +2,6 @@
 
 [![Build
 Status](https://github.com/rubygems/gemstash/actions/workflows/gemstash-ci.yml/badge.svg)](https://github.com/rubygems/gemstash/actions/workflows/gemstash-ci.yml/)
-[![Code
-Climate](https://codeclimate.com/github/rubygems/gemstash/badges/gpa.svg)](https://codeclimate.com/github/rubygems/gemstash)
 
 <p align="center"><img src="gemstash.png" /></p>
 
@@ -25,14 +23,8 @@ you might want to use Gemstash.
 Are you only using gems from https://rubygems.org, and don’t bundle the
 same gems frequently? Well, maybe you don’t need Gemstash… yet.
 
-<a href="https://rubytogether.org/"><img src="https://rubytogether.org/images/rubies.svg" width=200></a><br/>Gemstash
-is maintained by [Ruby Together](https://rubytogether.org/), a
-grassroots initiative committed to supporting the critical Ruby
-infrastructure you rely on. Contribute today [as an
-individual](https://rubytogether.org/developers) or even better, [as a
-company](https://rubytogether.org/companies), and ensure that Bundler,
-RubyGems, Gemstash, and other shared tooling is around for years to
-come.
+Gemstash is maintained by [Ruby Central](https://rubycentral.org/), as part of
+the critical Ruby infrastructure available to every Ruby developer.
 
 ## Quickstart Guide
 
