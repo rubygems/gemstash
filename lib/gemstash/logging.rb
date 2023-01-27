@@ -4,7 +4,7 @@ require "logger"
 require "puma/events"
 
 module Gemstash
-  #:nodoc:
+  # :nodoc:
   module Logging
     LEVELS = {
       debug: Logger::DEBUG,

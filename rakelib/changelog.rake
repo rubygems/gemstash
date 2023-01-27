@@ -37,7 +37,7 @@ class Changelog
     return if master_update?
 
     contents = File.read(changelog_file)
-    return unless contents =~ /^## master \(unreleased\)$/
+    return unless /^## master \(unreleased\)$/.match?(contents)
 
     contents.sub!(/^## master \(unreleased\)$/, "## #{current_version} (#{current_date})")
     File.write(changelog_file, contents)
@@ -194,7 +194,7 @@ class Changelog
 
   def self.current_version
     @current_version ||= begin
-      require_relative "../lib/gemstash/version.rb"
+      require_relative "../lib/gemstash/version"
 
       abort("Invalid version: #{Gemstash::VERSION}, instead use something like 1.1.0, or 1.1.0.pre.2") unless Gemstash::VERSION.match?(/\A\d+(\.\d+)*(\.pre\.\d+)?\z/)
 

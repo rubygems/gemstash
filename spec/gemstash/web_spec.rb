@@ -9,7 +9,7 @@ RSpec.describe Gemstash::Web do
   include Rack::Test::Methods
 
   let(:http_client_builder) do
-    #:nodoc:
+    # :nodoc:
     class StubHttpBuilder
       def for(server_url, timeout = 20)
         stubs = Faraday::Adapter::Test::Stubs.new do |stub|

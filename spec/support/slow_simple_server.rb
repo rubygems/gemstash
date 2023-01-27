@@ -10,7 +10,7 @@ class SlowSimpleServer < SimpleServer
     SimpleServer.servers << self
   end
 
-  #:nodoc:
+  # :nodoc:
   class SlowServlet < WEBrick::HTTPServlet::AbstractServlet
     def initialize(_, server)
       @simple_server = server

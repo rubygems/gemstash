@@ -94,6 +94,7 @@ module Gemstash
     include Gemstash::Env::Helper
     include Gemstash::Logging
     attr_reader :name, :folder
+
     VERSION = 1
 
     # If the storage engine detects a resource was originally saved from a newer

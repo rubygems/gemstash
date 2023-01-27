@@ -3,7 +3,7 @@
 require "speaker/version"
 require "speaker/platform"
 
-#:nodoc:
+# :nodoc:
 module Speaker
   def self.usage
     warn "Usage: speaker [hi|bye]"

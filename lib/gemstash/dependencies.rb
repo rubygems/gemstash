@@ -4,7 +4,7 @@ require "cgi"
 require "set"
 
 module Gemstash
-  #:nodoc:
+  # :nodoc:
   class Dependencies
     def self.for_private
       new(scope: "private", db_model: Gemstash::DB::Dependency)
@@ -24,7 +24,7 @@ module Gemstash
       Fetcher.new(gems, @scope, @http_client, @db_model).fetch
     end
 
-    #:nodoc:
+    # :nodoc:
     class Fetcher
       include Gemstash::Env::Helper
       include Gemstash::Logging

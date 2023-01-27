@@ -2,6 +2,6 @@
 
 require "example/version"
 
-#:nodoc:
+# :nodoc:
 module Example
 end
