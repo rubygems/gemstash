@@ -11,6 +11,8 @@ jobs:
         ruby: ["2.7", "3.0", "3.1", "3.2", "jruby-9.4"]
     steps:
       - uses: actions/checkout@v3
+      - run: rm Gemfile.lock
+        if: "${{ matrix.ruby != '3.2' }}"
       - name: Setup ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -25,4 +27,3 @@ jobs:
       - name: Run Integration Tests
         run: bundle exec rspec ./spec/integration_spec.rb
     timeout-minutes: 60
-
