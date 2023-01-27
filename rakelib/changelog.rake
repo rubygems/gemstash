@@ -14,7 +14,7 @@ class Changelog
 
   def run
     ensure_new_version_specified
-    update_master_version
+    update_main_version
     parse_changelog
     fetch_missing_pull_requests
     update_changelog
@@ -24,28 +24,28 @@ class Changelog
     tags = `git tag -l`
     return unless tags.include? Changelog.current_version
 
-    print "Are you updating the 'master' CHANGELOG? [yes/no] "
+    print "Are you updating the 'main' CHANGELOG? [yes/no] "
     abort("Please update lib/gemstash/version.rb with the new version first!") unless $stdin.gets.strip.casecmp("yes").zero?
-    @master_update = true
+    @main_update = true
   end
 
-  def master_update?
-    @master_update
+  def main_update?
+    @main_update
   end
 
-  def update_master_version
-    return if master_update?
+  def update_main_version
+    return if main_update?
 
     contents = File.read(changelog_file)
-    return unless /^## master \(unreleased\)$/.match?(contents)
+    return unless /^## main \(unreleased\)$/.match?(contents)
 
-    contents.sub!(/^## master \(unreleased\)$/, "## #{current_version} (#{current_date})")
+    contents.sub!(/^## main \(unreleased\)$/, "## #{current_version} (#{current_date})")
     File.write(changelog_file, contents)
   end
 
   def current_version
-    if master_update?
-      "master"
+    if main_update?
+      "main"
     else
       Changelog.current_version
     end
@@ -185,7 +185,7 @@ class Changelog
 
   def current_date
     @current_date ||=
-      if master_update?
+      if main_update?
         "unreleased"
       else
         Time.now.strftime("%Y-%m-%d")
