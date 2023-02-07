@@ -21,3 +21,7 @@ group :linting do
   gem "rubocop", "~> 1.44"
   gem "rubocop-performance", "~> 1.5"
 end
+
+group :test do
+  gem "mock_redis"
+end
