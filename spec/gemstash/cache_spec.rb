@@ -12,17 +12,17 @@ RSpec.describe Gemstash::Cache do
         allow(Redis).to receive(:new).and_return(mock_redis)
       end
 
-      let(:client) { Gemstash::RedisClient.new('redis://localhost:4242') }
+      let(:client) { Gemstash::RedisClient.new("redis://localhost:4242") }
       let(:cache) { Gemstash::Cache.new(client) }
-      let(:record) { Gemstash::DB::Authorization.insert_or_update('foobarbaz', 'push,fetch') }
+      let(:record) { Gemstash::DB::Authorization.insert_or_update("foobarbaz", "push,fetch") }
       let(:auth) { Gemstash::Authorization.new(record) }
 
       it "can set and get authorization" do
-         expect(cache.set_authorization('some-key', auth)).to be
-         result = cache.authorization('some-key')
-         expect(result.push?).to be_truthy
-         expect(result.yank?).to be_falsey
-         expect(result.fetch?).to be_truthy
+        expect(cache.set_authorization("some-key", auth)).to be
+        result = cache.authorization("some-key")
+        expect(result.push?).to be_truthy
+        expect(result.yank?).to be_falsey
+        expect(result.fetch?).to be_truthy
       end
     end
   end
