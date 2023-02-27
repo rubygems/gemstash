@@ -31,7 +31,7 @@ you push your own private gems as well."
 
   spec.required_ruby_version = ">= 2.7"
 
-  spec.add_runtime_dependency "activesupport", ">= 4.2", "< 6"
+  spec.add_runtime_dependency "activesupport", ">= 4.2", "< 8"
   spec.add_runtime_dependency "dalli", ">= 3.2.3", "< 4"
   spec.add_runtime_dependency "faraday", "~> 0.9"
   spec.add_runtime_dependency "faraday_middleware", "~> 0.10"
