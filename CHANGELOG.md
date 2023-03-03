@@ -1,3 +1,30 @@
+## Unreleased
+
+### Changes
+
+- Allow newer versions of the `activesupport` dependency ([#332](https://github.com/rubygems/gemstash/pull/332), [@kyrofa][])
+
+## 2.2.1 (2023-02-09)
+
+### Bugfixes
+
+- Add permitted classes to a `YAML.load` in cache ([#329](https://github.com/rubygems/gemstash/pull/329), [@SocalNick][])
+
+## 2.2.0 (2023-01-27)
+
+### Bugfixes
+
+- Respect auth set in upstream host uri ([#317](https://github.com/rubygems/gemstash/pull/317), [@jebentier][])
+- Change the response code for "/versions" from 403 to 404 ([#326](https://github.com/rubygems/gemstash/pull/326), [@hendric-dev][])
+
+### Changes
+
+- Support Ruby 3 ([#312](https://github.com/rubygems/gemstash/pull/312), [@tonytonyjan][])
+- Drop support for EOL Ruby versions 2.4, 2.5, 2.6 ([#328](https://github.com/rubygems/gemstash/pull/328), [@indirect][])
+- Update `dalli` dependency ([#324](https://github.com/rubygems/gemstash/pull/324), [@indirect][])
+
+Also thanks to: [@indirect][] and [@hsbt][] who fixed CI issues and lint warnings.
+
 ## 2.1.0 (2020-02-26)
 
 ### Bugfixes
@@ -235,3 +262,11 @@
   - Various fixes 2 ([#47](https://github.com/bundler/gemstash/pull/47), [@smellsblue](https://github.com/smellsblue))
   - Various fixes 3 ([#49](https://github.com/bundler/gemstash/pull/49), [@smellsblue](https://github.com/smellsblue))
   - Add Gemtash logo ([#50](https://github.com/bundler/gemstash/pull/50), [@jonathanrieta](https://github.com/jonathanrieta))
+
+[@SocalNick]:  https://github.com/SocalNick
+[@hendric-dev]: https://github.com/hendric-dev
+[@hsbt]: https://github.com/hsbt
+[@indirect]: https://github.com/indirect
+[@jebentier]: https://github.com/jebentier
+[@kyrofa]: https://github.com/kyrofa
+[@tonytonyjan]: https://github.com/tonytonyjan
