@@ -12,3 +12,4 @@
 /pkg/
 /spec/reports/
 /tmp/
+.rake_github_token
