@@ -1,7 +1,12 @@
 # frozen_string_literal: true
 
 require "logger"
-require "puma/events"
+
+begin
+  require "puma/log_writer" # Puma 6
+rescue LoadError
+  require "puma/events"
+end
 
 module Gemstash
   # :nodoc:
@@ -62,7 +67,9 @@ module Gemstash
     # Logger that looks like a stream, for Puma and Rack to log to.
     class StreamLogger
       def self.puma_events
-        Puma::Events.new(for_stdout, for_stderr)
+        # Puma 6 removed logging from Events and placed it in LogWriter
+        klass = Puma.const_defined?(:LogWriter) ? Puma::LogWriter : Puma::Events
+        klass.new(for_stdout, for_stderr)
       end
 
       def self.for_stdout
