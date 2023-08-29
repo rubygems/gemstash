@@ -13,7 +13,7 @@ gem "rspec", "~> 3.3"
 gem "webrick", "~> 1.6"
 
 platform :jruby do
-  gem "psych", "~> 4.0.6"
+  gem "psych"
 end
 
 group :linting do
