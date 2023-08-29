@@ -7,7 +7,7 @@ gem "aruba", ">= 0.14"
 gem "citrus", "~> 3.0"
 gem "octokit", "<= 4.22" # 4.22 secretly requires faraday >= 1.0
 gem "rack-test", "~> 2.1"
-gem "rake", "~> 12.3"
+gem "rake", "~> 13.0"
 gem "redis", "~> 3.3"
 gem "rspec", "~> 3.3"
 gem "webrick", "~> 1.6"
