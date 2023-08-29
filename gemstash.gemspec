@@ -41,7 +41,7 @@ you push your own private gems as well."
   spec.add_runtime_dependency "sequel", "~> 5.0"
   spec.add_runtime_dependency "server_health_check-rack", "~> 0.1"
   spec.add_runtime_dependency "sinatra", ">= 1.4", "< 4.0"
-  spec.add_runtime_dependency "thor", "~> 0.20"
+  spec.add_runtime_dependency "thor", ">= 0.20", "< 2.0"
 
   # Use Redis instead of memcached
   # spec.add_runtime_dependency "redis", "~> 3.3"
