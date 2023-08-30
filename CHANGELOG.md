@@ -1,3 +1,14 @@
+## 2.3.0 (2023-08-30)
+
+https://github.com/rubygems/gemstash/compare/v2.2.2...v2.3.0
+
+### Changes
+
+- Support Puma 6. ([#335](https://github.com/rubygems/gemstash/pull/335), [@MSP-Greg][])
+- Make UpstreamSource intermediate specs from upstream. ([#337](https://github.com/rubygems/gemstash/pull/337), [@tedgarb][])
+- Mention RubyCentral. ([#338](https://github.com/rubygems/gemstash/pull/338), [@adarsh][])
+- Configure Dependabot. ([#341](https://github.com/rubygems/gemstash/pull/341), [@olleolleolle][])
+
 ## 2.2.2 (2023-03-03)
 
 ### Changes
@@ -270,3 +281,7 @@ Also thanks to: [@indirect][] and [@hsbt][] who fixed CI issues and lint warning
 [@jebentier]: https://github.com/jebentier
 [@kyrofa]: https://github.com/kyrofa
 [@tonytonyjan]: https://github.com/tonytonyjan
+[@MSP-Greg]: https://github.com/MSP-Greg
+[@tedgarb]: https://github.com/tedgarb
+[@adarsh]: https://github.com/adarsh
+[@olleolleolle]: https://github.com/olleolleolle
