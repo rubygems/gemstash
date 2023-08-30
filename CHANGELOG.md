@@ -1,3 +1,7 @@
+## Unreleased
+
+- Reinstate Ruby Central in README. ([#353](https://github.com/rubygems/gemstash/pull/353), [@olleolleolle][])
+
 ## 2.3.0 (2023-08-30)
 
 https://github.com/rubygems/gemstash/compare/v2.2.2...v2.3.0
