@@ -21,14 +21,13 @@ you might want to use Gemstash.
 Are you only using gems from https://rubygems.org, and don’t bundle the
 same gems frequently? Well, maybe you don’t need Gemstash… yet.
 
-<a href="https://rubytogether.org/"><img src="https://rubytogether.org/images/rubies.svg" width=200></a><br/>Gemstash
-is maintained by [Ruby Together](https://rubytogether.org/), a
-grassroots initiative committed to supporting the critical Ruby
-infrastructure you rely on. Contribute today [as an
-individual](https://rubytogether.org/developers) or even better, [as a
-company](https://rubytogether.org/companies), and ensure that Bundler,
-RubyGems, Gemstash, and other shared tooling is around for years to
-come.
+<a href="https://rubycentral.org/"><img src="https://global.discourse-cdn.com/business7/uploads/rubycentral/original/1X/43afd1ed967a1b6e3040965db20af65b665744ec.png" width=200></a><br/>Gemstash
+is maintained by [Ruby Central](https://rubycentral.org/), a non-profit
+committed to supporting the critical Ruby infrastructure you rely on.
+Contribute today [as an individual, or even better, as a
+company](https://rubycentral.org/#/portal/signup), and ensure that
+Bundler, RubyGems, Gemstash, and other shared tooling is around for
+years to come.
 
 ## Quickstart Guide
 
