@@ -88,6 +88,10 @@ module Gemstash
 
       def sync=(_value); end
 
+      def sync
+        false
+      end
+
       def write(message)
         Gemstash::Logging.logger.add(@level, message)
       end
