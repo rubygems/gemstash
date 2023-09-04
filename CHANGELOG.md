@@ -1,6 +1,9 @@
 ## Unreleased
 
+### Fixes
+
 - Reinstate Ruby Central in README. ([#353](https://github.com/rubygems/gemstash/pull/353), [@olleolleolle][])
+- Implement Puma 5-required logger method `#sync` ([#355](https://github.com/rubygems/gemstash/pull/355), [@ball-hayden][])
 
 ## 2.3.0 (2023-08-30)
 
@@ -289,3 +292,4 @@ Also thanks to: [@indirect][] and [@hsbt][] who fixed CI issues and lint warning
 [@tedgarb]: https://github.com/tedgarb
 [@adarsh]: https://github.com/adarsh
 [@olleolleolle]: https://github.com/olleolleolle
+[@ball-hayden]: https://github.com/ball-hayden
