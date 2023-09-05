@@ -8,7 +8,7 @@ gem "citrus", "~> 3.0"
 gem "octokit"
 gem "rack-test", "~> 2.1"
 gem "rake", "~> 13.0"
-gem "redis", "~> 3.3"
+gem "redis", "~> 5.0"
 gem "rspec", "~> 3.3"
 gem "webrick", "~> 1.6"
 
