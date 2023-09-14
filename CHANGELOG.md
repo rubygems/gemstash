@@ -1,3 +1,11 @@
+## Unreleased
+
+https://github.com/rubygems/gemstash/compare/v2.3.1...main
+
+### Fixes
+
+- Require a now-needed file for Puma 6. Thanks, [@ktreis][]! ([#362](https://github.com/rubygems/gemstash/pull/362), [@olleolleolle][])
+
 ## 2.3.1 (2023-09-05)
 
 https://github.com/rubygems/gemstash/compare/v2.3.0...v2.3.1
@@ -295,3 +303,4 @@ Also thanks to: [@indirect][] and [@hsbt][] who fixed CI issues and lint warning
 [@adarsh]: https://github.com/adarsh
 [@olleolleolle]: https://github.com/olleolleolle
 [@ball-hayden]: https://github.com/ball-hayden
+[@ktreis]: https://github.com/ktreis
