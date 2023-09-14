@@ -3,6 +3,7 @@
 require "logger"
 
 begin
+  require "puma/detect"
   require "puma/log_writer" # Puma 6
 rescue LoadError
   require "puma/events"
