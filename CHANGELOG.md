@@ -1,6 +1,6 @@
-## Unreleased
+## 2.3.2 (2023-09-14)
 
-https://github.com/rubygems/gemstash/compare/v2.3.1...main
+https://github.com/rubygems/gemstash/compare/v2.3.1...v2.3.2
 
 ### Fixes
 
