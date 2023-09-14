@@ -14,7 +14,7 @@ end
 task spec: :rubocop
 task default: :spec
 
-desc "Update ChangeLog based on commits in master"
+desc "Update ChangeLog based on commits in main"
 task :changelog do
   Changelog.new.run
 end
