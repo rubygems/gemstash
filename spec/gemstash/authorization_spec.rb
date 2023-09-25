@@ -7,6 +7,7 @@ RSpec.describe Gemstash::Authorization do
     context "with an existing authoriation" do
       before do
         Gemstash::Authorization.authorize("abc", "all")
+        Gemstash::Authorization.authorize("def", "all", "named-authorization")
       end
 
       it "removes the authorization" do
@@ -15,6 +16,14 @@ RSpec.describe Gemstash::Authorization do
         Gemstash::Authorization.remove("abc")
         expect(Gemstash::Authorization["abc"]).to be_nil
         expect(the_log).to include("Authorization 'abc' with access to 'all' removed")
+      end
+
+      it "removes the named authorization" do
+        # Fetch it first so caching invalidation is tested
+        expect(Gemstash::Authorization["def"]).to be
+        Gemstash::Authorization.remove("def")
+        expect(Gemstash::Authorization["def"]).to be_nil
+        expect(the_log).to include("Authorization 'def' with access to 'all' removed")
       end
     end
 
@@ -56,6 +65,16 @@ RSpec.describe Gemstash::Authorization do
       end
     end
 
+    context "duplicate name" do
+      before do
+        Gemstash::Authorization.authorize("abc", "all", "test auth")
+      end
+
+      it "raises an error" do
+        expect { Gemstash::Authorization.authorize("def", "all", "test auth") }.to raise_error(Sequel::UniqueConstraintViolation)
+      end
+    end
+
     context "valid authorization key and permissions" do
       it "inserts or updates the database" do
         Gemstash::Authorization.authorize("abc", "all")
@@ -66,6 +85,25 @@ RSpec.describe Gemstash::Authorization do
         expect(Gemstash::Authorization["abc"].push?).to be_truthy
         expect(Gemstash::Authorization["abc"].yank?).to be_truthy
         expect(the_log).to include("Authorization 'abc' updated with access to 'push,yank'")
+      end
+
+      it "supports naming the authorization" do
+        expect(Gemstash::Authorization["def"]).to be_nil
+        Gemstash::Authorization.authorize("abc", "all", "test auth")
+        authorization = Gemstash::Authorization["abc"]
+        expect(authorization.all?).to be_truthy
+        expect(authorization.name).to eq "test auth"
+        expect(the_log).to include("Authorization 'abc' updated with access to 'all'")
+      end
+
+      it "supports naming the authorization in an update" do
+        expect(Gemstash::Authorization["def"]).to be_nil
+        Gemstash::Authorization.authorize("abc", "all")
+        authorization = Gemstash::Authorization["abc"]
+        expect(authorization.all?).to be_truthy
+        expect(authorization.name).to be_nil
+        Gemstash::Authorization.authorize("abc", "all", "test auth")
+        expect(Gemstash::Authorization["abc"].name).to eq "test auth"
       end
     end
   end
