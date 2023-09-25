@@ -58,6 +58,19 @@ RSpec.describe Gemstash::CLI::Authorize do
     end
   end
 
+  context "authorizing with a name without specifying the key" do
+    let(:cli_options) { { :name => "test auth" } }
+
+    it "saves a new key with the given name" do
+      expect(SecureRandom).to receive(:hex).and_return("new-auth-key")
+      Gemstash::CLI::Authorize.new(cli).run
+      expect(@said).to include("new-auth-key")
+      authorization = Gemstash::Authorization["new-auth-key"]
+      expect(authorization.all?).to be_truthy
+      expect(authorization.name).to eq "test auth"
+    end
+  end
+
   context "authorizing without specifying the key and with permissions" do
     it "outputs the new key and authorizes for the given permissions" do
       expect(SecureRandom).to receive(:hex).and_return("new-auth-key")
@@ -103,6 +116,13 @@ RSpec.describe Gemstash::CLI::Authorize do
       expect(auth.push?).to be_truthy
       expect(auth.yank?).to be_truthy
     end
+
+    it "updates the name" do
+      cli_options[:name] = "test auth"
+      Gemstash::CLI::Authorize.new(cli).run
+      auth = Gemstash::Authorization["auth-key"]
+      expect(auth.name).to eq "test auth"
+    end
   end
 
   context "with the --remove option" do
@@ -115,6 +135,18 @@ RSpec.describe Gemstash::CLI::Authorize do
     it "removes the authorization" do
       Gemstash::CLI::Authorize.new(cli).run
       expect(Gemstash::Authorization["auth-key"]).to be_nil
+    end
+
+    it "combined with --list results in an error" do
+      cli_options[:list] = true
+      expect { Gemstash::CLI::Authorize.new(cli).run }.to raise_error(Gemstash::CLI::Error)
+      expect(Gemstash::Authorization["auth-key"]).to be # Auth was not actually removed
+    end
+
+    it "combined with --name results in an error" do
+      cli_options[:name] = "test auth"
+      expect { Gemstash::CLI::Authorize.new(cli).run }.to raise_error(Gemstash::CLI::Error)
+      expect(Gemstash::Authorization["auth-key"]).to be # Auth was not actually removed
     end
   end
 
@@ -145,6 +177,73 @@ RSpec.describe Gemstash::CLI::Authorize do
     let(:cli_options) { { :remove => true } }
 
     it "gives the user an error" do
+      expect { Gemstash::CLI::Authorize.new(cli).run }.to raise_error(Gemstash::CLI::Error)
+    end
+  end
+
+  context "with the --list option" do
+    let(:cli_options) { { :list => true } }
+
+    it "lists un-named authorizations" do
+      Gemstash::Authorization.authorize("auth-key-all", "all")
+      Gemstash::Authorization.authorize("auth-key-push", %w[push])
+      Gemstash::Authorization.authorize("auth-key-yank", %w[yank])
+      Gemstash::Authorization.authorize("auth-key-fetch", %w[fetch])
+
+      Gemstash::CLI::Authorize.new(cli).run
+      expect(@said).to match(/auth-key-all.*all/)
+      expect(@said).to match(/auth-key-push.*push/)
+      expect(@said).to match(/auth-key-yank.*yank/)
+      expect(@said).to match(/auth-key-fetch.*fetch/)
+    end
+
+    it "lists named authorizations" do
+      Gemstash::Authorization.authorize("auth-key-all", "all", "auth all")
+      Gemstash::Authorization.authorize("auth-key-push", %w[push], "auth push")
+      Gemstash::Authorization.authorize("auth-key-yank", %w[yank], "auth yank")
+      Gemstash::Authorization.authorize("auth-key-fetch", %w[fetch], "auth fetch")
+
+      Gemstash::CLI::Authorize.new(cli).run
+      expect(@said).to match(/auth all.*auth-key-all.*all/)
+      expect(@said).to match(/auth push.*auth-key-push.*push/)
+      expect(@said).to match(/auth yank.*auth-key-yank.*yank/)
+      expect(@said).to match(/auth fetch.*auth-key-fetch.*fetch/)
+    end
+
+    it "lists specific authorization by name" do
+      Gemstash::Authorization.authorize("auth-key-all", "all", "auth all")
+      Gemstash::Authorization.authorize("auth-key-push", %w[push], "auth push")
+      cli_options[:name] = "auth push"
+
+      Gemstash::CLI::Authorize.new(cli).run
+      expect(@said).not_to match(/auth all.*auth-key-all.*all/)
+      expect(@said).to match(/auth push.*auth-key-push.*push/)
+    end
+
+    it "lists specific authorization by key" do
+      Gemstash::Authorization.authorize("auth-key-all", "all", "auth all")
+      Gemstash::Authorization.authorize("auth-key-push", %w[push], "auth push")
+      cli_options[:key] = "auth-key-push"
+
+      Gemstash::CLI::Authorize.new(cli).run
+      expect(@said).not_to match(/auth all.*auth-key-all.*all/)
+      expect(@said).to match(/auth push.*auth-key-push.*push/)
+    end
+
+    it "errors when auth is specified by both name and key" do
+      Gemstash::Authorization.authorize("auth-key-all", "all", "auth all")
+      Gemstash::Authorization.authorize("auth-key-push", %w[push], "auth push")
+      cli_options[:name] = "auth push"
+      cli_options[:key] = "auth-key-push"
+
+      expect { Gemstash::CLI::Authorize.new(cli).run }.to raise_error(Gemstash::CLI::Error)
+    end
+
+    it "handles missing authorization" do
+      Gemstash::Authorization.authorize("auth-key-all", "all", "auth all")
+      Gemstash::Authorization.authorize("auth-key-push", %w[push], "auth push")
+      cli_options[:name] = "missing name"
+
       expect { Gemstash::CLI::Authorize.new(cli).run }.to raise_error(Gemstash::CLI::Error)
     end
   end
