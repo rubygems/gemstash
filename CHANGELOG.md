@@ -1,3 +1,7 @@
+### Changes
+
+  - Support naming and listing authorizations ([#365](https://github.com/rubygems/gemstash/pull/365), [@kyrofa][])
+
 ## 2.3.2 (2023-09-14)
 
 https://github.com/rubygems/gemstash/compare/v2.3.1...v2.3.2
