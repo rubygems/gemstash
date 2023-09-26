@@ -239,7 +239,7 @@ RSpec.describe Gemstash::CLI::Authorize do
       expect { Gemstash::CLI::Authorize.new(cli).run }.to raise_error(Gemstash::CLI::Error)
     end
 
-    it "handles missing authorization" do
+    it "raises error when authorization is missing" do
       Gemstash::Authorization.authorize("auth-key-all", "all", "auth all")
       Gemstash::Authorization.authorize("auth-key-push", %w[push], "auth push")
       cli_options[:name] = "missing name"
