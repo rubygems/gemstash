@@ -1,61 +1,56 @@
+## 2.4.0 (2023-09-27)
+
 ### Changes
 
-  - Support naming and listing authorizations ([#365](https://github.com/rubygems/gemstash/pull/365), [@kyrofa][])
+  - Support naming and listing authorizations ([#365](https://github.com/rubygems/gemstash/pull/365), [@kyrofa](https://github.com/kyrofa))
 
 ## 2.3.2 (2023-09-14)
 
-https://github.com/rubygems/gemstash/compare/v2.3.1...v2.3.2
-
 ### Fixes
 
-- Require a now-needed file for Puma 6. Thanks, [@ktreis][]! ([#362](https://github.com/rubygems/gemstash/pull/362), [@olleolleolle][])
+  - Require a now-needed file for Puma 6. Thanks, [@ktreis][]! ([#362](https://github.com/rubygems/gemstash/pull/362), [@olleolleolle](https://github.com/olleolleolle))
 
 ## 2.3.1 (2023-09-05)
 
-https://github.com/rubygems/gemstash/compare/v2.3.0...v2.3.1
-
 ### Fixes
 
-- Reinstate Ruby Central in README. ([#353](https://github.com/rubygems/gemstash/pull/353), [@olleolleolle][])
-- Implement Puma 5-required logger method `#sync` ([#355](https://github.com/rubygems/gemstash/pull/355), [@ball-hayden][])
+  - Reinstate Ruby Central in README. ([#353](https://github.com/rubygems/gemstash/pull/353), [@olleolleolle](https://github.com/olleolleolle))
+  - Implement Puma 5-required logger method `#sync` ([#355](https://github.com/rubygems/gemstash/pull/355), [@ball-hayden](https://github.com/ball-hayden))
 
 ## 2.3.0 (2023-08-30)
 
-https://github.com/rubygems/gemstash/compare/v2.2.2...v2.3.0
-
 ### Changes
 
-- Support Puma 6. ([#335](https://github.com/rubygems/gemstash/pull/335), [@MSP-Greg][])
-- Make UpstreamSource intermediate specs from upstream. ([#337](https://github.com/rubygems/gemstash/pull/337), [@tedgarb][])
-- Mention RubyCentral. ([#338](https://github.com/rubygems/gemstash/pull/338), [@adarsh][])
-- Configure Dependabot. ([#341](https://github.com/rubygems/gemstash/pull/341), [@olleolleolle][])
+  - Support Puma 6. ([#335](https://github.com/rubygems/gemstash/pull/335), [@MSP-Greg](https://github.com/MSP-Greg))
+  - Make UpstreamSource intermediate specs from upstream. ([#337](https://github.com/rubygems/gemstash/pull/337), [@tedgarb](https://github.com/tedgarb))
+  - Mention RubyCentral. ([#338](https://github.com/rubygems/gemstash/pull/338), [@adarsh](https://github.com/adarsh))
+  - Configure Dependabot. ([#341](https://github.com/rubygems/gemstash/pull/341), [@olleolleolle](https://github.com/olleolleolle))
 
 ## 2.2.2 (2023-03-03)
 
 ### Changes
 
-- Allow newer versions of the `activesupport` dependency ([#332](https://github.com/rubygems/gemstash/pull/332), [@kyrofa][])
+  - Allow newer versions of the `activesupport` dependency ([#332](https://github.com/rubygems/gemstash/pull/332), [@kyrofa](https://github.com/kyrofa))
 
 ## 2.2.1 (2023-02-09)
 
 ### Bugfixes
 
-- Add permitted classes to a `YAML.load` in cache ([#329](https://github.com/rubygems/gemstash/pull/329), [@SocalNick][])
+  - Add permitted classes to a `YAML.load` in cache ([#329](https://github.com/rubygems/gemstash/pull/329), [@SocalNick](https://github.com/SocialNick))
 
 ## 2.2.0 (2023-01-27)
 
 ### Bugfixes
 
-- Respect auth set in upstream host uri ([#317](https://github.com/rubygems/gemstash/pull/317), [@jebentier][])
-- Change the response code for "/versions" from 403 to 404 ([#326](https://github.com/rubygems/gemstash/pull/326), [@hendric-dev][])
+  - Respect auth set in upstream host uri ([#317](https://github.com/rubygems/gemstash/pull/317), [@jebentier](https://github.com/jbentier))
+  - Change the response code for "/versions" from 403 to 404 ([#326](https://github.com/rubygems/gemstash/pull/326), [@hendric-dev](https://github.com/hendric-dev))
 
 ### Changes
 
-- Support Ruby 3 ([#312](https://github.com/rubygems/gemstash/pull/312), [@tonytonyjan][])
-- Drop support for EOL Ruby versions 2.4, 2.5, 2.6 ([#328](https://github.com/rubygems/gemstash/pull/328), [@indirect][])
-- Update `dalli` dependency ([#324](https://github.com/rubygems/gemstash/pull/324), [@indirect][])
-
-Also thanks to: [@indirect][] and [@hsbt][] who fixed CI issues and lint warnings.
+  - Support Ruby 3 ([#312](https://github.com/rubygems/gemstash/pull/312), [@tonytonyjan](https://github.com/tonytonyjan))
+  - Drop support for EOL Ruby versions 2.4, 2.5, 2.6 ([#328](https://github.com/rubygems/gemstash/pull/328), [@indirect](https://github.com/indirect))
+  - Update `dalli` dependency ([#324](https://github.com/rubygems/gemstash/pull/324), [@indirect](https://github.com/indirect))
+  - Also thanks to: [@indirect][] and [@hsbt][] who fixed CI issues and lint warnings.
 
 ## 2.1.0 (2020-02-26)
 
@@ -294,17 +289,3 @@ Also thanks to: [@indirect][] and [@hsbt][] who fixed CI issues and lint warning
   - Various fixes 2 ([#47](https://github.com/bundler/gemstash/pull/47), [@smellsblue](https://github.com/smellsblue))
   - Various fixes 3 ([#49](https://github.com/bundler/gemstash/pull/49), [@smellsblue](https://github.com/smellsblue))
   - Add Gemtash logo ([#50](https://github.com/bundler/gemstash/pull/50), [@jonathanrieta](https://github.com/jonathanrieta))
-
-[@SocalNick]:  https://github.com/SocalNick
-[@hendric-dev]: https://github.com/hendric-dev
-[@hsbt]: https://github.com/hsbt
-[@indirect]: https://github.com/indirect
-[@jebentier]: https://github.com/jebentier
-[@kyrofa]: https://github.com/kyrofa
-[@tonytonyjan]: https://github.com/tonytonyjan
-[@MSP-Greg]: https://github.com/MSP-Greg
-[@tedgarb]: https://github.com/tedgarb
-[@adarsh]: https://github.com/adarsh
-[@olleolleolle]: https://github.com/olleolleolle
-[@ball-hayden]: https://github.com/ball-hayden
-[@ktreis]: https://github.com/ktreis
