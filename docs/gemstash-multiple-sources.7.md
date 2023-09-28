@@ -61,17 +61,18 @@ you want. The `/upstream` prefix tells Gemstash to use a gem source
 other than the default source. You can now bundle with the additional
 source.
 
-Notice that the third source doesn't need to be escaped.
-This is because the `https://` is used by default when no scheme is set,
-and the source URL does not contain any chars that need to be escaped.
+Notice that the third source doesn’t need to be escaped. This is because
+the `https://` is used by default when no scheme is set, and the source
+URL does not contain any characters that need to be escaped.
 
 ## Authentication with Multiple Sources
 
-You can use basic authentication or API keys on sources directly in Gemfile
-or using ENV variables on the Gemstash instance.
+You can use basic authentication or API keys on sources directly in
+Gemfile or using ENV variables on the Gemstash instance.
 
 Example `Gemfile`:
-```ruby
+
+``` ruby
 # ./Gemfile
 require "cgi"
 source "http://localhost:9292"
@@ -85,10 +86,10 @@ source "http://localhost:9292/upstream/#{CGI.escape("api_key@my-other.gem-source
 end
 ```
 
-If you set `GEMSTASH_<HOST>` ENV variable with your authentication information,
-you can omit it from the `Gemfile`:
+If you set `GEMSTASH_<HOST>` ENV variable with your authentication
+information, you can omit it from the `Gemfile`:
 
-```ruby
+``` ruby
 # ./Gemfile
 source "http://localhost:9292"
 
@@ -99,15 +100,16 @@ end
 
 And run the Gemstash with the credentials set in an ENV variable:
 
-```bash
+``` bash
 GEMSTASH_MY__GEM___SOURCE__LOCAL=user:password gemstash start --no-daemonize --config-file config.yml.erb
 ```
 
 The name of the ENV variable is the uppercase version of the host name,
-with all `.` characters replaced with `__`, all `-` with `___` and a `GEMSTASH_` prefix 
-(it uses the same syntax as [Bundler](https://bundler.io/v2.4/man/bundle-config.1.html#CREDENTIALS-FOR-GEM-SOURCES)).
+with all `.` characters replaced with `__`, all `-` with `___` and a
+`GEMSTASH_` prefix (it uses the same syntax as
+[Bundler](https://bundler.io/v2.4/man/bundle-config.1.html#CREDENTIALS-FOR-GEM-SOURCES)).
 
-Example: `my.gem-source.local` => `GEMSTASH_MY__GEM___SOURCE__LOCAL`
+Example: `my.gem-source.local` =\> `GEMSTASH_MY__GEM___SOURCE__LOCAL`
 
 ## Redirecting
 
