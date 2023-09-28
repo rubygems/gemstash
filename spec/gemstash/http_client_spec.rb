@@ -29,8 +29,30 @@ RSpec.describe Gemstash::HTTPClient do
       it { is_expected.to include("Authorization" => "Basic dXNlcm5hbWU6cGFzc3dvcmQ=") }
     end
 
+    context "when user:pass auth is set by ENV variable" do
+      before do
+        allow(ENV).to receive(:[]).and_call_original
+        allow(ENV).to receive(:[]).with("GEMSTASH_LOCALHOST").and_return("username:password")
+      end
+
+      let(:upstream) { Gemstash::Upstream.new("https://localhost/") }
+      subject { Gemstash::HTTPClient.for(upstream).client.headers }
+      it { is_expected.to include("Authorization" => "Basic dXNlcm5hbWU6cGFzc3dvcmQ=") }
+    end
+
     context "when api_key auth is in the upstream url" do
       let(:upstream) { Gemstash::Upstream.new("https://api_key@localhost/") }
+      subject { Gemstash::HTTPClient.for(upstream).client.headers }
+      it { is_expected.to include("Authorization" => "Basic YXBpX2tleTo=") }
+    end
+
+    context "when api_key auth is set by ENV variable" do
+      before do
+        allow(ENV).to receive(:[]).and_call_original
+        allow(ENV).to receive(:[]).with("GEMSTASH_LOCALHOST").and_return("api_key")
+      end
+
+      let(:upstream) { Gemstash::Upstream.new("https://localhost/") }
       subject { Gemstash::HTTPClient.for(upstream).client.headers }
       it { is_expected.to include("Authorization" => "Basic YXBpX2tleTo=") }
     end
