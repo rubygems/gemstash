@@ -23,6 +23,16 @@ RSpec.describe Gemstash::Upstream do
     expect(upstream_uri.password).to be_nil
   end
 
+  it "uses HTTPS schema by default" do
+    upstream_uri = Gemstash::Upstream.new("rubygems.org")
+    expect(upstream_uri.to_s).to eq("https://rubygems.org")
+    expect(upstream_uri.host).to eq("rubygems.org")
+    expect(upstream_uri.scheme).to eq("https")
+    expect(upstream_uri.url("gems")).to eq("https://rubygems.org/gems")
+    expect(upstream_uri.user).to be_nil
+    expect(upstream_uri.password).to be_nil
+  end
+
   it "supports user:pass url auth in the uri" do
     upstream_uri = Gemstash::Upstream.new("https://myuser:mypassword@rubygems.org/")
     expect(upstream_uri.user).to eq("myuser")
@@ -55,12 +65,6 @@ RSpec.describe Gemstash::Upstream do
     expect(upstream_uri.url("gems", "key=value")).to eq("https://rubygems.org/gems?key=value")
   end
 
-  it "fails if the uri is not valid" do
-    expect { Gemstash::Upstream.new("something_that_is_not_an_uri") }.to raise_error(
-      /URL 'something_that_is_not_an_uri' is not valid/
-    )
-  end
-
   it "has a nil user agent if not provided" do
     expect(Gemstash::Upstream.new("https://rubygems.org/").user_agent).to be_nil
   end
@@ -68,6 +72,36 @@ RSpec.describe Gemstash::Upstream do
   it "supports getting user agent" do
     expect(Gemstash::Upstream.new("https://rubygems.org/",
                                   user_agent: "my_user_agent").user_agent).to eq("my_user_agent")
+  end
+
+  context "with ENV variables for upstream authentication" do
+    context "with user and password" do
+      before do
+        allow(ENV).to receive(:[]).and_call_original
+        allow(ENV).to receive(:[]).with("GEMSTASH_RUBYGEMS__ORG").and_return("myuser:mypassword")
+      end
+
+      it "users user:pass for auth" do
+        upstream_uri = Gemstash::Upstream.new("https://rubygems.org/")
+        expect(upstream_uri.user).to eq("myuser")
+        expect(upstream_uri.password).to eq("mypassword")
+        expect(upstream_uri.auth?).to be_truthy
+      end
+    end
+
+    context "with api key" do
+      before do
+        allow(ENV).to receive(:[]).and_call_original
+        allow(ENV).to receive(:[]).with("GEMSTASH_RUBYGEMS__ORG").and_return("api_key")
+      end
+
+      it "uses api_key for auth" do
+        upstream_uri = Gemstash::Upstream.new("https://rubygems.org/")
+        expect(upstream_uri.user).to eq("api_key")
+        expect(upstream_uri.password).to be_nil
+        expect(upstream_uri.auth?).to be_truthy
+      end
+    end
   end
 
   describe ".url" do

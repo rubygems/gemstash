@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add support for upstream auth with ENV variables ([#339](https://github.com/rubygems/gemstash/pull/339), [@CiTroNaK](https://github.com/CiTroNaK))
+
 ## 2.4.0 (2023-09-27)
 
 ### Changes
