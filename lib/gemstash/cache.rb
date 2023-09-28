@@ -97,7 +97,7 @@ module Gemstash
 
     def get(key)
       val = @cache.get(key)
-      YAML.load(val) unless val.nil?
+      YAML.load(val, permitted_classes: [Gemstash::Authorization, Set]) unless val.nil?
     end
 
     def get_multi(keys)

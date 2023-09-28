@@ -14,7 +14,7 @@ class Changelog
 
   def run
     ensure_new_version_specified
-    update_master_version
+    update_main_version
     parse_changelog
     fetch_missing_pull_requests
     update_changelog
@@ -24,28 +24,28 @@ class Changelog
     tags = `git tag -l`
     return unless tags.include? Changelog.current_version
 
-    print "Are you updating the 'master' CHANGELOG? [yes/no] "
-    abort("Please update lib/gemstash/version.rb with the new version first!") unless STDIN.gets.strip.casecmp("yes").zero?
-    @master_update = true
+    print "Are you updating the 'main' CHANGELOG? [yes/no] "
+    abort("Please update lib/gemstash/version.rb with the new version first!") unless $stdin.gets.strip.casecmp("yes").zero?
+    @main_update = true
   end
 
-  def master_update?
-    @master_update
+  def main_update?
+    @main_update
   end
 
-  def update_master_version
-    return if master_update?
+  def update_main_version
+    return if main_update?
 
     contents = File.read(changelog_file)
-    return unless contents =~ /^## master \(unreleased\)$/
+    return unless /^## main \(unreleased\)$/.match?(contents)
 
-    contents.sub!(/^## master \(unreleased\)$/, "## #{current_version} (#{current_date})")
+    contents.sub!(/^## main \(unreleased\)$/, "## #{current_version} (#{current_date})")
     File.write(changelog_file, contents)
   end
 
   def current_version
-    if master_update?
-      "master"
+    if main_update?
+      "main"
     else
       Changelog.current_version
     end
@@ -88,7 +88,7 @@ class Changelog
         puts "And store it at: #{token_path}"
         puts "Otherwise you might hit rate limits while running this"
         print "Continue without token? [yes/no] "
-        abort("Please create your token and retry") unless STDIN.gets.strip.casecmp("yes").zero?
+        abort("Please create your token and retry") unless $stdin.gets.strip.casecmp("yes").zero?
         options = {}
       end
 
@@ -178,14 +178,14 @@ class Changelog
     else
       puts "Cannot find GitHub link for author: #{commit.commit.author.name}"
       print "What is their GitHub username? "
-      username = STDIN.gets.strip
+      username = $stdin.gets.strip
       @author_links[commit.commit.author.name] = "[@#{username}](https://github.com/#{username})"
     end
   end
 
   def current_date
     @current_date ||=
-      if master_update?
+      if main_update?
         "unreleased"
       else
         Time.now.strftime("%Y-%m-%d")
@@ -194,7 +194,7 @@ class Changelog
 
   def self.current_version
     @current_version ||= begin
-      require_relative "../lib/gemstash/version.rb"
+      require_relative "../lib/gemstash/version"
 
       abort("Invalid version: #{Gemstash::VERSION}, instead use something like 1.1.0, or 1.1.0.pre.2") unless Gemstash::VERSION.match?(/\A\d+(\.\d+)*(\.pre\.\d+)?\z/)
 

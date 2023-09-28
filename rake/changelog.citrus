@@ -140,7 +140,7 @@ grammar Changelog::Grammar
   end
 
   rule author
-    ("[@" username:(/\w+/) "](" github_url ")") {
+    ("[@" username:(/[a-z][a-z0-9-]*/i) "](" github_url ")") {
       def username
         capture(:username).value
       end
@@ -152,6 +152,6 @@ grammar Changelog::Grammar
   end
 
   rule github_url
-    "https://github.com" path:(/\/\w*/)*
+    "https://github.com" path:(/\/[a-z0-9-]*/i)*
   end
 end

@@ -5,7 +5,7 @@ require "faraday"
 require "faraday_middleware"
 
 module Gemstash
-  #:nodoc:
+  # :nodoc:
   class WebError < StandardError
     attr_reader :code
 
@@ -15,14 +15,14 @@ module Gemstash
     end
   end
 
-  #:nodoc:
+  # :nodoc:
   class ConnectionError < WebError
     def initialize(message)
       super(message, 502) # Bad Gateway
     end
   end
 
-  #:nodoc:
+  # :nodoc:
   class HTTPClient
     extend Gemstash::Env::Helper
     include Gemstash::Logging
@@ -35,11 +35,16 @@ module Gemstash
         config.adapter :net_http
         config.options.timeout = gemstash_env.config[:fetch_timeout]
       end
+
+      client.basic_auth(upstream.user, upstream.password) if upstream.auth?
+
       user_agent = "#{upstream.user_agent} " unless upstream.user_agent.to_s.empty?
       user_agent = user_agent.to_s + DEFAULT_USER_AGENT
 
       new(client, user_agent: user_agent)
     end
+
+    attr_reader :client
 
     def initialize(client = nil, user_agent: nil)
       @client = client

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-#:nodoc:
+# :nodoc:
 module LogHelpers
   def the_log
     # Close the logger so it flushes the content

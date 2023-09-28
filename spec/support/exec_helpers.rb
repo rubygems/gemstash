@@ -29,7 +29,7 @@ module ExecHelpers
     end
 
     def exec
-      @output, @status = Open3.capture2e(patched_env, command, *args, chdir: dir)
+      @output, @status = Open3.capture2(patched_env, command, *args, chdir: dir)
     end
 
     def successful?
@@ -73,9 +73,10 @@ module ExecHelpers
 
     def clear_ruby_env
       {
+        "BUNDLER_SETUP" => nil,
+        "GEM_PATH" => original_gem_path,
         "RUBYLIB" => nil,
-        "RUBYOPT" => nil,
-        "GEM_PATH" => original_gem_path
+        "RUBYOPT" => nil
       }
     end
 

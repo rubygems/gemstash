@@ -9,8 +9,7 @@ RSpec.describe Gemstash::Web do
   include Rack::Test::Methods
 
   let(:http_client_builder) do
-    #:nodoc:
-    class StubHttpBuilder
+    Class.new do
       def for(server_url, timeout = 20)
         stubs = Faraday::Adapter::Test::Stubs.new do |stub|
           stub.get("/gems/rack") { [200, { "CONTENT-TYPE" => "octet/stream" }, "zapatito"] }
@@ -27,8 +26,7 @@ RSpec.describe Gemstash::Web do
         client = Faraday.new {|builder| builder.adapter(:test, stubs) }
         Gemstash::HTTPClient.new(client)
       end
-    end
-    StubHttpBuilder.new
+    end.new
   end
   let(:app) do
     Gemstash::Web.new(http_client_builder: http_client_builder,

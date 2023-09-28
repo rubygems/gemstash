@@ -4,7 +4,7 @@ require "yaml"
 require "erb"
 
 module Gemstash
-  #:nodoc:
+  # :nodoc:
   class Configuration
     DEFAULTS = {
       cache_type: "memory",

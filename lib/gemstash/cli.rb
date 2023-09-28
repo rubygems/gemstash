@@ -52,10 +52,14 @@ module Gemstash
     desc "authorize [PERMISSIONS...]", "Add authorizations to push/yank private gems"
     method_option :remove, :type => :boolean, :default => false, :desc =>
       "Remove an authorization key"
+    method_option :list, :type => :boolean, :default => false, :desc =>
+      "List existing authorization keys"
     method_option :config_file, :type => :string, :desc =>
       "Config file to save to"
     method_option :key, :type => :string, :desc =>
       "Authorization key to create/update/delete (optional unless deleting)"
+    method_option :name, :type => :string, :desc =>
+      "Name of the key (optional)"
     def authorize(*args)
       Gemstash::CLI::Authorize.new(self, *args).run
     end
