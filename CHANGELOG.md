@@ -8,7 +8,7 @@
 
 ### Fixes
 
-  - Require a now-needed file for Puma 6. Thanks, [@ktreis][]! ([#362](https://github.com/rubygems/gemstash/pull/362), [@olleolleolle](https://github.com/olleolleolle))
+  - Require a now-needed file for Puma 6. Thanks, [@ktreis](https://github.com/ktreis)! ([#362](https://github.com/rubygems/gemstash/pull/362), [@olleolleolle](https://github.com/olleolleolle))
 
 ## 2.3.1 (2023-09-05)
 
