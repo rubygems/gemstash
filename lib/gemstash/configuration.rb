@@ -75,6 +75,11 @@ module Gemstash
   private
 
     def default_file
+      # Support the config file being specified via environment variable
+      gemstash_config = ENV["GEMSTASH_CONFIG"]
+      return gemstash_config if gemstash_config
+
+      # If no environment variable is used, fall back to the normal defaults
       File.exist?("#{DEFAULT_FILE}.erb") ? "#{DEFAULT_FILE}.erb" : DEFAULT_FILE
     end
 
