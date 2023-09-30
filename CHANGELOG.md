@@ -1,10 +1,14 @@
+## 2.6.0 (2023-09-30)
+
 ### Changes
 
   - Support `GEMSTASH_CONFIG` environment variable ([#369](https://github.com/rubygems/gemstash/pull/369), [@kyrofa](https://github.com/kyrofa))
 
 ## 2.5.0 (2023-09-28)
 
-- Add support for upstream auth with ENV variables ([#339](https://github.com/rubygems/gemstash/pull/339), [@CiTroNaK](https://github.com/CiTroNaK))
+### Changes
+
+  - Add support for upstream auth with ENV variables ([#339](https://github.com/rubygems/gemstash/pull/339), [@CiTroNaK](https://github.com/CiTroNaK))
 
 ## 2.4.0 (2023-09-27)
 
