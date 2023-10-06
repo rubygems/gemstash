@@ -90,8 +90,8 @@ module Gemstash
 
       def ask_redis_details
         say_current_config(:redis_servers, "Current Redis servers")
-        servers = @cli.ask "What is the comma-separated list of Redis servers? [localhost:6379]"
-        servers = "localhost:6379" if servers.empty?
+        servers = @cli.ask "What is the comma-separated list of Redis servers? [redis://localhost:6379]"
+        servers = "redis://localhost:6379" if servers.empty?
         @config[:redis_servers] = servers
       end
 
