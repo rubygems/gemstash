@@ -20,6 +20,7 @@ module Gemstash
   autoload :LruReduxClient,      "gemstash/cache"
   autoload :NotAuthorizedError,  "gemstash/authorization"
   autoload :RackEnvRewriter,     "gemstash/rack_env_rewriter"
+  autoload :RedisClient,         "gemstash/cache"
   autoload :Resource,            "gemstash/storage"
   autoload :SpecsBuilder,        "gemstash/specs_builder"
   autoload :Storage,             "gemstash/storage"
