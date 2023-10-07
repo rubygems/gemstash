@@ -37,20 +37,13 @@ module Gemstash
       end
 
       def args
-        config_args + pidfile_args + daemonize_args
+        config_args + pidfile_args
       end
 
       def config_args
         ["--config", puma_config]
       end
 
-      def daemonize_args
-        if daemonize?
-          ["--daemon"]
-        else
-          []
-        end
-      end
     end
   end
 end

@@ -16,6 +16,11 @@ module Gemstash
     class EnvNotSetError < StandardError
     end
 
+    # Gemstash must garantee The Gemstash::Env values don't create
+    # undesirable effects. This error is thrown when that is not honored.
+    class EnvNotValidError < StandardError
+    end
+
     # Little module to provide easy access to the current Gemstash::Env.
     module Helper
       private # rubocop:disable Layout/AccessModifierIndentation
@@ -66,6 +71,11 @@ module Gemstash
     end
 
     def self.daemonized=(value)
+      if value == true
+        puts "Please create a custom daemonization script for your project or run without daemonization"
+        puts "Please consider contributing to this project with a custom daemonization script"
+        raise EnvNotValidError, "Puma no longer supports daemonized mode. https://github.com/puma/puma/issues/1983"
+      end
       value = false if value.nil?
       @daemonized = value
     end
