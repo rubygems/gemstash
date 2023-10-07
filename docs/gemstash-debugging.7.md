@@ -20,7 +20,7 @@ You can also [check the status](docs/gemstash-status.1.md) of the server:
     $ gemstash status
 
 The server status is checked by passing through to
-[pumactl](https://github.com/puma/puma#pumactl).
+[pumactl](https://github.com/puma/puma#controlstatus-server).
 
 If you find a bug, please don’t hesitate to [open a bug
 report](https://github.com/rubygems/gemstash#contributing)!
