@@ -245,6 +245,3 @@ placed in the [base path](docs/gemstash-configuration.5.md#base-path).
 ## Valid values
 
 Any valid file name, or `:stdout` to log to `$stdout`
-
-*Note: Using `:stdout` for the `:log_file` requires [running with
-`--no-daemonize`](docs/gemstash-start.1.md#options).*
