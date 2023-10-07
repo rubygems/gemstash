@@ -1,7 +1,9 @@
-## Unreleased
+## 2.7.0 (2023-10-08)
+
+### Fixes
 
   - Fix uninitialized constant error when using Redis cache ([#375](https://github.com/rubygems/gemstash/pull/375), [@chris72205](https://github.com/chris72205))
-  - Remove --daemonize option, no longer supported by Puma.
+  - Remove --daemonize option, no longer supported by Puma. ([#359](https://github.com/rubygems/gemstash/issues/359) [@olleolleolle](https://github.com/olleolleolle))
 
 ## 2.6.0 (2023-09-30)
 
