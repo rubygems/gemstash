@@ -8,8 +8,8 @@
 Gemstash is both a cache for remote servers such as
 https://rubygems.org, and a private gem source.
 
-If you are using [bundler](http://bundler.io/) across many machines that
-have access to a server within your control, you might want to use
+If you are using [bundler](https://bundler.io/) across many machines
+that have access to a server within your control, you might want to use
 Gemstash.
 
 If you produce gems that you don’t want everyone in the world to have
@@ -129,9 +129,9 @@ memory. Gem files are always cached permanently, so bundling with a
 `Gemfile.lock` with all gems cached will never call out to
 https://rubygems.org.
 
-The server you ran is provided via [Puma](http://puma.io/) and
-[Rack](http://rack.github.io/), however they are not customizable at
-this point.
+The server you ran is provided via [Puma](https://puma.io/) and
+[Rack](https://github.com/rack/rack), however they are not customizable
+at this point.
 
 ## Deep Dive
 
@@ -158,7 +158,7 @@ An anatomy of various configuration and commands:
 - [Version](docs/gemstash-version.1.md)
 
 To see what has changed in recent versions of Gemstash, see the
-[CHANGELOG](https://github.com/rubygems/gemstash/blob/master/CHANGELOG.md).
+[CHANGELOG](https://github.com/rubygems/gemstash/blob/main/CHANGELOG.md).
 
 ## Development
 
@@ -173,7 +173,7 @@ Bug reports and pull requests are welcome on GitHub at
 https://github.com/rubygems/gemstash. This project is intended to be a
 safe, welcoming space for collaboration, and contributors are expected
 to adhere to the [Contributor
-Covenant](https://github.com/rubygems/gemstash/blob/master/CODE_OF_CONDUCT.md)
+Covenant](https://github.com/rubygems/gemstash/blob/main/CODE_OF_CONDUCT.md)
 code of conduct.
 
 ## License

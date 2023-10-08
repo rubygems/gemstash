@@ -193,15 +193,15 @@ the [Contributor Covenant][CODE_OF_CONDUCT] code of conduct.
 The gem is available as open source under the terms of the
 [MIT License][LICENSE].
 
-[BUNDLER]: http://bundler.io/
+[BUNDLER]: https://bundler.io/
 [RUBY_CENTRAL]: https://rubycentral.org/
 [RUBY_CENTRAL_SIGNUP]: https://rubycentral.org/#/portal/signup
 [CUSTOMIZE_FILES]: ./gemstash-customize.7.md#files
 [SQLITE]: https://www.sqlite.org/
 [CUSTOMIZE_DATABASE]: ./gemstash-customize.7.md#database
 [CUSTOMIZE_CACHE]: ./gemstash-customize.7.md#cache
-[PUMA]: http://puma.io/
-[RACK]: http://rack.github.io/
+[PUMA]: https://puma.io/
+[RACK]: https://github.com/rack/rack
 [PRIVATE_GEMS]: ./gemstash-private-gems.7.md
 [MULTIPLE_SOURCES]: ./gemstash-multiple-sources.7.md
 [MIRROR]: ./gemstash-mirror.7.md
@@ -215,6 +215,6 @@ The gem is available as open source under the terms of the
 [STATUS]: ./gemstash-status.1.md
 [SETUP]: ./gemstash-setup.1.md
 [VERSION]: ./gemstash-version.1.md
-[CHANGELOG]: https://github.com/rubygems/gemstash/blob/master/CHANGELOG.md
-[CODE_OF_CONDUCT]: https://github.com/rubygems/gemstash/blob/master/CODE_OF_CONDUCT.md
+[CHANGELOG]: https://github.com/rubygems/gemstash/blob/main/CHANGELOG.md
+[CODE_OF_CONDUCT]: https://github.com/rubygems/gemstash/blob/main/CODE_OF_CONDUCT.md
 [LICENSE]: http://opensource.org/licenses/MIT
