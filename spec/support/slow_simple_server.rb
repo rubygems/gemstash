@@ -2,6 +2,7 @@
 
 class SlowSimpleServer < SimpleServer
   def initialize(hostname, port: nil)
+    super
     @port = port || SimpleServer.next_port
     @server = WEBrick::HTTPServer.new(:Port => @port)
     @server.mount("/", SlowServlet, self)
@@ -10,7 +11,7 @@ class SlowSimpleServer < SimpleServer
     SimpleServer.servers << self
   end
 
-  #:nodoc:
+  # :nodoc:
   class SlowServlet < WEBrick::HTTPServlet::AbstractServlet
     def initialize(_, server)
       @simple_server = server

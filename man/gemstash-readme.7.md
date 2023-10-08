@@ -27,11 +27,10 @@ might want to use Gemstash.
 Are you only using gems from https://rubygems.org, and don't bundle the same
 gems frequently? Well, maybe you don't need Gemstash... yet.
 
-<a href="https://rubytogether.org/"><img src="https://rubytogether.org/images/rubies.svg" width=200></a><br/>Gemstash
-is maintained by [Ruby Together][RUBY_TOGETHER], a grassroots initiative
+<a href="https://rubycentral.org/"><img src="https://global.discourse-cdn.com/business7/uploads/rubycentral/original/1X/43afd1ed967a1b6e3040965db20af65b665744ec.png" width=200></a><br/>Gemstash
+is maintained by [Ruby Central][RUBY_CENTRAL], a non-profit
 committed to supporting the critical Ruby infrastructure you rely on. Contribute
-today [as an individual][RUBY_TOGETHER_DEVELOPERS] or even better, [as a
-company][RUBY_TOGETHER_COMPANIES], and ensure that Bundler, RubyGems, Gemstash,
+today [as an individual, or even better, as a company][RUBY_CENTRAL_SIGNUP], and ensure that Bundler, RubyGems, Gemstash,
 and other shared tooling is around for years to come.
 
 ## Quickstart Guide
@@ -194,16 +193,15 @@ the [Contributor Covenant][CODE_OF_CONDUCT] code of conduct.
 The gem is available as open source under the terms of the
 [MIT License][LICENSE].
 
-[BUNDLER]: http://bundler.io/
-[RUBY_TOGETHER]: https://rubytogether.org/
-[RUBY_TOGETHER_DEVELOPERS]: https://rubytogether.org/developers
-[RUBY_TOGETHER_COMPANIES]: https://rubytogether.org/companies
+[BUNDLER]: https://bundler.io/
+[RUBY_CENTRAL]: https://rubycentral.org/
+[RUBY_CENTRAL_SIGNUP]: https://rubycentral.org/#/portal/signup
 [CUSTOMIZE_FILES]: ./gemstash-customize.7.md#files
 [SQLITE]: https://www.sqlite.org/
 [CUSTOMIZE_DATABASE]: ./gemstash-customize.7.md#database
 [CUSTOMIZE_CACHE]: ./gemstash-customize.7.md#cache
-[PUMA]: http://puma.io/
-[RACK]: http://rack.github.io/
+[PUMA]: https://puma.io/
+[RACK]: https://github.com/rack/rack
 [PRIVATE_GEMS]: ./gemstash-private-gems.7.md
 [MULTIPLE_SOURCES]: ./gemstash-multiple-sources.7.md
 [MIRROR]: ./gemstash-mirror.7.md
@@ -217,6 +215,6 @@ The gem is available as open source under the terms of the
 [STATUS]: ./gemstash-status.1.md
 [SETUP]: ./gemstash-setup.1.md
 [VERSION]: ./gemstash-version.1.md
-[CHANGELOG]: https://github.com/rubygems/gemstash/blob/master/CHANGELOG.md
-[CODE_OF_CONDUCT]: https://github.com/rubygems/gemstash/blob/master/CODE_OF_CONDUCT.md
+[CHANGELOG]: https://github.com/rubygems/gemstash/blob/main/CHANGELOG.md
+[CODE_OF_CONDUCT]: https://github.com/rubygems/gemstash/blob/main/CODE_OF_CONDUCT.md
 [LICENSE]: http://opensource.org/licenses/MIT

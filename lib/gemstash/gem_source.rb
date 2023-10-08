@@ -4,7 +4,7 @@ require "gemstash"
 require "forwardable"
 
 module Gemstash
-  #:nodoc:
+  # :nodoc:
   module GemSource
     autoload :DependencyCaching, "gemstash/gem_source/dependency_caching"
     autoload :PrivateSource,     "gemstash/gem_source/private_source"
@@ -29,7 +29,7 @@ module Gemstash
       include Gemstash::Logging
 
       def_delegators :@app, :cache_control, :content_type, :env, :halt,
-        :headers, :http_client_for, :params, :redirect, :request
+                     :headers, :http_client_for, :params, :redirect, :request
 
       def initialize(app)
         @app = app

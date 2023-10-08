@@ -5,11 +5,13 @@ require "json"
 require "gemstash"
 
 module Gemstash
-  #:nodoc:
+  # :nodoc:
   class Web < Sinatra::Base
-    def initialize(gemstash_env: nil, http_client_builder: nil)
-      @gemstash_env = gemstash_env || Gemstash::Env.new
-      @http_client_builder = http_client_builder || Gemstash::HTTPClient
+    ruby2_keywords def initialize(options = {})
+      raise ArgumentError unless options.is_a?(Hash)
+
+      @gemstash_env = options[:gemstash_env] || Gemstash::Env.new
+      @http_client_builder = options[:http_client_builder] || Gemstash::HTTPClient
       Gemstash::Env.current = @gemstash_env
       super()
     end

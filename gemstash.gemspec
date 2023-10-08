@@ -18,9 +18,9 @@ you push your own private gems as well."
   spec.homepage      = "https://github.com/rubygems/gemstash"
   spec.license       = "MIT"
 
-  spec.files         = `git ls-files -z`.split("\x0").select {|f|
+  spec.files         = `git ls-files -z`.split("\x0").select do |f|
     f.match(/^(lib|exe|CHANGELOG|CODE_OF_CONDUCT|LICENSE)/)
-  }
+  end
   # we don't check in man pages, but we need to ship them because
   # we use them to generate the long-form help for each command.
   spec.files += Dir.glob("lib/gemstash/man/**/*")
@@ -29,21 +29,20 @@ you push your own private gems as well."
   spec.executables   = spec.files.grep(%r{^exe/}) {|f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.required_ruby_version = ">= 2.4"
+  spec.required_ruby_version = ">= 2.7"
 
-  spec.add_runtime_dependency "activesupport", ">= 4.2", "< 6"
-  spec.add_runtime_dependency "dalli", "~> 2.7"
-  spec.add_runtime_dependency "faraday", "~> 0.9"
-  spec.add_runtime_dependency "faraday_middleware", "~> 0.10"
+  spec.add_runtime_dependency "activesupport", ">= 4.2", "< 8"
+  spec.add_runtime_dependency "dalli", ">= 3.2.3", "< 4"
+  spec.add_runtime_dependency "faraday", ">= 1", "< 3"
+  spec.add_runtime_dependency "faraday_middleware", "~> 1.0"
   spec.add_runtime_dependency "lru_redux", "~> 1.1"
-  spec.add_runtime_dependency "puma", "~> 4.0"
+  spec.add_runtime_dependency "psych", ">= 3.2.1"
+  spec.add_runtime_dependency "puma", "~> 6.1"
   spec.add_runtime_dependency "sequel", "~> 5.0"
   spec.add_runtime_dependency "server_health_check-rack", "~> 0.1"
-  spec.add_runtime_dependency "sinatra", ">= 1.4", "< 3.0"
-  spec.add_runtime_dependency "thor", "~> 0.20"
-
-  # Use Amazon S3 Storage instead of local storage
-  # spec.add_runtime_dependency "aws-sdk-s3", "~> 1.67"
+  spec.add_runtime_dependency "sinatra", ">= 1.4", "< 4.0"
+  spec.add_runtime_dependency "terminal-table", "~> 3.0"
+  spec.add_runtime_dependency "thor", "~> 1.0"
 
   # Use Redis instead of memcached
   # spec.add_runtime_dependency "redis", "~> 3.3"
@@ -57,19 +56,4 @@ you push your own private gems as well."
   else
     spec.add_runtime_dependency "sqlite3", "~> 1.3"
   end
-
-  spec.add_development_dependency "aruba", [">= 0.14"]
-  spec.add_development_dependency "aws-sdk-s3", "~> 1.67"
-  spec.add_development_dependency "bundler", [">= 1.11", "< 3.0"]
-  spec.add_development_dependency "citrus", "~> 3.0"
-  spec.add_development_dependency "octokit", "~> 4.2"
-  spec.add_development_dependency "pandoc_object_filters", "~> 0.2"
-  spec.add_development_dependency "rack-test", "~> 1.1"
-  spec.add_development_dependency "rake", "~> 12.3"
-  spec.add_development_dependency "redis", "~> 3.3"
-  spec.add_development_dependency "rspec", "~> 3.3"
-  spec.add_development_dependency "rubocop", "= 0.67.2"
-  spec.add_development_dependency "rubocop-performance", "~> 1.1.0"
-  spec.add_development_dependency "vcr", "~> 6.0.0"
-  spec.add_development_dependency "webmock", "~> 3.8.3"
 end

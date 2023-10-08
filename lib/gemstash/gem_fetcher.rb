@@ -4,11 +4,11 @@ require "gemstash"
 require "set"
 
 module Gemstash
-  #:nodoc:
+  # :nodoc:
   class GemFetcher
     def initialize(http_client)
       @http_client = http_client
-      @valid_headers = Set.new(["etag", "content-type", "content-length", "last-modified"])
+      @valid_headers = Set.new(%w[etag content-type content-length last-modified])
     end
 
     def fetch(gem_id, type, &block)

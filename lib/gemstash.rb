@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-#:nodoc:
+# :nodoc:
 module Gemstash
   autoload :ApiKeyAuthorization, "gemstash/api_key_authorization"
   autoload :Authorization,       "gemstash/authorization"
@@ -20,14 +20,12 @@ module Gemstash
   autoload :LruReduxClient,      "gemstash/cache"
   autoload :NotAuthorizedError,  "gemstash/authorization"
   autoload :RackEnvRewriter,     "gemstash/rack_env_rewriter"
-  autoload :Resource,            "gemstash/storage_services/local_storage"
+  autoload :RedisClient,         "gemstash/cache"
+  autoload :Resource,            "gemstash/storage"
   autoload :SpecsBuilder,        "gemstash/specs_builder"
-  autoload :LocalStorage,        "gemstash/storage_services/local_storage"
+  autoload :Storage,             "gemstash/storage"
   autoload :Upstream,            "gemstash/upstream"
   autoload :Web,                 "gemstash/web"
   autoload :WebError,            "gemstash/http_client"
   autoload :VERSION,             "gemstash/version"
-  autoload :S3,                  "gemstash/storage_services/s3_storage"
-  autoload :S3Resource,          "gemstash/storage_services/s3_storage"
-  autoload :Storage,             "gemstash/storage"
 end

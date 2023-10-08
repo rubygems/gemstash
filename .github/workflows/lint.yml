@@ -1,0 +1,19 @@
+name: Lint
+
+on: [push, pull_request]
+
+jobs:
+  rubocop:
+    name: Rubocop
+    runs-on: ubuntu-22.04
+    env:
+      BUNDLE_WITH: "linting"
+    steps:
+    - uses: actions/checkout@v4
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.2
+        bundler-cache: true # 'bundle install' and cache
+    - name: Rubocop
+      run: bundle exec rubocop
+

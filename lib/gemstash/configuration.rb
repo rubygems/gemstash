@@ -4,7 +4,7 @@ require "yaml"
 require "erb"
 
 module Gemstash
-  #:nodoc:
+  # :nodoc:
   class Configuration
     DEFAULTS = {
       cache_type: "memory",
@@ -20,9 +20,7 @@ module Gemstash
       puma_threads: 16,
       puma_workers: 1,
       cache_expiration: 30 * 60,
-      cache_max_size: 500,
-      storage_adapter: "local",
-      s3_path: "gemstash/s3_storage"
+      cache_max_size: 500
     }.freeze
 
     DEFAULT_FILE = File.expand_path("~/.gemstash/config.yml").freeze
@@ -62,10 +60,6 @@ module Gemstash
       @config[key]
     end
 
-    def keys
-      @config.keys
-    end
-
     # @return [Hash] Sequel connection configuration hash
     def database_connection_config
       case self[:db_adapter]
@@ -81,6 +75,11 @@ module Gemstash
   private
 
     def default_file
+      # Support the config file being specified via environment variable
+      gemstash_config = ENV["GEMSTASH_CONFIG"]
+      return gemstash_config if gemstash_config
+
+      # If no environment variable is used, fall back to the normal defaults
       File.exist?("#{DEFAULT_FILE}.erb") ? "#{DEFAULT_FILE}.erb" : DEFAULT_FILE
     end
 

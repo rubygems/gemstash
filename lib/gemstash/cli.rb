@@ -13,7 +13,6 @@ module Gemstash
     autoload :Start,     "gemstash/cli/start"
     autoload :Status,    "gemstash/cli/status"
     autoload :Stop,      "gemstash/cli/stop"
-    autoload :Info,      "gemstash/cli/info"
 
     # Thor::Error for the CLI, which colors the message red.
     class Error < Thor::Error
@@ -52,10 +51,14 @@ module Gemstash
     desc "authorize [PERMISSIONS...]", "Add authorizations to push/yank private gems"
     method_option :remove, :type => :boolean, :default => false, :desc =>
       "Remove an authorization key"
+    method_option :list, :type => :boolean, :default => false, :desc =>
+      "List existing authorization keys"
     method_option :config_file, :type => :string, :desc =>
       "Config file to save to"
     method_option :key, :type => :string, :desc =>
       "Authorization key to create/update/delete (optional unless deleting)"
+    method_option :name, :type => :string, :desc =>
+      "Name of the key (optional)"
     def authorize(*args)
       Gemstash::CLI::Authorize.new(self, *args).run
     end
@@ -67,15 +70,11 @@ module Gemstash
       "Show detailed errors"
     method_option :config_file, :type => :string, :desc =>
       "Config file to save to"
-    method_option :s3, :type => :boolean, :default => false, :desc =>
-      "Config backend storage to Amazon S3 service"
     def setup
       Gemstash::CLI::Setup.new(self).run
     end
 
     desc "start", "Starts your gemstash server"
-    method_option :daemonize, :type => :boolean, :default => true, :desc =>
-      "Daemonize the server"
     method_option :config_file, :type => :string, :desc =>
       "Config file to load when starting"
     def start
@@ -101,11 +100,6 @@ module Gemstash
       say "Gemstash version #{Gemstash::VERSION}"
     end
     map %w[-v --version] => :version
-
-    desc "info", "Check current gemstash instance info"
-    def info
-      Gemstash::CLI::Info.new(self).run
-    end
 
   private
 

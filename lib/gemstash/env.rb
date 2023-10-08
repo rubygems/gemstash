@@ -59,17 +59,6 @@ module Gemstash
       Thread.current[:gemstash_env] = value
     end
 
-    def self.daemonized?
-      raise "Daemonized hasn't been set yet!" if @daemonized.nil?
-
-      @daemonized
-    end
-
-    def self.daemonized=(value)
-      value = false if value.nil?
-      @daemonized = value
-    end
-
     def config
       @config ||= Gemstash::Configuration.new
     end
@@ -176,10 +165,6 @@ module Gemstash
           raise "Invalid cache client: '#{config[:cache_type]}'"
         end
       end
-    end
-
-    def s3_test_credentials?
-      Gemstash::S3.new("test").check_credentials?
     end
   end
 end

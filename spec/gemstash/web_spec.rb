@@ -9,8 +9,7 @@ RSpec.describe Gemstash::Web do
   include Rack::Test::Methods
 
   let(:http_client_builder) do
-    #:nodoc:
-    class StubHttpBuilder
+    Class.new do
       def for(server_url, timeout = 20)
         stubs = Faraday::Adapter::Test::Stubs.new do |stub|
           stub.get("/gems/rack") { [200, { "CONTENT-TYPE" => "octet/stream" }, "zapatito"] }
@@ -27,8 +26,7 @@ RSpec.describe Gemstash::Web do
         client = Faraday.new {|builder| builder.adapter(:test, stubs) }
         Gemstash::HTTPClient.new(client)
       end
-    end
-    StubHttpBuilder.new
+    end.new
   end
   let(:app) do
     Gemstash::Web.new(http_client_builder: http_client_builder,
@@ -264,7 +262,7 @@ RSpec.describe Gemstash::Web do
     context "from the default upstream" do
       let(:current_env) { Gemstash::Env.current }
       let(:upstream) { Gemstash::Upstream.new(current_env.config[:rubygems_url]) }
-      let(:storage) { Gemstash::LocalStorage.for("gem_cache").for(upstream.host_id) }
+      let(:storage) { Gemstash::Storage.for("gem_cache").for(upstream.host_id) }
 
       it "fetches the gem file, stores, and serves it" do
         get "/gems/rack", {}, rack_env
@@ -322,7 +320,7 @@ RSpec.describe Gemstash::Web do
 
     context "from private gems" do
       let(:gem_source) { Gemstash::GemSource::PrivateSource }
-      let(:storage) { Gemstash::LocalStorage.for("private").for("gems") }
+      let(:storage) { Gemstash::Storage.for("private").for("gems") }
 
       context "with a missing gem" do
         it "halts with 404" do
@@ -368,7 +366,7 @@ RSpec.describe Gemstash::Web do
     context "from the default upstream" do
       let(:current_env) { Gemstash::Env.current }
       let(:upstream) { Gemstash::Upstream.new(current_env.config[:rubygems_url]) }
-      let(:storage) { Gemstash::LocalStorage.for("gem_cache").for(upstream.host_id) }
+      let(:storage) { Gemstash::Storage.for("gem_cache").for(upstream.host_id) }
 
       it "fetches the marshalled gemspec, stores, and serves it" do
         get "/quick/Marshal.4.8/rack.gemspec.rz", {}, rack_env
@@ -425,7 +423,7 @@ RSpec.describe Gemstash::Web do
 
     context "from private gems" do
       let(:gem_source) { Gemstash::GemSource::PrivateSource }
-      let(:storage) { Gemstash::LocalStorage.for("private").for("gems") }
+      let(:storage) { Gemstash::Storage.for("private").for("gems") }
 
       context "with a missing gem" do
         it "halts with 404" do

@@ -144,7 +144,7 @@ class SimpleServer
     end
   end
 
-  #:nodoc:
+  # :nodoc:
   class Servlet < WEBrick::HTTPServlet::AbstractServlet
     def initialize(_, server)
       @simple_server = server
