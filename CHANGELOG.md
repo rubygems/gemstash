@@ -1,3 +1,7 @@
+## Unreleased
+
+  - Fix uninitialized constant error when using Redis cache ([#375](https://github.com/rubygems/gemstash/pull/375), [@ chris72205](https://github.com/ chris72205))
+
 ## 2.6.0 (2023-09-30)
 
 ### Changes
