@@ -75,6 +75,8 @@ module Gemstash
     end
 
     desc "start", "Starts your gemstash server"
+    method_option :daemonize, :type => :boolean, :default => nil, :desc =>
+       "No effect - functionality removed, option kept for compatibility"
     method_option :config_file, :type => :string, :desc =>
       "Config file to load when starting"
     def start
