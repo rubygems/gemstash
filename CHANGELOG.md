@@ -1,3 +1,9 @@
+## 2.7.1 (2023-10-12)
+
+### Fixes
+
+  - Reinstate NOOP --daemonize and --no-daemonize that warn about them doing nothing. ([#381](https://github.com/rubygems/gemstash/pull/381) [@olleolleolle](https://github.com/olleolleolle))
+
 ## 2.7.0 (2023-10-08)
 
 ### Fixes
