@@ -53,7 +53,7 @@ module Gemstash
   private
 
     def hash
-      Digest::MD5.hexdigest(to_s)
+      Digest::SHA256.hexdigest(to_s)
     end
 
     def env_auth_user
