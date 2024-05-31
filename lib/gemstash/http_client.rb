@@ -55,7 +55,7 @@ module Gemstash
       response = with_retries do
         @client.get(path) do |req|
           req.headers["User-Agent"] = @user_agent
-          req.options.open_timeout = 2
+          req.options.open_timeout = gemstash_env.config[:fetch_timeout]
         end
       end
 
