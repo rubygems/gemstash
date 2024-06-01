@@ -179,6 +179,16 @@ configuration key to change it.
 :fetch_timeout: 20
 ```
 
+## Open Timeout
+
+The default connection open timeout is 2 seconds. Use the
+`:open_timeout` configuration key to change it.
+
+``` yaml
+---
+:open_timeout: 2
+```
+
 ## Config File Location
 
 By default, configuration for Gemstash will be at
