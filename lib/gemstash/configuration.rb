@@ -15,6 +15,7 @@ module Gemstash
       ignore_gemfile_source: false,
       protected_fetch: false,
       fetch_timeout: 20,
+      open_timeout: 2,
       # Actual default for db_connection_options is dynamic based on the adapter
       db_connection_options: {},
       puma_threads: 16,

@@ -25,6 +25,7 @@ module Gemstash
   # :nodoc:
   class HTTPClient
     extend Gemstash::Env::Helper
+    include Gemstash::Env::Helper
     include Gemstash::Logging
 
     DEFAULT_USER_AGENT = "Gemstash/#{Gemstash::VERSION}"
@@ -55,7 +56,7 @@ module Gemstash
       response = with_retries do
         @client.get(path) do |req|
           req.headers["User-Agent"] = @user_agent
-          req.options.open_timeout = 10
+          req.options.open_timeout = gemstash_env.config[:open_timeout]
         end
       end
 
