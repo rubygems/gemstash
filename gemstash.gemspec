@@ -29,7 +29,7 @@ you push your own private gems as well."
   spec.executables   = spec.files.grep(%r{^exe/}) {|f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.required_ruby_version = ">= 2.7"
+  spec.required_ruby_version = ">= 3.1"
 
   spec.add_runtime_dependency "activesupport", ">= 4.2", "< 8"
   spec.add_runtime_dependency "dalli", ">= 3.2.3", "< 4"
