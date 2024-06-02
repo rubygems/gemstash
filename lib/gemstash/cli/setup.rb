@@ -25,7 +25,8 @@ module Gemstash
         ask_cache
         ask_database
         ask_protected_fetch
-        ask_timeout
+        ask_fetch_timeout
+        ask_open_timeout
         check_cache
         check_storage
         check_database
@@ -123,11 +124,18 @@ module Gemstash
         @config[:protected_fetch] = value
       end
 
-      def ask_timeout
+      def ask_fetch_timeout
         say_current_config(:fetch_timeout, "Fetch timeout")
-        timeout = @cli.ask "How many seconds to wait when fetching a gem? [20]"
+        timeout = @cli.ask "How many seconds to wait for fetching a gem to complete? [20]"
         timeout = Gemstash::Configuration::DEFAULTS[:fetch_timeout] if timeout.to_i < 1
         @config[:fetch_timeout] = timeout.to_i
+      end
+
+      def ask_open_timeout
+        say_current_config(:open_timeout, "Open timeout")
+        timeout = @cli.ask "How many seconds to wait for connection to upstream gem server to be established? [2]"
+        timeout = Gemstash::Configuration::DEFAULTS[:open_timeout] if timeout.to_i < 1
+        @config[:open_timeout] = timeout.to_i
       end
 
       def check_cache

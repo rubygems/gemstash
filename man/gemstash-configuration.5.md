@@ -27,6 +27,7 @@ gemstash-configuration
 :bind: tcp://0.0.0.0:4242
 :protected_fetch: true
 :fetch_timeout: 10
+:open_timeout: 2
 :log_file: gemstash.log
 ```
 
@@ -212,13 +213,33 @@ Boolean values `true` or `false`
 
 `:fetch_timeout`
 
-The timeout setting for fetching gems. Fetching gems over a slow connection may
-cause timeout errors. If you experience timeout errors, you may want to increase
-this value. The default is `20` seconds.
+This is the number of seconds to allow for fetching a gem from upstream.
+It covers establishing the connection and receiving the response. Fetching
+gems over a slow connection may cause timeout errors. If you experience
+timeout errors, you may want to increase this value. The default is `20`
+seconds.
 
 ## Default value
 
 `20`
+
+## Valid values
+
+Integer value with a minimum of `1`
+
+# Open Timeout
+
+`:open_timeout`
+
+The timeout setting for opening the connection to an upstream gem
+server. On high-latency networks, even establishing the connection
+to an upstream gem server can take a while. If you experience
+connection failures instead of timeout errors, you may want to
+increase this value. The default is `2` seconds.
+
+## Default value
+
+`2`
 
 ## Valid values
 
