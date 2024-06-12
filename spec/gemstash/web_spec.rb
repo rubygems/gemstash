@@ -210,7 +210,7 @@ RSpec.describe Gemstash::Web do
       it "fetches the gem file, stores, and serves it" do
         get "/gems/rack", {}, rack_env
         expect(last_response.body).to eq("zapatito")
-        expect(last_response.header["CONTENT-TYPE"]).to eq("octet/stream")
+        expect(last_response.headers["CONTENT-TYPE"]).to eq("octet/stream")
         expect(storage.resource("rack").exist?(:gem)).to be_truthy
       end
 
@@ -256,7 +256,7 @@ RSpec.describe Gemstash::Web do
         expect(storage.resource("rack").exist?(:gem)).to be_falsey
         get "/gems/rack", {}, rack_env
         expect(last_response.body).to eq("zapatito")
-        expect(last_response.header["CONTENT-TYPE"]).to eq("octet/stream")
+        expect(last_response.headers["CONTENT-TYPE"]).to eq("octet/stream")
         expect(storage.resource("rack").exist?(:gem)).to be_truthy
       end
     end
@@ -314,7 +314,7 @@ RSpec.describe Gemstash::Web do
       it "fetches the marshalled gemspec, stores, and serves it" do
         get "/quick/Marshal.4.8/rack.gemspec.rz", {}, rack_env
         expect(last_response.body).to eq("specatito")
-        expect(last_response.header["CONTENT-TYPE"]).to eq("octet/stream")
+        expect(last_response.headers["CONTENT-TYPE"]).to eq("octet/stream")
         expect(storage.resource("rack").exist?(:spec)).to be_truthy
       end
 
@@ -359,7 +359,7 @@ RSpec.describe Gemstash::Web do
         expect(storage.resource("rack").exist?(:spec)).to eq(false)
         get "/quick/Marshal.4.8/rack.gemspec.rz", {}, rack_env
         expect(last_response.body).to eq("specatito")
-        expect(last_response.header["CONTENT-TYPE"]).to eq("octet/stream")
+        expect(last_response.headers["CONTENT-TYPE"]).to eq("octet/stream")
         expect(storage.resource("rack").exist?(:spec)).to eq(true)
       end
     end
