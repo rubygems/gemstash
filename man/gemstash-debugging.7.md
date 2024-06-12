@@ -11,11 +11,11 @@ to start by looking at the server log. You can find the log at `server.log`
 within your base directory. By default, this will be at
 `~/.gemstash/server.log`.
 
-You might find it easier to view the log directly in your terminal. If you run
-Gemstash [in non-daemonized form][START_OPTIONS], the log will be
-output directly to standard out:
+You might find it easier to view the log directly in your terminal. Gemstash
+outputs its log directly to standard out:
+
 ```
-$ gemstash start --no-daemonize
+$ gemstash start
 ```
 
 You can also [check the status][STATUS] of the server:
@@ -29,5 +29,5 @@ If you find a bug, please don't hesitate to [open a bug report][CONTRIBUTING]!
 
 [START_OPTIONS]: ./gemstash-start.1.md#options
 [STATUS]: ./gemstash-status.1.md
-[PUMACTL]: https://github.com/puma/puma#pumactl
+[PUMACTL]: https://github.com/puma/puma#controlstatus-server
 [CONTRIBUTING]: https://github.com/rubygems/gemstash#contributing

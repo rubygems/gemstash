@@ -46,4 +46,24 @@ RSpec.describe Gemstash::Configuration do
       expect(env.config[:db_adapter]).to eq("sqlite3")
     end
   end
+
+  context "config from GEMSTASH_CONFIG environment variable" do
+    let(:env) { Gemstash::Env.new }
+
+    before do
+      @original_gemstash_config = ENV["GEMSTASH_CONFIG"]
+      ENV["GEMSTASH_CONFIG"] = "#{config_dir}/config.yml"
+    end
+
+    after do
+      ENV.delete("GEMSTASH_CONFIG")
+      ENV["GEMSTASH_CONFIG"] = @original_gemstash_config unless @original_gemstash_config.nil?
+    end
+
+    it "loads successfully and is merged with defaults" do
+      expect(env.config[:db_adapter]).to eq("postgres")
+      expect(env.config[:db_url]).to eq("postgres://gemstash")
+      expect(env.config[:rubygems_url]).to eq("https://rubygems.org")
+    end
+  end
 end

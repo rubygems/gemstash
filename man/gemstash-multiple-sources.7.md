@@ -100,11 +100,11 @@ end
 And run the Gemstash with the credentials set in an ENV variable:
 
 ```bash
-GEMSTASH_MY__GEM___SOURCE__LOCAL=user:password gemstash start --no-daemonize --config-file config.yml.erb
+GEMSTASH_MY__GEM___SOURCE__LOCAL=user:password gemstash start --config-file config.yml.erb
 ```
 
 The name of the ENV variable is the uppercase version of the host name,
-with all `.` characters replaced with `__`, all `-` with `___` and a `GEMSTASH_` prefix 
+with all `.` characters replaced with `__`, all `-` with `___` and a `GEMSTASH_` prefix
 (it uses the same syntax as [Bundler](https://bundler.io/v2.4/man/bundle-config.1.html#CREDENTIALS-FOR-GEM-SOURCES)).
 
 Example: `my.gem-source.local` => `GEMSTASH_MY__GEM___SOURCE__LOCAL`

@@ -29,7 +29,7 @@ you push your own private gems as well."
   spec.executables   = spec.files.grep(%r{^exe/}) {|f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.required_ruby_version = ">= 2.7"
+  spec.required_ruby_version = ">= 3.1"
 
   spec.add_runtime_dependency "activesupport", ">= 4.2", "< 8"
   spec.add_runtime_dependency "dalli", ">= 3.2.3", "< 4"
@@ -40,7 +40,7 @@ you push your own private gems as well."
   spec.add_runtime_dependency "puma", "~> 6.1"
   spec.add_runtime_dependency "sequel", "~> 5.0"
   spec.add_runtime_dependency "server_health_check-rack", "~> 0.1"
-  spec.add_runtime_dependency "sinatra", ">= 1.4", "< 4.0"
+  spec.add_runtime_dependency "sinatra", ">= 1.4", "< 5.0"
   spec.add_runtime_dependency "terminal-table", "~> 3.0"
   spec.add_runtime_dependency "thor", "~> 1.0"
 
@@ -54,6 +54,6 @@ you push your own private gems as well."
   if RUBY_PLATFORM == "java"
     spec.add_runtime_dependency "jdbc-sqlite3", "~> 3.8"
   else
-    spec.add_runtime_dependency "sqlite3", "~> 1.3"
+    spec.add_runtime_dependency "sqlite3", ">= 1.3", "< 3.0"
   end
 end

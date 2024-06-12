@@ -1,6 +1,27 @@
+## 2.7.1 (2023-10-12)
+
+### Fixes
+
+  - Reinstate NOOP --daemonize and --no-daemonize that warn about them doing nothing. ([#381](https://github.com/rubygems/gemstash/pull/381) [@olleolleolle](https://github.com/olleolleolle))
+
+## 2.7.0 (2023-10-08)
+
+### Fixes
+
+  - Fix uninitialized constant error when using Redis cache ([#375](https://github.com/rubygems/gemstash/pull/375), [@chris72205](https://github.com/chris72205))
+  - Remove --daemonize option, no longer supported by Puma. ([#359](https://github.com/rubygems/gemstash/issues/359) [@olleolleolle](https://github.com/olleolleolle))
+
+## 2.6.0 (2023-09-30)
+
+### Changes
+
+  - Support `GEMSTASH_CONFIG` environment variable ([#369](https://github.com/rubygems/gemstash/pull/369), [@kyrofa](https://github.com/kyrofa))
+
 ## 2.5.0 (2023-09-28)
 
-- Add support for upstream auth with ENV variables ([#339](https://github.com/rubygems/gemstash/pull/339), [@CiTroNaK](https://github.com/CiTroNaK))
+### Changes
+
+  - Add support for upstream auth with ENV variables ([#339](https://github.com/rubygems/gemstash/pull/339), [@CiTroNaK](https://github.com/CiTroNaK))
 
 ## 2.4.0 (2023-09-27)
 
@@ -12,7 +33,7 @@
 
 ### Fixes
 
-  - Require a now-needed file for Puma 6. Thanks, [@ktreis](https://github.com/ktreis)! ([#362](https://github.com/rubygems/gemstash/pull/362), [@olleolleolle](https://github.com/olleolleolle))
+  - Require a now-needed file for Puma 6. Thanks, @ktreis! ([#362](https://github.com/rubygems/gemstash/pull/362), [@olleolleolle](https://github.com/olleolleolle))
 
 ## 2.3.1 (2023-09-05)
 

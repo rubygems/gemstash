@@ -59,17 +59,6 @@ module Gemstash
       Thread.current[:gemstash_env] = value
     end
 
-    def self.daemonized?
-      raise "Daemonized hasn't been set yet!" if @daemonized.nil?
-
-      @daemonized
-    end
-
-    def self.daemonized=(value)
-      value = false if value.nil?
-      @daemonized = value
-    end
-
     def config
       @config ||= Gemstash::Configuration.new
     end

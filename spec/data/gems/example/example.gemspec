@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
   spec.bindir        = "exe"
   spec.executables   = []
   spec.require_paths = ["lib"]
-  spec.required_ruby_version = ">= 2.7"
+  spec.required_ruby_version = ">= 3.1"
 
   spec.add_runtime_dependency "sqlite3", "~> 1.3"
   spec.add_runtime_dependency "thor", "~> 0.19"

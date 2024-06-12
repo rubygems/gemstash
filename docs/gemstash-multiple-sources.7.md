@@ -101,7 +101,7 @@ end
 And run the Gemstash with the credentials set in an ENV variable:
 
 ``` bash
-GEMSTASH_MY__GEM___SOURCE__LOCAL=user:password gemstash start --no-daemonize --config-file config.yml.erb
+GEMSTASH_MY__GEM___SOURCE__LOCAL=user:password gemstash start --config-file config.yml.erb
 ```
 
 The name of the ENV variable is the uppercase version of the host name,
