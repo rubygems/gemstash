@@ -16,11 +16,6 @@ module Gemstash
         update(indexed: true)
       end
 
-      # This converts to the format used by /private/specs.4.8.gz
-      def to_spec
-        [rubygem.name, Gem::Version.new(number), platform]
-      end
-
       def self.slug(params)
         version = params[:version]
         platform = params[:platform]
