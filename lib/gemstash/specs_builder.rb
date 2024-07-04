@@ -70,11 +70,25 @@ module Gemstash
     end
 
     def fetch_versions
-      @versions = Gemstash::DB::Version.for_spec_collection(prerelease: @prerelease, latest: @latest).map(&:to_spec)
+      @versions = Gemstash::DB::Version.for_spec_collection(prerelease: @prerelease, latest: @latest)
     end
 
     def marshal
-      @marshal ||= Marshal.dump(@versions)
+      @marshal ||= Marshal.dump(minimize_specs(@versions))
+    end
+
+    def minimize_specs(data)
+      names     = Hash.new {|h, k| h[k] = k }
+      versions  = Hash.new {|h, k| h[k] = Gem::Version.new(k) }
+      platforms = Hash.new {|h, k| h[k] = k }
+
+      data.map do |version|
+        [
+          names[version.rubygem.name],
+          versions[version.number],
+          platforms[version.platform]
+        ]
+      end
     end
 
     def gzip
