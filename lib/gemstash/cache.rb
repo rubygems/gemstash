@@ -43,7 +43,10 @@ module Gemstash
 
     def invalidate_gem(scope, gem)
       @client.delete("deps/v1/#{scope}/#{gem}")
-      Gemstash::SpecsBuilder.invalidate_stored if scope == "private"
+      if scope == "private"
+        Gemstash::SpecsBuilder.invalidate_stored
+        Gemstash::CompactIndexBuilder.invalidate_stored(gem)
+      end
     end
   end
 
