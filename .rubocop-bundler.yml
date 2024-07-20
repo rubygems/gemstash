@@ -18,6 +18,7 @@ Lint/UnusedMethodArgument:
 Lint/UriEscapeUnescape:
   Enabled: true
 
+
 # Style
 
 Layout/EndAlignment:
@@ -91,10 +92,7 @@ Style/SpecialGlobalVars:
   Enabled: false
 
 Naming/VariableNumber:
-  EnforcedStyle: "snake_case"
-  AllowedIdentifiers:
-    - sha256
-    - capture3
+  EnforcedStyle: 'snake_case'
 
 Naming/MemoizedInstanceVariableName:
   Enabled: false
