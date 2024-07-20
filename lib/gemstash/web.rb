@@ -27,19 +27,12 @@ module Gemstash
 
     not_found do
       status 404
-      return body response.body if response.body && !response.body.empty?
-
       body JSON.dump("error" => "Not found", "code" => 404)
     end
 
     error GemPusher::ExistingVersionError do
-      status 409
-      body JSON.dump("error" => "Version already exists", "code" => 409)
-    end
-
-    error Gemstash::GemYanker::UnknownGemError, Gemstash::GemYanker::UnknownVersionError do |e|
-      status 404
-      body JSON.dump("error" => e.message, "code" => 404)
+      status 422
+      body JSON.dump("error" => "Version already exists", "code" => 422)
     end
 
     get "/" do

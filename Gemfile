@@ -22,6 +22,5 @@ group :linting do
 end
 
 group :test do
-  gem "gem_server_conformance", "~> 0.1.4"
   gem "mock_redis"
 end
