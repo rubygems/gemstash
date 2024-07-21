@@ -23,7 +23,12 @@ FileUtils.mkpath(TEST_BASE_PATH) unless Dir.exist?(TEST_BASE_PATH)
 Pathname.new(TEST_BASE_PATH).children.each(&:rmtree)
 TEST_LOG_FILE = File.join(TEST_BASE_PATH, "server.log")
 TEST_CONFIG = Gemstash::Configuration.new(config: {
-                                            :base_path => TEST_BASE_PATH
+                                            base_path: TEST_BASE_PATH,
+                                            cache_type: ENV.fetch("GEMSTASH_SPEC_CACHE_TYPE", "memory"),
+                                            db_adapter: ENV.fetch("GEMSTASH_SPEC_DB_ADAPTER", "sqlite3"),
+                                            db_url: ENV.fetch("GEMSTASH_SPEC_DB_URL", nil),
+                                            redis_servers: ENV.fetch("GEMSTASH_SPEC_REDIS_SERVERS", nil),
+                                            memcached_servers: ENV.fetch("GEMSTASH_SPEC_MEMCACHED_SERVERS", nil)
                                           })
 Gemstash::Env.current = Gemstash::Env.new(TEST_CONFIG)
 Thread.current[:test_gemstash_env_set] = true
@@ -45,13 +50,19 @@ RSpec.configure do |config|
       end
     end
 
-    TEST_DB.disconnect
-
     # If a spec has no transaction, delete the DB, and force recreate/migrate to ensure it is clean
     if example.metadata[:db_transaction] == false
-      File.delete(File.join(TEST_BASE_PATH, "gemstash.db"))
+      if TEST_CONFIG[:db_adapter] == "sqlite3"
+        File.delete(File.join(TEST_BASE_PATH, "gemstash.db"))
+      else
+        # Drop all tables
+        TEST_DB.drop_table(*TEST_DB.tables)
+      end
+      TEST_DB.disconnect
       Gemstash::Env.migrate(TEST_DB)
     end
+
+    TEST_DB.disconnect
   end
 
   config.before(:each) do
