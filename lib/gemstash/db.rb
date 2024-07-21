@@ -10,6 +10,7 @@ module Gemstash
     Sequel::Model.db = Gemstash::Env.current.db
     Sequel::Model.raise_on_save_failure = true
     Sequel::Model.plugin :timestamps, update_on_create: true
+    Sequel::Model.db.extension :string_agg
     Sequel::Model.db.extension :schema_dumper
     autoload :Authorization, "gemstash/db/authorization"
     autoload :CachedRubygem, "gemstash/db/cached_rubygem"
