@@ -238,10 +238,9 @@ module Gemstash
         names = DB::Rubygem.db[<<~SQL.squish].map {|row| row[:name] }
           SELECT name
           FROM rubygems
-          LEFT JOIN versions ON versions.rubygem_id = rubygems.id
+          INNER JOIN versions ON versions.rubygem_id = rubygems.id
           WHERE versions.indexed = true
           GROUP BY name
-          HAVING COUNT(versions.id) > 0
           ORDER BY name
         SQL
         @result = CompactIndex.names(names).encode("UTF-8")
