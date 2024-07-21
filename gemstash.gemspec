@@ -54,6 +54,7 @@ you push your own private gems as well."
   if RUBY_PLATFORM == "java"
     spec.add_runtime_dependency "jdbc-sqlite3", "~> 3.8"
   else
-    spec.add_runtime_dependency "sqlite3", ">= 1.3", "< 3.0"
+    # SQLite 3.44+ is required for string_agg support
+    spec.add_runtime_dependency "sqlite3", ">= 1.68", "< 3.0"
   end
 end
