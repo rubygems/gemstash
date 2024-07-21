@@ -132,7 +132,10 @@ module Gemstash
             Sequel.connect("sqlite://#{CGI.escape(db_path)}", config.database_connection_config)
           end
         when "postgres", "mysql", "mysql2"
-          db = Sequel.connect(config[:db_url], config.database_connection_config)
+          db_url = config[:db_url]
+          raise "Missing DB URL" unless db_url
+
+          db = Sequel.connect(db_url, config.database_connection_config)
         else
           raise "Unsupported DB adapter: '#{config[:db_adapter]}'"
         end

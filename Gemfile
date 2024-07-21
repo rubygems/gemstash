@@ -13,7 +13,14 @@ gem "rspec", "~> 3.3"
 gem "webrick", "~> 1.6"
 
 platform :jruby do
+  gem "jdbc-sqlite3"
   gem "psych"
+end
+
+platform :ruby do
+  gem "mysql2"
+  gem "pg"
+  gem "sqlite3"
 end
 
 group :linting do

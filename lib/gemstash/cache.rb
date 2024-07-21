@@ -101,9 +101,10 @@ module Gemstash
     end
 
     def get_multi(keys)
-      @cache.mget(*keys).each do |k, v|
+      @cache.mget(*keys).each_with_index do |v, idx|
         next if v.nil?
 
+        k = keys[idx]
         yield(k, YAML.load(v))
       end
     end
