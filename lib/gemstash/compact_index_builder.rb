@@ -185,6 +185,7 @@ module Gemstash
     private
 
       def requirements_and_dependencies
+        db_type = DB::Rubygem.db.database_type
         DB::Rubygem.association_left_join(versions: :dependencies).
           where(name: @name).
           where { versions[:indexed] }.
@@ -193,8 +194,12 @@ module Gemstash
             [versions[:number], versions[:platform], versions[:sha256], versions[:info_checksum], versions[:required_ruby_version], versions[:required_rubygems_version], versions[:created_at]]
           end. # rubocop:disable Style/MultilineBlockChain
           select_more do
-            [string_agg(dependencies[:requirements], "@").order(dependencies[:rubygem_name], dependencies[:id]).as(:dep_req_agg),
-             string_agg(dependencies[:rubygem_name], ",").order(dependencies[:rubygem_name]).as(:dep_name_agg)]
+            sa = case db_type
+                 when :sqlite then ->(a, b) { string_agg(a, b) }
+                 else ->(a, b) { Sequel.string_agg(a, b) }
+            end
+            [sa.call(dependencies[:requirements], "@").order(dependencies[:rubygem_name], dependencies[:id]).as(:dep_req_agg),
+             sa.call(dependencies[:rubygem_name], ",").order(dependencies[:rubygem_name]).as(:dep_name_agg)]
           end. # rubocop:disable Style/MultilineBlockChain
           map do |row|
           reqs = row[:dep_req_agg]&.split("@")
