@@ -79,7 +79,7 @@ module Gemstash
         raise ExistingVersionError, "Cannot push to an existing version!" if existing && existing.indexed
         raise YankedVersionError, "Cannot push to a yanked version!" if existing && !existing.indexed
 
-        version_id = Gemstash::DB::Version.insert_by_spec(gem_id, spec)
+        version_id = Gemstash::DB::Version.insert_by_spec(gem_id, spec, sha256: Digest::SHA256.hexdigest(@content))
         Gemstash::DB::Dependency.insert_by_spec(version_id, spec)
       end
     end

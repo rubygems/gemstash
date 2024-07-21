@@ -12,6 +12,9 @@ module Gemstash
       def run
         prepare
         list_config
+
+        # Gemstash::DB
+        # Gemstash::Env.current.db.dump_schema_migration(same_db: true)
       end
 
     private

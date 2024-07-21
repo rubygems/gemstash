@@ -69,6 +69,14 @@ RSpec.describe "gemstash integration tests" do
     @gemstash_empty_rubygems.start
   end
 
+  before(:each) do
+    $test_gemstash_server_current_test = self # rubocop:disable Style/GlobalVars
+  end
+
+  after(:each) do
+    $test_gemstash_server_current_test = nil # rubocop:disable Style/GlobalVars
+  end
+
   let(:platform_message) do
     if RUBY_PLATFORM == "java"
       "Java"
@@ -114,6 +122,15 @@ RSpec.describe "gemstash integration tests" do
     after do
       # Some actions affect files in the environment, like adding and removing sources
       clean_env env_name
+    end
+
+    it "is a conformant gem server", db_transaction: false do
+      @gemstash.env.cache.flush
+      expect(
+        execute("gem_server_conformance", ["--fail-fast", "--format", "progress", "--tag=~content_length_header"],
+                env: { "UPSTREAM" => host, "GEM_HOST_API_KEY" => auth_key })
+      ).
+        to exit_success
     end
 
     context "pushing a gem" do

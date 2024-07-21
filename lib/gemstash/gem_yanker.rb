@@ -66,6 +66,7 @@ module Gemstash
 
     def invalidate_cache
       gemstash_env.cache.invalidate_gem("private", @gem_name)
+      Gemstash::CompactIndexBuilder.invalidate_stored(@gem_name)
     end
   end
 end
