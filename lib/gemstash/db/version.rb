@@ -7,6 +7,7 @@ module Gemstash
     # Sequel model for versions table.
     class Version < Sequel::Model
       many_to_one :rubygem
+      one_to_many :dependencies
 
       def deindex
         info = Gemstash::CompactIndexBuilder::Info.new(nil, rubygem.name).tap(&:build_result).result

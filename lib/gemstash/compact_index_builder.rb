@@ -183,21 +183,17 @@ module Gemstash
     private
 
       def requirements_and_dependencies
-        group_by_columns = "number, platform, sha256, info_checksum, required_ruby_version, required_rubygems_version, versions.created_at"
-
-        dep_req_agg = "string_agg(dependencies.requirements, '@' ORDER BY dependencies.rubygem_name, dependencies.id) as dep_req_agg"
-
-        dep_name_agg = "string_agg(dependencies.rubygem_name, ',' ORDER BY dependencies.rubygem_name) AS dep_name_agg"
-
-        DB::Rubygem.db[<<~SQL.squish, @name].
-          SELECT #{group_by_columns}, #{dep_req_agg}, #{dep_name_agg}
-          FROM rubygems
-            LEFT JOIN versions ON versions.rubygem_id = rubygems.id
-            LEFT JOIN dependencies ON dependencies.version_id = versions.id
-          WHERE rubygems.name = ? AND versions.indexed = true
-          GROUP BY #{group_by_columns}
-          ORDER BY versions.created_at, number, platform, dep_name_agg
-        SQL
+        DB::Rubygem.association_left_join(versions: :dependencies).
+          where(name: @name).
+          where { versions[:indexed] }.
+          order { [versions[:created_at], versions[:number], versions[:platform], dep_name_agg] }.
+          select_group do
+            [versions[:number], versions[:platform], versions[:sha256], versions[:info_checksum], versions[:required_ruby_version], versions[:required_rubygems_version], versions[:created_at]]
+          end. # rubocop:disable Style/MultilineBlockChain
+          select_more do
+            [string_agg(dependencies[:requirements], "@").order(dependencies[:rubygem_name], dependencies[:id]).as(:dep_req_agg),
+             string_agg(dependencies[:rubygem_name], ",").order(dependencies[:rubygem_name]).as(:dep_name_agg)]
+          end. # rubocop:disable Style/MultilineBlockChain
           map do |row|
           reqs = row[:dep_req_agg]&.split("@")
           dep_names = row[:dep_name_agg]&.split(",")
@@ -235,14 +231,9 @@ module Gemstash
       end
 
       def build_result
-        names = DB::Rubygem.db[<<~SQL.squish].map {|row| row[:name] }
-          SELECT name
-          FROM rubygems
-          INNER JOIN versions ON versions.rubygem_id = rubygems.id
-          WHERE versions.indexed = true
-          GROUP BY name
-          ORDER BY name
-        SQL
+        names = DB::Rubygem.association_join(:versions).
+                where { versions[:indexed] }.
+                order(:name).group(:name).select_map(:name)
         @result = CompactIndex.names(names).encode("UTF-8")
       end
 
