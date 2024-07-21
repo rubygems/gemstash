@@ -178,6 +178,8 @@ module Gemstash
 
       def build_result
         @result = CompactIndex.info(requirements_and_dependencies)
+      rescue Sequel::DatabaseError => e
+        raise "Error building info for #{@name}\n\n```sql\n#{e.sql}\n```\n"
       end
 
     private
