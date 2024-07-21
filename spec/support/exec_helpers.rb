@@ -76,7 +76,10 @@ module ExecHelpers
         "BUNDLER_SETUP" => nil,
         "GEM_PATH" => original_gem_path,
         "RUBYLIB" => nil,
-        "RUBYOPT" => nil
+        "RUBYOPT" => nil,
+        "XDG_CONFIG_HOME" => nil,
+        "XDG_CACHE_HOME" => nil,
+        "XDG_DATA_HOME" => nil
       }
     end
 

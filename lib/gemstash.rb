@@ -7,6 +7,7 @@ module Gemstash
   autoload :DB,                  "gemstash/db"
   autoload :Cache,               "gemstash/cache"
   autoload :CLI,                 "gemstash/cli"
+  autoload :CompactIndexBuilder, "gemstash/compact_index_builder"
   autoload :Configuration,       "gemstash/configuration"
   autoload :Dependencies,        "gemstash/dependencies"
   autoload :Env,                 "gemstash/env"

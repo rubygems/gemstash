@@ -29,7 +29,8 @@ module Gemstash
       include Gemstash::Logging
 
       def_delegators :@app, :cache_control, :content_type, :env, :halt,
-                     :headers, :http_client_for, :params, :redirect, :request
+                     :headers, :http_client_for, :params, :redirect, :request,
+                     :etag
 
       def initialize(app)
         @app = app
