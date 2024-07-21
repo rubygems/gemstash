@@ -106,7 +106,7 @@ module Gemstash
 
           UNION ALL
 
-          SELECT r.name as name, v.yanked_at as date, v.yanked_info_checksum as info_checksum, '-'||v.number as number, v.platform as platform
+          SELECT r.name as name, v.yanked_at as date, v.yanked_info_checksum as info_checksum, concat('-', v.number) as number, v.platform as platform
           FROM rubygems AS r, versions AS v
           WHERE v.rubygem_id = r.id AND
                 v.indexed is false AND
