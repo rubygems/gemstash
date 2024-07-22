@@ -16,7 +16,7 @@ module ExecHelpers
 
   # Executes and stores the results for an external command.
   class Result
-    attr_reader :command, :args, :dir, :output
+    attr_reader :command, :args, :dir, :output, :err
 
     def initialize(env, command, args, dir)
       @command = command
@@ -29,7 +29,7 @@ module ExecHelpers
     end
 
     def exec
-      @output, @status = Open3.capture2(patched_env, command, *args, chdir: dir)
+      @output, @err, @status = Open3.capture3(patched_env, command, *args, chdir: dir)
     end
 
     def successful?
@@ -148,7 +148,10 @@ but instead it output:
     else
       "expected '#{actual.display_command}' in '#{actual.dir}' to exit with a success code, but it didn't.
 the command output was:
-#{actual.output}"
+#{actual.output}
+
+and the error was:
+#{actual.err}"
     end
   end
 end

@@ -115,8 +115,6 @@ module Gemstash
           ORDER BY date, number, platform, name
         SQL
 
-        # not ordered correctly in sqlite for some reason
-        all_versions.sort_by! {|v| [v[:date], v[:number], v[:platform], v[:name]] }
         map_gem_versions(all_versions.map {|v| [v[:name], [v]] })
       end
 

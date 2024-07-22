@@ -236,7 +236,7 @@ RSpec.describe "gemstash integration tests" do
     shared_examples "a bundleable project" do
       it "successfully bundles" do
         env = { "HOME" => dir }
-        expect(execute("bundle", dir: dir, env: env)).to exit_success
+        expect(execute("bundle", %w[install --verbose], dir: dir, env: env)).to exit_success
         expect(execute("bundle", %w[exec speaker hi], dir: dir, env: env)).
           to exit_success.and_output("Hello world, #{platform_message}\n")
       end
