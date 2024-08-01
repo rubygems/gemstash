@@ -6,6 +6,8 @@ module Gemstash
   module DB
     # Sequel model for rubygems table.
     class Rubygem < Sequel::Model
+      one_to_many :versions
+
       def self.find_or_insert(spec)
         record = self[name: spec.name]
         return record.id if record

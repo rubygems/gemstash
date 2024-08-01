@@ -1,0 +1,3 @@
+require "rubygems"
+
+load Gem.bin_path("gem_server_conformance", "gem_server_conformance")
