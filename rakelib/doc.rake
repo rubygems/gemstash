@@ -71,7 +71,7 @@ class Doc
     end
 
     def export_to_man_and_txt
-      path = export_path("lib/gemstash/man", to_extension(""))
+      path = export_path("man", to_extension(""))
       export "man", path
       system "groff -Wall -mtty-char -mandoc -Tascii #{path} | col -b > #{path}.txt"
     end
