@@ -221,10 +221,10 @@ Boolean values `true` or `false`
 `:fetch_timeout`
 
 This is the number of seconds to allow for fetching a gem from upstream.
-It covers establishing the connection and receiving the response. Fetching
-gems over a slow connection may cause timeout errors. If you experience
-timeout errors, you may want to increase this value. The default is `20`
-seconds.
+It covers establishing the connection and receiving the response.
+Fetching gems over a slow connection may cause timeout errors. If you
+experience timeout errors, you may want to increase this value. The
+default is `20` seconds.
 
 ## Default value
 
@@ -239,10 +239,10 @@ Integer value with a minimum of `1`
 `:open_timeout`
 
 The timeout setting for opening the connection to an upstream gem
-server. On high-latency networks, even establishing the connection
-to an upstream gem server can take a while. If you experience
-connection failures instead of timeout errors, you may want to
-increase this value. The default is `2` seconds.
+server. On high-latency networks, even establishing the connection to an
+upstream gem server can take a while. If you experience connection
+failures instead of timeout errors, you may want to increase this value.
+The default is `2` seconds.
 
 ## Default value
 
