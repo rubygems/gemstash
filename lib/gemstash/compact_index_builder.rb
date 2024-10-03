@@ -87,7 +87,7 @@ module Gemstash
           else
             ts = Time.now.iso8601
             versions_file.create(
-              compact_index_public_versions(ts), ts
+              compact_index_public_versions(ts), ts.to_s.sub(/\+00:00\z/, "Z")
             )
             @result = file.read
             resource.save("versions.list" => @result)
@@ -176,14 +176,11 @@ module Gemstash
 
       def build_result
         @result = CompactIndex.info(requirements_and_dependencies)
-      rescue Sequel::DatabaseError => e
-        raise "Error building info for #{@name}\n\n```sql\n#{e.sql}\n```\n"
       end
 
     private
 
       def requirements_and_dependencies
-        db_type = DB::Rubygem.db.database_type
         DB::Rubygem.association_left_join(versions: :dependencies).
           where(name: @name).
           where { versions[:indexed] }.
@@ -192,24 +189,17 @@ module Gemstash
             [versions[:number], versions[:platform], versions[:sha256], versions[:info_checksum], versions[:required_ruby_version], versions[:required_rubygems_version], versions[:created_at]]
           end. # rubocop:disable Style/MultilineBlockChain
           select_more do
-            sa = case db_type
-                 when :sqlite then ->(a, b) { string_agg(a, b) }
-                 else ->(a, b) { Sequel.string_agg(a, b) }
-            end
-            [sa.call(dependencies[:requirements], "@").order(dependencies[:rubygem_name], dependencies[:id]).as(:dep_req_agg),
-             sa.call(dependencies[:rubygem_name], ",").order(dependencies[:rubygem_name]).as(:dep_name_agg)]
+            [coalesce(Sequel.string_agg(dependencies[:requirements], "@").order(dependencies[:rubygem_name], dependencies[:id]), "").as(:dep_req_agg),
+             coalesce(Sequel.string_agg(dependencies[:rubygem_name], ",").order(dependencies[:rubygem_name]), "").as(:dep_name_agg)]
           end. # rubocop:disable Style/MultilineBlockChain
           map do |row|
-          reqs = row[:dep_req_agg]&.split("@")
-          dep_names = row[:dep_name_agg]&.split(",")
+          reqs = row[:dep_req_agg].split("@")
+          dep_names = row[:dep_name_agg].split(",")
 
-          raise "Dependencies and requirements are not the same size:\n  reqs: #{reqs.inspect}\n  dep_names: #{dep_names.inspect}\n  row: #{row.inspect}" if dep_names&.size != reqs&.size
+          raise "Dependencies and requirements are not the same size:\n  reqs: #{reqs.inspect}\n  dep_names: #{dep_names.inspect}\n  row: #{row.inspect}" if dep_names.size != reqs.size
 
-          deps = []
-          if reqs
-            dep_names.zip(reqs).each do |name, req|
-              deps << CompactIndex::Dependency.new(name, req)
-            end
+          deps = dep_names.zip(reqs).map! do |name, req|
+            CompactIndex::Dependency.new(name, req)
           end
 
           CompactIndex::GemVersion.new(

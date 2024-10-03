@@ -39,7 +39,7 @@ you push your own private gems as well."
   spec.add_runtime_dependency "lru_redux", "~> 1.1"
   spec.add_runtime_dependency "psych", ">= 3.2.1"
   spec.add_runtime_dependency "puma", "~> 6.1"
-  spec.add_runtime_dependency "sequel", "~> 5.0"
+  spec.add_runtime_dependency "sequel", "~> 5.85"
   spec.add_runtime_dependency "server_health_check-rack", "~> 0.1"
   spec.add_runtime_dependency "sinatra", ">= 1.4", "< 5.0"
   spec.add_runtime_dependency "terminal-table", "~> 3.0"
@@ -53,7 +53,7 @@ you push your own private gems as well."
   # spec.add_runtime_dependency "mysql2", "~> 0.4"
 
   if RUBY_PLATFORM == "java"
-    spec.add_runtime_dependency "jdbc-sqlite3", "~> 3.8"
+    spec.add_runtime_dependency "jdbc-sqlite3", "~> 3.46"
   else
     # SQLite 3.44+ is required for string_agg support
     spec.add_runtime_dependency "sqlite3", ">= 1.68", "< 3.0"
