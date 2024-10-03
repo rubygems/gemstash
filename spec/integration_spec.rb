@@ -127,7 +127,7 @@ RSpec.describe "gemstash integration tests" do
     it "is a conformant gem server", db_transaction: false do
       @gemstash.env.cache.flush
       expect(
-        execute("gem_server_conformance", ["--fail-fast", "--format", "progress", "--tag=~content_length_header"],
+        execute("gem_server_conformance", ["--format", "progress", "--tag=~content_length_header"],
                 env: { "UPSTREAM" => host, "GEM_HOST_API_KEY" => auth_key })
       ).
         to exit_success
