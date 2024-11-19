@@ -144,7 +144,10 @@ RSpec::Matchers.define :exit_success do
 #{@expected_output}
 
 but instead it output:
-#{actual.output}"
+#{actual.output}
+
+and the error was:
+#{actual.err}"
     else
       "expected '#{actual.display_command}' in '#{actual.dir}' to exit with a success code, but it didn't.
 the command output was:
@@ -153,5 +156,13 @@ the command output was:
 and the error was:
 #{actual.err}"
     end
+  end
+
+  failure_message_when_negated do |actual|
+    "expected '#{actual.display_command}' in '#{actual.dir}' to not exit with a success code, but it did
+#{actual.output}
+
+and the error was:
+#{actual.err}"
   end
 end
