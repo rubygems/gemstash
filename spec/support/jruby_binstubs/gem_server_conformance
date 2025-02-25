@@ -1,3 +1,9 @@
 require "rubygems"
 
-load Gem.bin_path("gem_server_conformance", "gem_server_conformance")
+begin
+  load Gem.bin_path("gem_server_conformance", "gem_server_conformance")
+rescue Gem::GemNotFoundException
+  require "bundler"
+  Bundler::Env.write($stderr)
+  raise
+end
