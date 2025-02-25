@@ -181,6 +181,8 @@ module Gemstash
     private
 
       def requirements_and_dependencies
+        return requirements_and_dependencies_without_string_agg if RUBY_PLATFORM == "java"
+
         DB::Rubygem.association_left_join(versions: :dependencies).
           where(name: @name).
           where { versions[:indexed] }.
@@ -208,6 +210,49 @@ module Gemstash
             row[:sha256],
             nil, # info_checksum
             deps,
+            row[:required_ruby_version],
+            row[:required_rubygems_version]
+          )
+        end
+      end
+
+      def requirements_and_dependencies_without_string_agg
+        results = DB::Rubygem.
+                  association_left_join(:versions).
+                  where(name: @name).
+                  where { versions[:indexed] }.
+                  order { [versions[:created_at], versions[:number], versions[:platform]] }.
+                  select do
+                    [
+                      versions[:id].as(:version_id),
+                      versions[:number],
+                      versions[:platform],
+                      versions[:sha256],
+                      versions[:info_checksum],
+                      versions[:required_ruby_version],
+                      versions[:required_rubygems_version],
+                      versions[:created_at]
+                    ]
+                  end
+
+        version_ids = results.map {|v| v[:version_id] }
+
+        deps = DB::Dependency.
+               where(version_id: version_ids).
+               select(:version_id, :rubygem_name, :requirements).
+               order(:version_id, :rubygem_name).
+               each_with_object({}) do |dep, agg|
+          agg[dep.version_id] ||= []
+          agg[dep.version_id] << CompactIndex::Dependency.new(dep.rubygem_name, dep.requirements)
+        end
+
+        results.map do |row|
+          CompactIndex::GemVersion.new(
+            row[:number],
+            row[:platform],
+            row[:sha256],
+            nil, # info_checksum
+            deps[row[:version_id]] || [],
             row[:required_ruby_version],
             row[:required_rubygems_version]
           )
