@@ -431,8 +431,8 @@ RSpec.describe Gemstash::Web do
 
       post "/api/v1/gems", read_gem("example", "0.1.0"), env
       expect(last_response).to_not be_ok
-      expect(last_response.status).to eq(422)
-      expect(JSON.parse(last_response.body)).to eq("error" => "Version already exists", "code" => 422)
+      expect(last_response.status).to eq(409)
+      expect(JSON.parse(last_response.body)).to eq("error" => "Version already exists", "code" => 409)
     end
   end
 end

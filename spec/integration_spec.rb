@@ -69,6 +69,14 @@ RSpec.describe "gemstash integration tests" do
     @gemstash_empty_rubygems.start
   end
 
+  before(:each) do
+    $test_gemstash_server_current_test = self # rubocop:disable Style/GlobalVars
+  end
+
+  after(:each) do
+    $test_gemstash_server_current_test = nil # rubocop:disable Style/GlobalVars
+  end
+
   let(:platform_message) do
     if RUBY_PLATFORM == "java"
       "Java"
@@ -116,6 +124,15 @@ RSpec.describe "gemstash integration tests" do
       clean_env env_name
     end
 
+    it "is a conformant gem server", db_transaction: false do
+      @gemstash.env.cache.flush
+      expect(
+        execute("gem_server_conformance", ["--format", "progress", "--tag=~content_length_header"],
+                env: { "UPSTREAM" => host, "GEM_HOST_API_KEY" => auth_key })
+      ).
+        to exit_success
+    end
+
     context "pushing a gem" do
       before do
         expect(deps.fetch(%w[speaker])).to match_dependencies([])
@@ -152,18 +169,15 @@ RSpec.describe "gemstash integration tests" do
       end
 
       it "finds private gems when just the private source is configured", db_transaction: false do
-        skip "this doesn't work because Rubygems sends /specs.4.8.gz instead of /private/specs.4.8.gz"
         env = { "HOME" => env_dir }
-        expect(execute("gem", ["source", "-r", "https://rubygems.org/"], env: env)).to exit_success
-        expect(execute("gem", ["source", "-a", host], env: env)).to exit_success
+        expect(execute("gem", ["source", "-r", "https://rubygems.org/", "-a", host], env: env)).to exit_success
         expect(execute("gem", ["search", "-ar", "speaker"], env: env)).
           to exit_success.and_output(/speaker \(0.1.0\)/)
       end
 
       it "finds private gems when just the private source is configured with a trailing slash", db_transaction: false do
         env = { "HOME" => env_dir }
-        expect(execute("gem", ["source", "-r", "https://rubygems.org/"], env: env)).to exit_success
-        expect(execute("gem", ["source", "-a", "#{host}/"], env: env)).to exit_success
+        expect(execute("gem", ["source", "-r", "https://rubygems.org/", "-a", "#{host}/"], env: env)).to exit_success
         expect(execute("gem", ["search", "-ar", "speaker"], env: env)).
           to exit_success.and_output(/speaker \(0.1.0\)/)
       end
@@ -219,7 +233,7 @@ RSpec.describe "gemstash integration tests" do
     shared_examples "a bundleable project" do
       it "successfully bundles" do
         env = { "HOME" => dir }
-        expect(execute("bundle", dir: dir, env: env)).to exit_success
+        expect(execute("bundle", %w[install --verbose], dir: dir, env: env)).to exit_success
         expect(execute("bundle", %w[exec speaker hi], dir: dir, env: env)).
           to exit_success.and_output("Hello world, #{platform_message}\n")
       end

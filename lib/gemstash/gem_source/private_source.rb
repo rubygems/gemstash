@@ -43,15 +43,17 @@ module Gemstash
       end
 
       def serve_names
-        halt 403, "Not yet supported"
+        protected(CompactIndexBuilder::Names)
       end
 
       def serve_versions
-        halt 404, "Not yet supported"
+        protected(CompactIndexBuilder::Versions)
       end
 
       def serve_info(name)
-        halt 403, "Not yet supported"
+        halt(404, { "Content-Type" => "text/plain; charset=utf-8" }, "This gem could not be found") unless DB::Rubygem.where(name: name).limit(1).count > 0
+
+        protected(CompactIndexBuilder::Info, name)
       end
 
       def serve_marshal(id)
@@ -96,8 +98,8 @@ module Gemstash
 
     private
 
-      def protected(servable)
-        authorization.protect(self) { servable.serve(self) }
+      def protected(servable, ...)
+        authorization.protect(self) { servable.serve(self, ...) }
       end
 
       def authorization
