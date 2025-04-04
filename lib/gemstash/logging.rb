@@ -12,7 +12,7 @@ end
 module Gemstash
   # :nodoc:
   module Logging
-    include Gemstash::Env::Helper
+    extend Gemstash::Env::Helper
 
     LEVELS = {
       debug: Logger::DEBUG,
@@ -47,6 +47,8 @@ module Gemstash
     end
 
     def self.logger
+      require "debug"
+      debugger
       @logger ||= setup_logger(gemstash_env.log_file)
     end
 
