@@ -47,8 +47,6 @@ module Gemstash
     end
 
     def self.logger
-      require "debug"
-      debugger
       @logger ||= setup_logger(gemstash_env.log_file)
     end
 
@@ -65,6 +63,7 @@ module Gemstash
 
       def call(env)
         env["rack.logger"] = Gemstash::Logging.logger
+        env["rack.errors"] = Gemstash::Env.current.log_file
         @app.call(env)
       end
     end
