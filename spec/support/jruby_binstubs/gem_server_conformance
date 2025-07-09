@@ -1,0 +1,10 @@
+require "rubygems"
+require "bundler/setup"
+
+begin
+  load Gem.bin_path("gem_server_conformance", "gem_server_conformance")
+rescue Gem::GemNotFoundException
+  require "bundler"
+  Bundler::Env.write($stderr)
+  raise
+end

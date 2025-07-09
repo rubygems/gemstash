@@ -16,7 +16,7 @@ module ExecHelpers
 
   # Executes and stores the results for an external command.
   class Result
-    attr_reader :command, :args, :dir, :output
+    attr_reader :command, :args, :dir, :output, :err
 
     def initialize(env, command, args, dir)
       @command = command
@@ -29,7 +29,7 @@ module ExecHelpers
     end
 
     def exec
-      @output, @status = Open3.capture2(patched_env, command, *args, chdir: dir)
+      @output, @err, @status = Open3.capture3(patched_env, command, *args, chdir: dir)
     end
 
     def successful?
@@ -76,7 +76,10 @@ module ExecHelpers
         "BUNDLER_SETUP" => nil,
         "GEM_PATH" => original_gem_path,
         "RUBYLIB" => nil,
-        "RUBYOPT" => nil
+        "RUBYOPT" => nil,
+        "XDG_CONFIG_HOME" => nil,
+        "XDG_CACHE_HOME" => nil,
+        "XDG_DATA_HOME" => nil
       }
     end
 
@@ -141,11 +144,25 @@ RSpec::Matchers.define :exit_success do
 #{@expected_output}
 
 but instead it output:
-#{actual.output}"
+#{actual.output}
+
+and the error was:
+#{actual.err}"
     else
       "expected '#{actual.display_command}' in '#{actual.dir}' to exit with a success code, but it didn't.
 the command output was:
-#{actual.output}"
+#{actual.output}
+
+and the error was:
+#{actual.err}"
     end
+  end
+
+  failure_message_when_negated do |actual|
+    "expected '#{actual.display_command}' in '#{actual.dir}' to not exit with a success code, but it did
+#{actual.output}
+
+and the error was:
+#{actual.err}"
   end
 end
