@@ -59,6 +59,8 @@ jobs:
       GEMSTASH_SPEC_MEMCACHED_SERVERS: localhost:11211
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Setup ruby
         uses: ruby/setup-ruby@v1
         with:
