@@ -7,7 +7,6 @@ require "stringio"
 require "zlib"
 
 module Gemstash
-  # Comment
   class CompactIndexBuilder
     include Gemstash::Env::Helper
     attr_reader :result
@@ -67,7 +66,6 @@ module Gemstash
       @auth.check("fetch")
     end
 
-    # Comment
     class Versions < CompactIndexBuilder
       def fetch_resource
         storage.resource("versions")
@@ -163,7 +161,6 @@ module Gemstash
       end
     end
 
-    # Comment
     class Info < CompactIndexBuilder
       def initialize(auth, name)
         super(auth)
@@ -219,7 +216,6 @@ module Gemstash
       end
     end
 
-    # Comment
     class Names < CompactIndexBuilder
       def fetch_resource
         storage.resource("names")
