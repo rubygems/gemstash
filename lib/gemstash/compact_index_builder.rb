@@ -12,6 +12,12 @@ module Gemstash
     attr_reader :result
 
     def self.serve(app, ...)
+      unless Gemstash::DB::Backfill.compact_index.completed?
+        app.status 404
+        app.body JSON.dump("error" => "Backfills pending, skipping compact index build", "code" => 404)
+        return
+      end
+
       app.content_type "text/plain; charset=utf-8"
       body = new(app.auth, ...).serve
       app.etag Digest::MD5.hexdigest(body)

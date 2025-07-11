@@ -2,10 +2,12 @@ require "rubygems/package"
 
 module Gemstash
   class Backfiller
-    attr_reader :db
+    include Gemstash::Env::Helpers
 
+    attr_reader :db
+    
     def initialize
-      @db = Gemstash::Env.current.db
+      @db = gemstash_env.db
     end
 
     def run
