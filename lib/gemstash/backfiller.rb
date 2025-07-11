@@ -2,21 +2,43 @@ require "rubygems/package"
 
 module Gemstash
   class Backfiller
+    attr_reader :db
+
     def initialize
       @db = Gemstash::Env.current.db
     end
 
     def run
+      if backfills.any?
+        puts "Running #{backfills.size} backfills..."
+      else
+        puts "No backfills to run."
+        return
+      end
+
       backfills.each do |backfill|
         backfill.run
       end
     end
 
+    def run_specific_backfill(backfill_record)
+      backfill_runner = Backfiller.const_get(backfill_record.backfill_class).new(db, storage)
+
+      affected_rows = backfill_runner.records.count
+      backfill_runner.run
+
+      backfill_record.update(completed_at: Time.now, affected_rows: affected_rows)
+    end
 
     def backfills
-      @backfills ||= [
-        CompactIndexesBackfill.new(@db, storage)
-      ]
+      DB::Backfill.pending.each do |record|
+        backfill_runner = Backfiller.const_get(record.backfill_class).new(db, storage)
+
+        affected_rows = backfill_runner.records.count
+        backfill_runner.run
+
+        record.update(completed_at: Time.now, affected_rows: affected_rows)
+      end
     end
 
     def needed?
@@ -27,7 +49,7 @@ module Gemstash
       @storage ||= Gemstash::Storage.for("private").for("gems")
     end
 
-    class Backfill
+    class BackfillRunner
       def initialize(db, storage)
         @db = db
         @storage = storage
@@ -44,10 +66,27 @@ module Gemstash
       def run
         puts "Running backfill: #{self.class.name}"
         puts "Records: #{records.count}"
+
+        failed_rows = 0
         records.each do |record|
-          puts "#{record.class.name}##{record.id}: #{record.full_name}"
-          backfill(record)
+          puts "#{record.class.name}##{record.id}..."
+          begin
+            backfill(record)
+          rescue StandardError => e
+            puts "Error backfilling #{record.class.name}##{record.id}"
+            puts e.message
+            puts e.backtrace.join("\n")
+            failed_rows += 1
+          end
         end
+
+        if failed_rows > 0
+          puts "Backfill failed for #{failed_rows} rows!"
+          puts "Review the output and run the backfill again to fix the errors."
+          puts "If you get this error again, please file an issue at https://github.com/rubygems/gemstash/issues with the output of this backfill."
+        end
+
+        puts "Done!"
       end
 
       def backfill(record)
@@ -55,7 +94,7 @@ module Gemstash
       end
     end
 
-    class CompactIndexesBackfill < Backfill
+    class CompactIndexesBackfillRunner < BackfillRunner
       def records
         DB::Version.where(
           Sequel.or(
@@ -67,7 +106,7 @@ module Gemstash
 
       def backfill(record)
         resource = @storage.resource(record.storage_id)
-        gem_contents = resource.content(:gem)  
+        gem_contents = resource.content(:gem)
         gem = Gem::Package.new(StringIO.new(gem_contents))
 
         sha256 = Digest::SHA256.base64digest(gem_contents)

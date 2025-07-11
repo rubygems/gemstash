@@ -111,6 +111,10 @@ module Gemstash
     end
 
     desc "backfill", "Check for any missing data from upgrades, and backfills the database"
+    method_option :list, :type => :boolean, :default => false, :desc =>
+      "List all known backfills and their status"
+    method_option :rerun, :type => :string, :desc =>
+      "Re-run a specific backfill by name"
     def backfill
       Gemstash::CLI::Backfill.new(self).run
     end

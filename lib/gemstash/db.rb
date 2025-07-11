@@ -19,5 +19,6 @@ module Gemstash
     autoload :Rubygem,       "gemstash/db/rubygem"
     autoload :Upstream,      "gemstash/db/upstream"
     autoload :Version,       "gemstash/db/version"
+    autoload :Backfill,      "gemstash/db/backfill"
   end
 end
