@@ -12,7 +12,7 @@ RSpec.describe Gemstash::CLI::Backfill do
     @said = ""
     result = double(options: cli_options)
     allow(result).to receive(:say) do |x|
-      @said += x.to_s + "\n"
+      @said += "#{x}\n"
       nil
     end
     allow(result).to receive(:set_color) {|x| x }

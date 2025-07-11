@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
 require "rubygems/package"
 
 module Gemstash
+  # Class that reviews existing data, and updates them to fix issues, prepare for new features, etc.
   class Backfiller
     include Gemstash::Env::Helper
 
@@ -49,6 +52,8 @@ module Gemstash
       @storage ||= Gemstash::Storage.for("private").for("gems")
     end
 
+    # Base class for running a specific backfill
+    #  Subclasses need to implement the `records` and `backfill` methods.
     class BackfillRunner
       def initialize(db, storage)
         @db = db
@@ -94,6 +99,7 @@ module Gemstash
       end
     end
 
+    # Backfill to support Compact Indexes
     class CompactIndexesBackfillRunner < BackfillRunner
       def records
         DB::Version.where(

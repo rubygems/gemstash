@@ -1,7 +1,11 @@
+# frozen_string_literal: true
+
 require "terminal-table"
 
 module Gemstash
   class CLI
+    # This implements the command line backfill task:
+    #  $ gemstash backfill
     class Backfill < Gemstash::CLI::Base
       def run
         prepare
@@ -27,7 +31,7 @@ module Gemstash
         rows = backfills.map do |backfill|
           status = backfill.completed_at ? "Completed" : "Pending"
           completed_at = backfill.completed_at ? backfill.completed_at.strftime("%Y-%m-%d %H:%M:%S") : "N/A"
-          affected_rows = backfill.affected_rows || "N/A"
+          backfill.affected_rows || "N/A"
           [
             backfill.backfill_class,
             status,

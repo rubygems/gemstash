@@ -7,6 +7,7 @@ require "stringio"
 require "zlib"
 
 module Gemstash
+  # Class that builds the compact index.
   class CompactIndexBuilder
     include Gemstash::Env::Helper
     attr_reader :result
@@ -72,6 +73,7 @@ module Gemstash
       @auth.check("fetch")
     end
 
+    # Builds the compact index for all versions.
     class Versions < CompactIndexBuilder
       def fetch_resource
         storage.resource("versions")
@@ -167,6 +169,7 @@ module Gemstash
       end
     end
 
+    # Builds the compact index for a specific gem.
     class Info < CompactIndexBuilder
       def initialize(auth, name)
         super(auth)
@@ -222,6 +225,7 @@ module Gemstash
       end
     end
 
+    # Builds the compact index for all names.
     class Names < CompactIndexBuilder
       def fetch_resource
         storage.resource("names")
