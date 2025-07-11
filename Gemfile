@@ -5,6 +5,7 @@ source "https://rubygems.org"
 gemspec
 gem "aruba"
 gem "citrus", "~> 3.0"
+gem "irb"
 gem "octokit"
 gem "rack-test", "~> 2.1"
 gem "rake", "~> 13.0"
@@ -32,3 +33,5 @@ group :test do
   gem "gem_server_conformance", "~> 0.1.5"
   gem "mock_redis"
 end
+
+gem "debug", "~> 1.11"

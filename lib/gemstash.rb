@@ -4,6 +4,7 @@
 module Gemstash
   autoload :ApiKeyAuthorization, "gemstash/api_key_authorization"
   autoload :Authorization,       "gemstash/authorization"
+  autoload :Backfiller,          "gemstash/backfiller"
   autoload :DB,                  "gemstash/db"
   autoload :Cache,               "gemstash/cache"
   autoload :CLI,                 "gemstash/cli"
