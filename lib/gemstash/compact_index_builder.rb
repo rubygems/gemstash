@@ -14,9 +14,7 @@ module Gemstash
 
     def self.serve(app, ...)
       unless Gemstash::DB::Backfill.compact_index.completed?
-        app.status 404
-        app.body JSON.dump("error" => "Backfills pending, skipping compact index build", "code" => 404)
-        return
+        halt(404, { "Content-Type" => "text/plain; charset=utf-8" }, "Backfills pending, skipping compact index build")
       end
 
       app.content_type "text/plain; charset=utf-8"
