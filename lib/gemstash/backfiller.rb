@@ -2,24 +2,29 @@ require "rubygems/package"
 
 module Gemstash
   class Backfiller
-    include Gemstash::Env::Helpers
+    include Gemstash::Env::Helper
 
     attr_reader :db
-    
+
     def initialize
       @db = gemstash_env.db
     end
 
     def run
       if backfills.any?
-        puts "Running #{backfills.size} backfills..."
+        puts "Running #{backfills.count} backfills..."
       else
         puts "No backfills to run."
         return
       end
 
-      backfills.each do |backfill|
-        backfill.run
+      backfills.each do |record|
+        backfill_runner = Backfiller.const_get(record.backfill_class).new(db, storage)
+
+        affected_rows = backfill_runner.records.count
+        backfill_runner.run
+
+        record.update(completed_at: Time.now, affected_rows: affected_rows)
       end
     end
 
@@ -33,14 +38,7 @@ module Gemstash
     end
 
     def backfills
-      DB::Backfill.pending.each do |record|
-        backfill_runner = Backfiller.const_get(record.backfill_class).new(db, storage)
-
-        affected_rows = backfill_runner.records.count
-        backfill_runner.run
-
-        record.update(completed_at: Time.now, affected_rows: affected_rows)
-      end
+      DB::Backfill.pending
     end
 
     def needed?
