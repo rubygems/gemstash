@@ -13,8 +13,6 @@ module Gemstash
     attr_reader :result
 
     def self.serve(app, ...)
-      halt(404, { "Content-Type" => "text/plain; charset=utf-8" }, "Backfills pending, skipping compact index build") unless Gemstash::DB::Backfill.compact_index.completed?
-
       app.content_type "text/plain; charset=utf-8"
       body = new(app.auth, ...).serve
       app.etag Digest::MD5.hexdigest(body)
