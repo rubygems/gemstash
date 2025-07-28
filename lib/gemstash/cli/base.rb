@@ -47,8 +47,17 @@ module Gemstash
       end
 
       def check_backfills
-        # require 'debug'; debugger
-        pending_backfills = DB::Backfill.pending
+        pending_backfills = Gemstash::DB::Backfill.pending
+        # For some installs (and new installs), the backfill may not even be needed if there's not affected rows.
+        pending_backfills.reject! do |backfill|
+          if backfill.needed?
+            backfill.mark_completed
+            false
+          else
+            true
+          end
+        end
+
         if pending_backfills.any?
           @cli.say(@cli.set_color("Backfills pending, some features may be disabled", :red))
           pending_backfills.each do |backfill|

@@ -27,7 +27,7 @@ module Gemstash
         affected_rows = backfill_runner.records.count
         backfill_runner.run
 
-        record.update(completed_at: Time.now, affected_rows: affected_rows)
+        backfill_runner.mark_completed(affected_rows: affected_rows)
       end
     end
 
@@ -92,6 +92,10 @@ module Gemstash
         end
 
         puts "Done!"
+      end
+
+      def mark_completed(affected_rows: 0)
+        backfill_record.update(completed_at: Time.now, affected_rows: affected_rows)
       end
 
       def backfill(record)
