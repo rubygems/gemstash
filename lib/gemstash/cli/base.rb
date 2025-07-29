@@ -51,9 +51,9 @@ module Gemstash
         # For some installs (and new installs), the backfill may not even be needed if there's not affected rows.
         pending_backfills.reject! do |backfill|
           if backfill.needed?
-            backfill.mark_completed
             false
           else
+            backfill.mark_completed
             true
           end
         end
