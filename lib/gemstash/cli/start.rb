@@ -11,6 +11,7 @@ module Gemstash
       def run
         prepare
         @cli.say("Starting gemstash!", :green)
+        check_backfills
         case @cli.options[:daemonize]
         when false then warn "The --no-daemonize option was removed and has no effect."
         when true then warn "The --daemonize option was removed and has no effect."

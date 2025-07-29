@@ -43,14 +43,17 @@ module Gemstash
       end
 
       def serve_names
+        check_compact_index_backfill
         protected(CompactIndexBuilder::Names)
       end
 
       def serve_versions
+        check_compact_index_backfill
         protected(CompactIndexBuilder::Versions)
       end
 
       def serve_info(name)
+        check_compact_index_backfill
         halt(404, { "Content-Type" => "text/plain; charset=utf-8" }, "This gem could not be found") unless DB::Rubygem.where(name: name).limit(1).count > 0
 
         protected(CompactIndexBuilder::Info, name)
@@ -99,7 +102,13 @@ module Gemstash
     private
 
       def protected(servable, ...)
-        authorization.protect(self) { servable.serve(self, ...) }
+        authorization.protect(self) do
+          servable.serve(self, ...)
+        end
+      end
+
+      def check_compact_index_backfill
+        halt(404, { "Content-Type" => "text/plain; charset=utf-8" }, "Backfills pending, skipping compact index build") unless DB::Backfill.compact_index.completed?
       end
 
       def authorization

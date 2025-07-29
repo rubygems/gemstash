@@ -14,6 +14,7 @@ module Gemstash
     autoload :Status,    "gemstash/cli/status"
     autoload :Stop,      "gemstash/cli/stop"
     autoload :Info,      "gemstash/cli/info"
+    autoload :Backfill,  "gemstash/cli/backfill"
 
     # Thor::Error for the CLI, which colors the message red.
     class Error < Thor::Error
@@ -107,6 +108,15 @@ module Gemstash
     desc "info", "Check current gemstash instance info"
     def info
       say Gemstash::CLI::Info.new(self).run
+    end
+
+    desc "backfill", "Check for any missing data from upgrades, and backfills the database"
+    method_option :list, :type => :boolean, :default => false, :desc =>
+      "List all known backfills and their status"
+    method_option :rerun, :type => :string, :desc =>
+      "Re-run a specific backfill by name"
+    def backfill
+      Gemstash::CLI::Backfill.new(self).run
     end
 
   private

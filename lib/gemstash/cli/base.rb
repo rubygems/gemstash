@@ -46,6 +46,27 @@ module Gemstash
                                              "install version #{version} or later.")
       end
 
+      def check_backfills
+        pending_backfills = Gemstash::DB::Backfill.pending
+        # For some installs (and new installs), the backfill may not even be needed if there's not affected rows.
+        pending_backfills.reject! do |backfill|
+          if backfill.needed?
+            false
+          else
+            backfill.mark_completed
+            true
+          end
+        end
+
+        if pending_backfills.any?
+          @cli.say(@cli.set_color("Backfills pending, some features may be disabled", :red))
+          pending_backfills.each do |backfill|
+            @cli.say(@cli.set_color("- #{backfill.backfill_class}: #{backfill.description}", :red))
+          end
+          @cli.say(@cli.set_color("Run `gemstash backfill` to fix this.", :red))
+        end
+      end
+
       def pidfile_args
         ["--pidfile", gemstash_env.pidfile]
       end
