@@ -46,9 +46,7 @@ Simply start the Gemstash server with the `gemstash` command:
 
     $ gemstash start
 
-You may have noticed that the command finished quickly. This is because
-Gemstash will run the server in the background by default. The server
-runs on port 9292.
+The server runs on port 9292.
 
 ### Bundling
 
