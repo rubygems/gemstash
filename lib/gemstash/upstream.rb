@@ -18,7 +18,7 @@ module Gemstash
       url = "https://#{url}" unless %r{^https?://}.match?(url)
       @uri = URI(url)
       @user_agent = user_agent
-      raise "URL '#{@uri}' is not valid!" unless @uri.to_s&.match?(URI::DEFAULT_PARSER.make_regexp)
+      raise "URL '#{@uri}' is not valid!" unless @uri.to_s.match?(URI::DEFAULT_PARSER.make_regexp)
     end
 
     def url(path = nil, params = nil)
