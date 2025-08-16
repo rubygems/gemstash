@@ -10,6 +10,8 @@ jobs:
       BUNDLE_WITH: "linting"
     steps:
     - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: 3.3

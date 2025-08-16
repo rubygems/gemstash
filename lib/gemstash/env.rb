@@ -129,7 +129,7 @@ module Gemstash
           db = if RUBY_PLATFORM == "java"
             Sequel.connect("jdbc:sqlite:#{db_path}", config.database_connection_config)
           else
-            Sequel.connect("sqlite://#{CGI.escape(db_path)}", config.database_connection_config)
+            Sequel.connect("sqlite://#{db_path}", config.database_connection_config)
           end
         when "postgres", "mysql", "mysql2"
           db_url = config[:db_url]

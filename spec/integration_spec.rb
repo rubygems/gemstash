@@ -152,18 +152,27 @@ RSpec.describe "gemstash integration tests" do
       end
 
       it "finds private gems when just the private source is configured", db_transaction: false do
-        skip "this doesn't work because Rubygems sends /specs.4.8.gz instead of /private/specs.4.8.gz"
+        File.write(File.join(env_dir, ".gemrc"), "---\nsources:\n  - #{host}\n")
         env = { "HOME" => env_dir }
+
+        # This way of adjusting sources is required for ruby 3.2 and 3.1 to pass.
         expect(execute("gem", ["source", "-r", "https://rubygems.org/"], env: env)).to exit_success
         expect(execute("gem", ["source", "-a", host], env: env)).to exit_success
+
         expect(execute("gem", ["search", "-ar", "speaker"], env: env)).
           to exit_success.and_output(/speaker \(0.1.0\)/)
       end
 
       it "finds private gems when just the private source is configured with a trailing slash", db_transaction: false do
+        # The presence of `update_sources: true` in the .gemrc file breaks this test, and only this test.
+        # Write a clean .gemrc file to avoid that. (This also makes the test much faster.)
+        File.write(File.join(env_dir, ".gemrc"), "---\nsources:\n  - #{host}/\n")
         env = { "HOME" => env_dir }
+
+        # This way of adjusting sources is required for ruby 3.2 and 3.1 to pass.
         expect(execute("gem", ["source", "-r", "https://rubygems.org/"], env: env)).to exit_success
         expect(execute("gem", ["source", "-a", "#{host}/"], env: env)).to exit_success
+
         expect(execute("gem", ["search", "-ar", "speaker"], env: env)).
           to exit_success.and_output(/speaker \(0.1.0\)/)
       end

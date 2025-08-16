@@ -12,6 +12,8 @@ end
 module Gemstash
   # :nodoc:
   module Logging
+    extend Gemstash::Env::Helper
+
     LEVELS = {
       debug: Logger::DEBUG,
       info: Logger::INFO,
@@ -45,7 +47,7 @@ module Gemstash
     end
 
     def self.logger
-      @logger ||= setup_logger($stdout)
+      @logger ||= setup_logger(gemstash_env.log_file)
     end
 
     def self.reset
@@ -61,6 +63,7 @@ module Gemstash
 
       def call(env)
         env["rack.logger"] = Gemstash::Logging.logger
+        env["rack.errors"] = Gemstash::Env.current.log_file
         @app.call(env)
       end
     end
