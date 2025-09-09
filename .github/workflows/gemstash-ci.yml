@@ -12,20 +12,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: ["3.1", "3.2", "3.3", "jruby-9.4"]
+        ruby: ["3.2", "3.3", "3.4", "jruby-9.4"]
         db_adapter: ["sqlite3"]
         cache_type: ["memory"]
         include:
-          - ruby: "3.3"
+          - ruby: "3.4"
             db_adapter: "postgres"
             cache_type: "memory"
-          - ruby: "3.3"
+          - ruby: "3.4"
             db_adapter: "mysql2"
             cache_type: "memory"
-          - ruby: "3.3"
+          - ruby: "3.4"
             db_adapter: "sqlite3"
             cache_type: "memcached"
-          - ruby: "3.3"
+          - ruby: "3.4"
             db_adapter: "sqlite3"
             cache_type: "redis"
           - ruby: "jruby-9.4"
@@ -36,7 +36,7 @@ jobs:
             cache_type: "redis"
     services:
       postgres:
-        image: postgres:13
+        image: postgres:17
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
