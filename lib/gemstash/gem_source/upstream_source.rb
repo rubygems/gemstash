@@ -62,6 +62,10 @@ module Gemstash
         redirect index_upstream.url("versions", request.query_string)
       end
 
+      def serve_gem_versions(name)
+        redirect index_upstream.url("api/v1/versions/#{name}", request.query_string)
+      end
+
       def serve_info(name)
         redirect index_upstream.url("info/#{name}", request.query_string)
       end
