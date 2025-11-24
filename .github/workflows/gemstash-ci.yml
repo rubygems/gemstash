@@ -58,7 +58,7 @@ jobs:
       GEMSTASH_SPEC_REDIS_SERVERS: redis://localhost:6379
       GEMSTASH_SPEC_MEMCACHED_SERVERS: localhost:11211
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           persist-credentials: false
       - name: Setup ruby

@@ -9,7 +9,7 @@ jobs:
     env:
       BUNDLE_WITH: "linting"
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         persist-credentials: false
     - uses: ruby/setup-ruby@v1
