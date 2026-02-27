@@ -128,6 +128,16 @@ module Gemstash
         serve_cached(id, :gem)
       end
 
+      def serve_info(name)
+        http_client = http_client_for(upstream)
+        http_client.get("info/#{name}")
+      end
+
+      def serve_versions
+        http_client = http_client_for(upstream)
+        http_client.get("versions")
+      end
+
       def serve_latest_specs
         http_client = http_client_for(upstream)
         http_client.get("latest_specs.4.8.gz")
