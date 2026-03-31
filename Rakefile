@@ -25,3 +25,5 @@ task :doc do
 end
 
 task build: :doc
+
+Rake::Task["release:guard_clean"].clear
