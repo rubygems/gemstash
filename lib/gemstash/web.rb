@@ -7,7 +7,7 @@ require "gemstash"
 module Gemstash
   # :nodoc:
   class Web < Sinatra::Base
-    ruby2_keywords def initialize(options = {})
+    def initialize(options = {})
       raise ArgumentError unless options.is_a?(Hash)
 
       @gemstash_env = options[:gemstash_env] || Gemstash::Env.new
