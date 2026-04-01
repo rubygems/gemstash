@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-ENV["RACK_ENV"] ||= "production"
+ENV["RACK_ENV"] ||= ENV["APP_ENV"] || "production"
 
 require "gemstash"
 require "puma/commonlogger"
