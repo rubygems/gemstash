@@ -24,8 +24,8 @@ platform :ruby do
 end
 
 group :linting do
-  gem "rubocop", "~> 1.44"
-  gem "rubocop-performance", "~> 1.5"
+  gem "rubocop", "~> 1.72"
+  gem "rubocop-performance", "~> 1.24"
 end
 
 group :test do

@@ -17,5 +17,5 @@ jobs:
         ruby-version: 3.3
         bundler-cache: true # 'bundle install' and cache
     - name: Rubocop
-      run: bundle exec rubocop
+      run: bundle exec rake rubocop
 
