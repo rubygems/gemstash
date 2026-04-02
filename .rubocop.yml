@@ -1,5 +1,5 @@
 inherit_from: .rubocop-bundler.yml
-require:
+plugins:
   - rubocop-performance
 AllCops:
   NewCops: disable

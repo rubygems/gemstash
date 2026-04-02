@@ -4,7 +4,11 @@ require "bundler/gem_tasks"
 require "rspec/core/rake_task"
 require "rubocop/rake_task"
 
-RuboCop::RakeTask.new
+# Workaround: some rubocop versions prioritize ~/.config/rubocop/config.yml
+# over the project's .rubocop.yml, so we explicitly specify the config file.
+RuboCop::RakeTask.new do |t|
+  t.options = %w[-c .rubocop.yml]
+end
 
 desc "Run specs"
 RSpec::Core::RakeTask.new(:spec) do |t|
