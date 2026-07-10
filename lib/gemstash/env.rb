@@ -11,7 +11,7 @@ require "pathname"
 module Gemstash
   # Storage for application-wide variables and configuration.
   class Env
-    # The Gemstash::Env must be set before being retreived via
+    # The Gemstash::Env must be set before being retrieved via
     # Gemstash::Env.current. This error is thrown when that is not honored.
     class EnvNotSetError < StandardError
     end
