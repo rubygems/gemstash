@@ -50,6 +50,17 @@ module Gemstash
         halt 404, "Not yet supported"
       end
 
+      def serve_gem_versions(name)
+        authorization.protect(self) do
+          auth.check("fetch") if gemstash_env.config[:protected_fetch]
+          name.slice! ".json"
+          gem = fetch_gem(name)
+          halt 404 unless gem.exist?(:spec)
+          content_type "application/json;charset=UTF-8"
+          fetch_gem_versions(name).to_json
+        end
+      end
+
       def serve_info(name)
         halt 403, "Not yet supported"
       end
@@ -117,6 +128,29 @@ module Gemstash
         halt 404 unless gem.exist?(:gem)
         halt 403, "That gem has been yanked" unless gem.properties[:indexed]
         gem
+      end
+
+      def fetch_gem_versions(gem)
+        results = db["
+          SELECT rubygem.name,
+                 version.number, version.platform
+          FROM rubygems rubygem
+          JOIN versions version
+            ON version.rubygem_id = rubygem.id
+          WHERE rubygem.name = ?
+            AND version.indexed = ?", gem.to_a, true].to_a
+        results.group_by {|r| r[:name] }.each do |rows|
+          requirements = rows.group_by {|r| [r[:number], r[:platform]] }
+
+          value = requirements.map do |(version, platform)|
+            {
+              :number => version,
+              :platform => platform
+            }
+          end
+
+          yield(gem, value)
+        end
       end
     end
   end

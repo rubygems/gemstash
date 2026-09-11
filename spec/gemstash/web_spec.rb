@@ -201,6 +201,63 @@ RSpec.describe Gemstash::Web do
     end
   end
 
+  context "GET /api/v1/versions/:name" do
+    context "from the default upstream" do
+      let(:current_env) { Gemstash::Env.current }
+      let(:upstream) { Gemstash::Upstream.new(current_env.config[:rubygems_url]) }
+      let(:storage) { Gemstash::LocalStorage.for("gem_cache").for(upstream.host_id) }
+
+      it "fetches the gem informations as json" do
+        result = [{
+          "number" => "1.0.0",
+          "platform" => "ruby"
+        }]
+
+        get "/api/v1/versions/rack.json", {}, rack_env
+        expect(last_response).to be_ok
+        expect(JSON.parse(last_response.body)).to eq(result)
+      end
+
+      it "can be called multiple times without error" do
+        get "/api/v1/versions/rack.json", {}, rack_env
+        get "/api/v1/versions/rack.json", {}, rack_env
+      end
+    end
+
+    context "from private gems" do
+      let(:gem_source) { Gemstash::GemSource::PrivateSource }
+      let(:storage) { Gemstash::LocalStorage.for("private").for("gems") }
+
+      context "with a missing gem" do
+        it "halts with 404" do
+          get "/api/v1/versions/unknown.json", {}, rack_env
+          expect(last_response).to_not be_ok
+          expect(last_response.status).to eq(404)
+          expect(last_response.body).to match(/not found/i)
+        end
+      end
+
+      context "with a regular gem" do
+        before do
+          gem_id = insert_rubygem "example"
+          insert_version gem_id, "0.1.0"
+          storage.resource("example-0.1.0").save({ gem: "Example gem content" }, indexed: true)
+        end
+
+        it "fetches the gem informations as json" do
+          result = [{
+            "number" => "0.1.0",
+            "platform" => "ruby"
+          }]
+
+          get "/api/v1/versions/example.json", {}, rack_env
+          expect(last_response).to be_ok
+          expect(JSON.parse(last_response.body)).to eq(result)
+        end
+      end
+    end
+  end
+
   context "GET /gems/:id" do
     context "from the default upstream" do
       let(:current_env) { Gemstash::Env.current }
