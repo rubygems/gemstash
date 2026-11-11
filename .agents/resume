@@ -4,4 +4,4 @@ set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 # SQLite and the in-memory cache need no services. Never install on resume.
-mise exec -- bundle check
+MISE_AUTO_INSTALL=false mise exec -- bundle check
