@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+# Assumes mise is on PATH.
+echo "Installing native dependencies and Ruby"
+mise trust mise.toml
+mise bootstrap --yes --only packages,tools
+
+echo "Setting up the development environment"
+mise exec -- bin/setup
+echo "Gemstash setup finished in ${SECONDS}s"

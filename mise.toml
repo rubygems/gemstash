@@ -1,0 +1,16 @@
+[tools]
+# Matches the primary CRuby version in CI.
+ruby = "3.3"
+
+[settings.ruby]
+# Precompiled Ruby generates broken gem launchers under a custom GEM_HOME.
+compile = true
+
+[bootstrap.packages]
+"apt:build-essential" = "latest"
+"apt:libssl-dev" = "latest"
+"apt:libyaml-dev" = "latest"
+"apt:zlib1g-dev" = "latest"
+"apt:libsqlite3-dev" = "latest"
+"apt:default-libmysqlclient-dev" = "latest"
+"apt:libpq-dev" = "latest"
