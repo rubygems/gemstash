@@ -165,6 +165,29 @@ Then, run `rake` to run RuboCop and the tests. While developing, you can
 run `bin/gemstash` to run Gemstash. You can also run `bin/console` for
 an interactive prompt that will allow you to experiment.
 
+### macOS Dependencies
+
+If you're developing on macOS, you may encounter issues with installing the PostgreSQL and MySQL native gems. To resolve these:
+
+1. Install the required libraries via Homebrew:
+   ```
+   brew install mysql libpq
+   ```
+
+2. Configure Bundler to use the correct paths for building the native extensions:
+   ```
+   # For PostgreSQL
+   bundle config build.pg --with-pg-config=/usr/local/Cellar/libpq/[VERSION]/bin/pg_config
+   # Replace [VERSION] with your installed libpq version (e.g., 17.4_1)
+
+   # For MySQL
+   bundle config build.mysql2 --with-mysql-dir=/usr/local/opt/mysql
+   ```
+
+3. Run `bin/setup` again to complete the installation.
+
+These configurations tell the Ruby gem system where to find the necessary headers and libraries needed to compile the native extensions for these gems.
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at
