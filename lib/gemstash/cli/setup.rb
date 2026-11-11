@@ -163,6 +163,7 @@ module Gemstash
           else
             @cli.say "Creating the file storage path '#{dir}'"
             FileUtils.mkpath(dir)
+            FileUtils.chmod(0o700, dir)
           end
         end
       end
@@ -171,6 +172,8 @@ module Gemstash
         config_dir = File.dirname(config_file)
         FileUtils.mkpath(config_dir) unless Dir.exist?(config_dir)
         gemstash_env.atomic_write(config_file) {|f| f.write(YAML.dump(@config)) }
+        # The config may hold a db_url with credentials, so keep it owner-only.
+        FileUtils.chmod(0o600, config_file) if File.exist?(config_file)
       end
 
       def save_metadata

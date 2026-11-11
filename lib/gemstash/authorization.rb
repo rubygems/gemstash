@@ -29,7 +29,7 @@ module Gemstash
 
       Gemstash::DB::Authorization.insert_or_update(auth_key, permissions, name)
       gemstash_env.cache.invalidate_authorization(auth_key)
-      log.info "Authorization '#{auth_key}' updated with access to '#{permissions}'"
+      log.info "Authorization '#{log_identifier(auth_key, name)}' updated with access to '#{permissions}'"
     end
 
     def self.remove(auth_key)
@@ -38,7 +38,15 @@ module Gemstash
 
       record.destroy
       gemstash_env.cache.invalidate_authorization(auth_key)
-      log.info "Authorization '#{auth_key}' with access to '#{record.permissions}' removed"
+      log.info "Authorization '#{log_identifier(auth_key, record.name)}' with access to '#{record.permissions}' removed"
+    end
+
+    # A log-safe identifier: the name if set, else a masked key fingerprint — never the raw key.
+    def self.log_identifier(auth_key, name = nil)
+      return name unless name.to_s.strip.empty?
+
+      key = auth_key.to_s
+      key.length > 4 ? "****#{key[-4..]}" : "****"
     end
 
     def self.check(auth_key, permission)

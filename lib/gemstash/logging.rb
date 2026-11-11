@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "fileutils"
 require "logger"
 
 begin
@@ -34,6 +35,8 @@ module Gemstash
 
     def self.setup_logger(logfile)
       @logger = Logger.new(logfile, 2, 10_485_760)
+      # Logs can contain authorization activity; keep owner-only. logfile is an IO (e.g. $stdout) on the stdout path.
+      FileUtils.chmod(0o600, logfile) if logfile.is_a?(String) && File.exist?(logfile)
       @logger.level = Logger::INFO
       @logger.datetime_format = "%d/%b/%Y:%H:%M:%S %z"
       @logger.formatter = proc do |severity, datetime, _progname, msg|

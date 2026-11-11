@@ -37,6 +37,15 @@ module Gemstash
       !user.to_s.empty? || !password.to_s.empty?
     end
 
+    # The upstream URL with any userinfo (user:password) stripped — use for
+    # anything persisted or logged so URL credentials don't leak into those sinks.
+    def without_credentials
+      scrubbed = @uri.dup
+      scrubbed.user = nil
+      scrubbed.password = nil
+      scrubbed.to_s
+    end
+
     # Utilized as the parent directory for cached gems
     def host_id
       @host_id ||= "#{host}_#{hash}"
