@@ -11,7 +11,14 @@ RSpec.describe Gemstash::Web do
   let(:http_client_builder) do
     Class.new do
       def for(server_url, timeout = 20)
+        page = [200, { "CONTENT-TYPE" => "text/html" }, "<script>alert(1)</script>"]
+
         stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+          stub.get("/gems/page-1.0.0.gem") { page }
+          stub.get("/quick/Marshal.4.8/page-1.0.0.gemspec.rz") { page }
+          stub.get("/specs.4.8.gz") { page }
+          stub.get("/latest_specs.4.8.gz") { page }
+          stub.get("/prerelease_specs.4.8.gz") { page }
           stub.get("/gems/rack") { [200, { "CONTENT-TYPE" => "octet/stream" }, "zapatito"] }
           stub.get("/gems/rack-1.0.0.gem") { [200, { "CONTENT-TYPE" => "octet/stream" }, "zapatito-1.0.0"] }
           stub.get("/gems/rack-1.1.0.gem") { [200, { "CONTENT-TYPE" => "octet/stream" }, "zapatito-1.1.0"] }
@@ -201,6 +208,16 @@ RSpec.describe Gemstash::Web do
     end
   end
 
+  %w[/specs.4.8.gz /latest_specs.4.8.gz /prerelease_specs.4.8.gz].each do |index|
+    context "GET #{index}" do
+      it "does not serve the content type of the upstream" do
+        get index, {}, rack_env
+        expect(last_response.body).to eq("<script>alert(1)</script>")
+        expect(last_response.headers["CONTENT-TYPE"]).to eq("application/octet-stream")
+      end
+    end
+  end
+
   context "GET /gems/:id" do
     context "from the default upstream" do
       let(:current_env) { Gemstash::Env.current }
@@ -210,7 +227,7 @@ RSpec.describe Gemstash::Web do
       it "fetches the gem file, stores, and serves it" do
         get "/gems/rack", {}, rack_env
         expect(last_response.body).to eq("zapatito")
-        expect(last_response.headers["CONTENT-TYPE"]).to eq("octet/stream")
+        expect(last_response.headers["CONTENT-TYPE"]).to eq("application/octet-stream")
         expect(storage.resource("rack").exist?(:gem)).to be_truthy
       end
 
@@ -226,6 +243,16 @@ RSpec.describe Gemstash::Web do
         get "/gems/rack", {}, rack_env
         expect(storage.resource("rack").properties[:headers][:spec]).to eq("content-type" => "octet/stream")
         expect(storage.resource("rack").properties[:headers][:gem]).to eq("content-type" => "octet/stream")
+      end
+
+      it "does not serve the content type of the upstream, even for a gem that is already cached" do
+        2.times do
+          get "/gems/page-1.0.0.gem", {}, rack_env
+          expect(last_response.body).to eq("<script>alert(1)</script>")
+          expect(last_response.headers["CONTENT-TYPE"]).to eq("application/octet-stream")
+        end
+
+        expect(storage.resource("page-1.0.0").properties[:headers][:gem]).to eq("content-type" => "text/html")
       end
 
       it "indexes the cached gem" do
@@ -256,7 +283,7 @@ RSpec.describe Gemstash::Web do
         expect(storage.resource("rack").exist?(:gem)).to be_falsey
         get "/gems/rack", {}, rack_env
         expect(last_response.body).to eq("zapatito")
-        expect(last_response.headers["CONTENT-TYPE"]).to eq("octet/stream")
+        expect(last_response.headers["CONTENT-TYPE"]).to eq("application/octet-stream")
         expect(storage.resource("rack").exist?(:gem)).to be_truthy
       end
     end
@@ -314,7 +341,7 @@ RSpec.describe Gemstash::Web do
       it "fetches the marshalled gemspec, stores, and serves it" do
         get "/quick/Marshal.4.8/rack.gemspec.rz", {}, rack_env
         expect(last_response.body).to eq("specatito")
-        expect(last_response.headers["CONTENT-TYPE"]).to eq("octet/stream")
+        expect(last_response.headers["CONTENT-TYPE"]).to eq("application/octet-stream")
         expect(storage.resource("rack").exist?(:spec)).to be_truthy
       end
 
@@ -330,6 +357,16 @@ RSpec.describe Gemstash::Web do
         get "/quick/Marshal.4.8/rack.gemspec.rz", {}, rack_env
         expect(storage.resource("rack").properties[:headers][:gem]).to eq("content-type" => "octet/stream")
         expect(storage.resource("rack").properties[:headers][:spec]).to eq("content-type" => "octet/stream")
+      end
+
+      it "does not serve the content type of the upstream, even for a spec that is already cached" do
+        2.times do
+          get "/quick/Marshal.4.8/page-1.0.0.gemspec.rz", {}, rack_env
+          expect(last_response.body).to eq("<script>alert(1)</script>")
+          expect(last_response.headers["CONTENT-TYPE"]).to eq("application/octet-stream")
+        end
+
+        expect(storage.resource("page-1.0.0").properties[:headers][:spec]).to eq("content-type" => "text/html")
       end
 
       it "indexes the cached spec" do
@@ -359,7 +396,7 @@ RSpec.describe Gemstash::Web do
         expect(storage.resource("rack").exist?(:spec)).to eq(false)
         get "/quick/Marshal.4.8/rack.gemspec.rz", {}, rack_env
         expect(last_response.body).to eq("specatito")
-        expect(last_response.headers["CONTENT-TYPE"]).to eq("octet/stream")
+        expect(last_response.headers["CONTENT-TYPE"]).to eq("application/octet-stream")
         expect(storage.resource("rack").exist?(:spec)).to eq(true)
       end
     end
