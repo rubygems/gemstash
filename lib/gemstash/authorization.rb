@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "set"
-
 module Gemstash
   # An action was not authorized and should cause the server to send a 401.
   class NotAuthorizedError < StandardError

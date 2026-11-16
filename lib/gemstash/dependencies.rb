@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "cgi"
-require "set"
 
 module Gemstash
   # :nodoc:
