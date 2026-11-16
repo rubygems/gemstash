@@ -22,13 +22,13 @@ Preconditions:
 
 - A run started with `$S launch --protected-fetch` and a healthy `$S doctor $RUN` (its `info` line shows `protected_fetch true`).
 
-- **Keys.** Run `$S run $RUN keys 'gemstash authorize push --key verify-push-only && gemstash authorize fetch --key verify-fetch-only'`. Exit `0`.
-- **Push.** Run `$S make-gem $RUN verify-protected 0.1.0`, then `$S run $RUN push 'GEM_HOST_API_KEY=verify-push-only gem push --host $VERIFY_GEMSTASH_URL/private verify-protected-0.1.0.gem'`. Exit `0`.
-- **Anonymous download.** Run `$S run $RUN fetch-anon 'curl -s -o /dev/null -w "HTTP %{http_code}\n" $VERIFY_GEMSTASH_URL/private/gems/verify-protected-0.1.0.gem'`. Stdout `HTTP 401`.
-- **Push-only key.** Run `$S run $RUN fetch-push-key 'curl -s -o /dev/null -w "HTTP %{http_code}\n" -u verify-push-only: $VERIFY_GEMSTASH_URL/private/gems/verify-protected-0.1.0.gem'`. Stdout `HTTP 401`.
-- **Fetch key.** Run `$S run $RUN fetch-fetch-key 'curl -s -o got.gem -w "HTTP %{http_code}\n" -u verify-fetch-only: $VERIFY_GEMSTASH_URL/private/gems/verify-protected-0.1.0.gem && cmp got.gem verify-protected-0.1.0.gem && echo identical'`. Stdout `HTTP 200` and `identical`.
-- **Bundler without credentials.** Run `$S run $RUN bundle-anon 'mkdir -p app-anon && cd app-anon && printf "source \"%s/private\"\ngem \"verify-protected\"\n" "$VERIFY_GEMSTASH_URL" > Gemfile && bundle config set --local path vendor/bundle && bundle install'`. Exit `17`, stdout includes `Authentication is required for 127.0.0.1.`
-- **Bundler with credentials.** Run `$S run $RUN bundle-key 'cd app-anon && BUNDLE_127__0__0__1=verify-fetch-only bundle install && bundle exec ruby -e "require %q(verify-protected); puts VerifyProtected::VERSION"'`. Exit `0`, stdout `Installing verify-protected 0.1.0` and ends `0.1.0`.
+- **Keys** (setup). Run `$S run $RUN keys 'gemstash authorize push --key verify-push-only && gemstash authorize fetch --key verify-fetch-only'`. Exit `0`.
+- **Push** (setup). Run `$S make-gem $RUN verify-protected 0.1.0`, then `$S run $RUN push 'GEM_HOST_API_KEY=verify-push-only gem push --host $VERIFY_GEMSTASH_URL/private verify-protected-0.1.0.gem'`. Exit `0`.
+- **Anonymous download** (`pf-anon-denied`). Run `$S run $RUN fetch-anon 'curl -s -o /dev/null -w "HTTP %{http_code}\n" $VERIFY_GEMSTASH_URL/private/gems/verify-protected-0.1.0.gem'`. Stdout `HTTP 401`.
+- **Push-only key** (`pf-wrong-perm-denied`). Run `$S run $RUN fetch-push-key 'curl -s -o /dev/null -w "HTTP %{http_code}\n" -u verify-push-only: $VERIFY_GEMSTASH_URL/private/gems/verify-protected-0.1.0.gem'`. Stdout `HTTP 401`.
+- **Fetch key** (`pf-fetch-allowed`). Run `$S run $RUN fetch-fetch-key 'curl -s -o got.gem -w "HTTP %{http_code}\n" -u verify-fetch-only: $VERIFY_GEMSTASH_URL/private/gems/verify-protected-0.1.0.gem && cmp got.gem verify-protected-0.1.0.gem && echo identical'`. Stdout `HTTP 200` and `identical`.
+- **Bundler without credentials** (`pf-bundle-denied`). Run `$S run $RUN bundle-anon 'mkdir -p app-anon && cd app-anon && printf "source \"%s/private\"\ngem \"verify-protected\"\n" "$VERIFY_GEMSTASH_URL" > Gemfile && bundle config set --local path vendor/bundle && bundle install'`. Exit `17`, stdout includes `Authentication is required for 127.0.0.1.`
+- **Bundler with credentials** (`pf-bundle-allowed`). Run `$S run $RUN bundle-key 'cd app-anon && BUNDLE_127__0__0__1=verify-fetch-only bundle install && bundle exec ruby -e "require %q(verify-protected); puts VerifyProtected::VERSION"'`. Exit `0`, stdout `Installing verify-protected 0.1.0` and ends `0.1.0`.
 
 ## Gotchas
 

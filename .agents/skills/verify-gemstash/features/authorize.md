@@ -25,15 +25,15 @@ Preconditions:
 - A run started with `$S launch` and a healthy `$S doctor $RUN`.
 - `$S make-gem $RUN verify-auth 0.1.0`, `$S make-gem $RUN verify-auth 0.2.0`, and `$S make-gem $RUN verify-auth 0.3.0` have built three gem files.
 
-- **Generate.** Run `$S run $RUN auth-generate 'gemstash authorize --name generated'`. Stdout is `Your new key is: <32 hex chars>`.
-- **Scoped key.** Run `$S run $RUN auth-scoped 'gemstash authorize yank fetch --key verify-yank-fetch --name limited'`. Exit `0`.
-- **List.** Run `$S run $RUN auth-list 'gemstash authorize --list'`. The table shows `generated` with `all` and `limited` / `verify-yank-fetch` with `yank,fetch`.
-- **List one.** Run `$S run $RUN auth-list-one 'gemstash authorize --list --name limited'`. Only the `limited` row appears.
-- **Push denied without push.** Run `$S run $RUN push-no-perm 'GEM_HOST_API_KEY=verify-yank-fetch gem push --host $VERIFY_GEMSTASH_URL/private verify-auth-0.1.0.gem'`. Exit `1`, stdout includes `Authorization key doesn't have push access`.
-- **Push denied with unknown key.** Run `$S run $RUN push-bad-key 'GEM_HOST_API_KEY=wrong gem push --host $VERIFY_GEMSTASH_URL/private verify-auth-0.1.0.gem'`. Exit `1`, stdout includes `Authorization key is invalid`.
-- **Upgrade before first use.** Run `$S run $RUN auth-upgrade 'gemstash authorize fetch --key verify-upgrade && gemstash authorize push --key verify-upgrade && gemstash authorize --list --key verify-upgrade'`. Permissions read `push`. Then run `$S run $RUN push-upgraded 'GEM_HOST_API_KEY=verify-upgrade gem push --host $VERIFY_GEMSTASH_URL/private verify-auth-0.1.0.gem'`. Exit `0`.
-- **Remove.** Run `$S run $RUN auth-revoke-create 'gemstash authorize push --key verify-revoke'` and `$S run $RUN push-before-revoke 'GEM_HOST_API_KEY=verify-revoke gem push --host $VERIFY_GEMSTASH_URL/private verify-auth-0.2.0.gem'` (exit `0`). Then run `$S run $RUN auth-remove 'gemstash authorize --remove --key verify-revoke'` and `$S state $RUN after-remove`. The `authorizations` table has no `verify-revoke` row.
-- **Removal enforced on the server.** Run `$S run $RUN push-after-revoke 'GEM_HOST_API_KEY=verify-revoke gem push --host $VERIFY_GEMSTASH_URL/private verify-auth-0.3.0.gem'`. Expected: exit `1` with `Authorization key is invalid`, and no `0.3.0` row in a following `$S state $RUN after-revoked-push`. See Gotchas for the observed result.
+- **Generate** (`auth-generate`, `auth-named`). Run `$S run $RUN auth-generate 'gemstash authorize --name generated'`. Stdout is `Your new key is: <32 hex chars>`.
+- **Scoped key** (`auth-scoped`). Run `$S run $RUN auth-scoped 'gemstash authorize yank fetch --key verify-yank-fetch --name limited'`. Exit `0`.
+- **List** (`auth-list`, `auth-named`). Run `$S run $RUN auth-list 'gemstash authorize --list'`. The table shows `generated` with `all` and `limited` / `verify-yank-fetch` with `yank,fetch`.
+- **List one** (`auth-list`). Run `$S run $RUN auth-list-one 'gemstash authorize --list --name limited'`. Only the `limited` row appears.
+- **Push denied without push** (`auth-enforced`). Run `$S run $RUN push-no-perm 'GEM_HOST_API_KEY=verify-yank-fetch gem push --host $VERIFY_GEMSTASH_URL/private verify-auth-0.1.0.gem'`. Exit `1`, stdout includes `Authorization key doesn't have push access`.
+- **Push denied with unknown key** (`auth-enforced`). Run `$S run $RUN push-bad-key 'GEM_HOST_API_KEY=wrong gem push --host $VERIFY_GEMSTASH_URL/private verify-auth-0.1.0.gem'`. Exit `1`, stdout includes `Authorization key is invalid`.
+- **Upgrade before first use** (`auth-scoped`, `auth-enforced`). Run `$S run $RUN auth-upgrade 'gemstash authorize fetch --key verify-upgrade && gemstash authorize push --key verify-upgrade && gemstash authorize --list --key verify-upgrade'`. Permissions read `push`. Then run `$S run $RUN push-upgraded 'GEM_HOST_API_KEY=verify-upgrade gem push --host $VERIFY_GEMSTASH_URL/private verify-auth-0.1.0.gem'`. Exit `0`.
+- **Remove** (`auth-remove`). Run `$S run $RUN auth-revoke-create 'gemstash authorize push --key verify-revoke'` and `$S run $RUN push-before-revoke 'GEM_HOST_API_KEY=verify-revoke gem push --host $VERIFY_GEMSTASH_URL/private verify-auth-0.2.0.gem'` (exit `0`). Then run `$S run $RUN auth-remove 'gemstash authorize --remove --key verify-revoke'` and `$S state $RUN after-remove`. The `authorizations` table has no `verify-revoke` row.
+- **Removal enforced on the server** (`auth-enforced`). Run `$S run $RUN push-after-revoke 'GEM_HOST_API_KEY=verify-revoke gem push --host $VERIFY_GEMSTASH_URL/private verify-auth-0.3.0.gem'`. Expected: exit `1` with `Authorization key is invalid`, and no `0.3.0` row in a following `$S state $RUN after-revoked-push`. See Gotchas for the observed result.
 
 ## Gotchas
 

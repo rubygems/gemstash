@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Launch, inspect, drive, and tear down a disposable Gemstash server built from
-# this checkout. Run with no arguments for usage.
+# this checkout. Run `verify-gemstash help` for usage.
 set -euo pipefail
 
 SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -15,18 +15,22 @@ Usage: $(basename "$0") <command> [args]
   launch [--protected-fetch] [--upstream URL]
         Start a fresh server on a free 127.0.0.1 port with its own base_path.
         Prints RUN=<id>, URL, and the evidence directory.
-  doctor RUN       Read-only check that RUN is ours, alive, and healthy.
+  doctor RUN       Read-only check that RUN is ours, alive, healthy, and still
+        running the code in this checkout.
   run RUN LABEL 'SHELL COMMAND'
         Run a shell command as a Gemstash user: cwd is the run's work dir,
-        HOME is isolated, \`gemstash\` is this checkout, and
-        \$VERIFY_GEMSTASH_URL is the server. Records command, stdout,
-        stderr, and exit code as evidence. Exits with the command's status.
+        HOME is isolated, \`gemstash\` is this checkout,
+        \$VERIFY_GEMSTASH_URL is the server, and \$VERIFY_GEMSTASH_LOG is its
+        server.log. Records command, stdout, stderr, and exit code as
+        evidence. Exits with the command's status.
   make-gem RUN NAME VERSION
         Build NAME-VERSION.gem in the run's work dir (a minimal test gem).
   state RUN LABEL  Record stored state: database rows and base_path files.
   cleanup RUN      Stop the server and delete scratch state; keep evidence.
   list             Show runs under $RUN_ROOT.
+  help             Show this text.
 
+LABEL names the evidence files; use letters, digits, ".", "_", and "-".
 Runs live in $RUN_ROOT/<RUN>; evidence in $EVIDENCE_ROOT/<RUN>.
 EOF
 }
@@ -37,12 +41,24 @@ load_run() {
   [ -n "${1:-}" ] || die "missing RUN id"
   RUN="$1"
   RUN_DIR="$RUN_ROOT/$RUN"
-  [ -f "$RUN_DIR/instance.env" ] || die "no instance at $RUN_DIR (already cleaned up?)"
+  [ -f "$RUN_DIR/instance.env" ] || die "no run at $RUN_DIR (already cleaned up?); \`list\` shows the runs on disk"
   # shellcheck disable=SC1091
   . "$RUN_DIR/instance.env"
 }
 
 alive() { kill -0 "$1" 2>/dev/null; }
+
+check_label() {
+  [[ "${1:-}" =~ ^[A-Za-z0-9._-]+$ ]] || die "LABEL '${1:-}' must use only letters, digits, '.', '_', and '-'"
+}
+
+# Hash of the code a server loads at start, so doctor can tell when the
+# checkout has changed under a running server.
+code_fingerprint() { # RUBY_BIN
+  (cd "$REPO" && "$1/ruby" -rdigest -e '
+    files = Dir["{lib,bin,exe}/**/*", "Gemfile", "Gemfile.lock", "gemstash.gemspec"].select { |f| File.file?(f) }.sort
+    print Digest::SHA256.hexdigest(files.map { |f| f + Digest::SHA256.file(f).hexdigest }.join)')
+}
 
 # Build the PATH and environment a user of this checkout would have.
 user_env() {
@@ -52,6 +68,7 @@ user_env() {
     TERM="${TERM:-dumb}" LANG="${LANG:-C.UTF-8}" \
     GEMSTASH_CONFIG="$RUN_DIR/config.yml" \
     VERIFY_GEMSTASH_URL="$URL" \
+    VERIFY_GEMSTASH_LOG="$RUN_DIR/base/server.log" \
     VERIFY_GEMSTASH_RUN="$RUN" \
     "$@"
 }
@@ -104,6 +121,8 @@ cmd_launch() {
   EVIDENCE="$EVIDENCE_ROOT/$RUN"
   mkdir -p "$RUN_DIR"/{base,home,work,bin} "$EVIDENCE"
 
+  local code
+  code=$(code_fingerprint "$ruby_bin")
   PORT=$("$ruby_bin/ruby" -rsocket -e 's = TCPServer.new("127.0.0.1", 0); print s.addr[1]; s.close')
   URL="http://127.0.0.1:$PORT"
   cat > "$RUN_DIR/config.yml" <<EOF
@@ -137,6 +156,7 @@ REPO=$REPO
 EVIDENCE=$EVIDENCE
 PROTECTED_FETCH=$protected
 UPSTREAM=$upstream
+CODE=$code
 EOF
   cp "$RUN_DIR/config.yml" "$EVIDENCE/config.yml"
 
@@ -182,6 +202,8 @@ cmd_doctor() {
   case "$health" in *" 200") check "GET /health/heartbeat" ok ;; *) check "GET /health/heartbeat" "$health" ;; esac
   health=$(curl -s -w ' %{http_code}' "$URL/health/db_read" || true)
   case "$health" in *" 200") check "GET /health/db_read" ok ;; *) check "GET /health/db_read" "$health" ;; esac
+  [ "$(code_fingerprint "$RUBY_BIN")" = "${CODE:-}" ] && check "checkout code unchanged since launch" ok \
+    || check "checkout code unchanged since launch" "lib, bin, exe, or the bundle changed; this server still runs the old code"
   version=$(user_env gemstash version 2>&1 || true)
   echo "info  $version; checkout $(git -C "$REPO" rev-parse --short HEAD)$(git -C "$REPO" diff --quiet HEAD -- lib bin exe || echo ' (lib/bin/exe modified)')"
   echo "info  url $URL; protected_fetch $PROTECTED_FETCH; upstream $UPSTREAM; evidence $EVIDENCE"
@@ -191,6 +213,7 @@ cmd_doctor() {
 cmd_run() {
   load_run "$1"
   [ -n "${2:-}" ] && [ -n "${3:-}" ] || die "usage: run RUN LABEL 'SHELL COMMAND'"
+  check_label "$2"
   record "$2" "$3"
 }
 
@@ -215,7 +238,8 @@ EOF
 
 cmd_state() {
   load_run "$1"
-  local label="${2:?LABEL}" seq
+  local label="${2:-}" seq
+  check_label "$label"
   seq=$(next_seq)
   # Read-only Sequel connection to the run's SQLite database.
   {
@@ -279,5 +303,6 @@ case "${1:-}" in
   state) shift; cmd_state "$@" ;;
   cleanup) shift; cmd_cleanup "$@" ;;
   list) shift; cmd_list ;;
-  *) usage; exit 2 ;;
+  help|-h|--help) usage ;;
+  *) echo "verify-gemstash: unknown command '${1:-}'" >&2; usage >&2; exit 2 ;;
 esac

@@ -23,14 +23,14 @@ Preconditions:
 
 - No run is needed beforehand. `launch` performs the start.
 
-- **Start.** Run `$S launch`. It prints `RUN=`, `URL=`, `PID=`, and `health: {"status":{"heartbeat":"OK","storage_read":"OK","storage_write":"OK","db_read":"OK","db_write":"OK"}}`. `$EVIDENCE/launch-health.json` holds the same JSON.
-- **Doctor.** Run `$S doctor $RUN`. Every line is `ok` and the last line is `doctor: healthy`.
-- **Single check.** Run `$S run $RUN health-heartbeat 'curl -s -w "\nHTTP %{http_code}\n" $VERIFY_GEMSTASH_URL/health/heartbeat'`. Stdout ends `HTTP 200` and shows `heartbeat` as `OK`.
-- **Status.** Run `$S run $RUN status 'gemstash status'`. Exit `0`, stdout `Puma is started`.
-- **Info.** Run `$S run $RUN info 'gemstash info'`. Exit `0`, stdout includes `base_path: <RUN_DIR>/base`, `bind: tcp://127.0.0.1:<port>`, `cache_type: memory`, and `db_adapter: sqlite3`.
-- **Version.** Run `$S run $RUN version 'gemstash version'`. Stdout matches `Gemstash version` followed by the value of `Gemstash::VERSION` in `lib/gemstash/version.rb`.
-- **Stored state.** Run `$S state $RUN started`. The file list includes `./gemstash.db`, `./metadata.yml`, and `./puma.pid`.
-- **Stop.** Run `$S cleanup $RUN`. `$EVIDENCE/cleanup-stop.txt` contains `Command stop sent success` and `Gemstash stopped successfully!`, and cleanup prints `stopped PID <pid>`. Then run `$S list`; the run is not listed.
+- **Start** (`start`). Run `$S launch`. It prints `RUN=`, `URL=`, `PID=`, and `health: {"status":{"heartbeat":"OK","storage_read":"OK","storage_write":"OK","db_read":"OK","db_write":"OK"}}`. `$EVIDENCE/launch-health.json` holds the same JSON.
+- **Doctor** (`health`). Run `$S doctor $RUN`. Exit `0`, all eight check lines start `ok`, and the last line is `doctor: healthy`.
+- **Single check** (`health`). Run `$S run $RUN health-heartbeat 'curl -s -w "\nHTTP %{http_code}\n" $VERIFY_GEMSTASH_URL/health/heartbeat'`. Stdout ends `HTTP 200` and shows `heartbeat` as `OK`.
+- **Status** (`status`). Run `$S run $RUN status 'gemstash status'`. Exit `0`, stdout `Puma is started`.
+- **Info** (`info`). Run `$S run $RUN info 'gemstash info'`. Exit `0`, stdout includes `base_path: <RUN_DIR>/base`, `bind: tcp://127.0.0.1:<port>`, `cache_type: memory`, and `db_adapter: sqlite3`.
+- **Version** (`version`). Run `$S run $RUN version 'gemstash version'`. Stdout matches `Gemstash version` followed by the value of `Gemstash::VERSION` in `lib/gemstash/version.rb`.
+- **Stored state** (`start`). Run `$S state $RUN started`. The file list includes `./gemstash.db`, `./metadata.yml`, and `./puma.pid`.
+- **Stop** (`stop`). Run `$S cleanup $RUN`. `$EVIDENCE/cleanup-stop.txt` contains `Command stop sent success` and `Gemstash stopped successfully!`, and cleanup prints `stopped PID <pid>`. Then run `$S list`; the run is not listed.
 
 ## Gotchas
 
