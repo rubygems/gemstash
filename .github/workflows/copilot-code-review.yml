@@ -1,0 +1,28 @@
+name: Copilot code review setup
+
+# Copilot code review runs this job before it reviews a pull request, so the
+# verify-gemstash helper (.agents/skills/verify-gemstash) can run during review.
+# Copilot uses the copy on the default branch. These triggers only validate edits.
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - .github/workflows/copilot-code-review.yml
+
+jobs:
+  # Copilot only picks up a job with this name.
+  copilot-setup-steps:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ruby/setup-ruby@v1.338.0
+        with:
+          ruby-version: "4.0"
+          bundler-cache: true # 'bundle install' and cache
+      # verify-gemstash's doctor and cleanup need lsof; the runner image lacks it.
+      - run: sudo apt-get update && sudo apt-get install -y lsof
