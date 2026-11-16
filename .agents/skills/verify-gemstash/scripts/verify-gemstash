@@ -222,7 +222,8 @@ cmd_make_gem() {
   local name="${2:?NAME}" version="${3:?VERSION}" dir
   dir="$RUN_DIR/work/src/$name-$version"
   mkdir -p "$dir/lib"
-  echo "module $(echo "$name" | sed -E 's/(^|[-_])([a-z])/\U\2/g'); VERSION = \"$version\"; end" > "$dir/lib/$name.rb"
+  # verify-private -> VerifyPrivate, with Ruby rather than GNU-only sed \U.
+  echo "module $("$RUBY_BIN/ruby" -e 'print ARGV[0].split(/[-_]/).map { |p| p[0].upcase + p[1..] }.join' "$name"); VERSION = \"$version\"; end" > "$dir/lib/$name.rb"
   cat > "$dir/$name.gemspec" <<EOF
 Gem::Specification.new do |s|
   s.name = "$name"

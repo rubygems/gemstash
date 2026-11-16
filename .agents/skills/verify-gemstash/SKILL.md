@@ -1,6 +1,7 @@
 ---
 name: verify-gemstash
-description: Proves Gemstash behavior on a disposable server launched from this checkout, driven the way users do (gemstash CLI, gem, bundle, curl), with every command, exit code, and stored state kept as evidence. Use to verify a Gemstash change end to end, to reproduce a reported server or CLI bug, or to check private gem, API key, mirror cache, or protected fetch behavior on a running server. Not for running the spec suite.
+description: Proves Gemstash behavior on a disposable server launched from this checkout, driven the way users do (gemstash CLI, gem, bundle, curl), with every command, exit code, and stored state kept as evidence. Use when asked to "verify this gemstash change", "prove it works end to end", "reproduce this gemstash bug", or "check that gem push to /private still works", or to check private gem, API key, mirror cache, or protected fetch behavior on a running server. Not for running the spec suite.
+compatibility: Needs Ruby and this repository's bundle (.agents/setup with mise, or bin/setup), plus bash, curl, and lsof. The mirror recipes need outbound HTTPS to rubygems.org. Verified on Linux with Ruby 3.3; macOS and JRuby are untested.
 ---
 
 # Verify Gemstash
@@ -62,7 +63,7 @@ Three traps apply to every drive:
 - Run `gem install` with `--remote`, and give each Gemfile its own subdirectory of `work/`. `work/` holds the built `.gem` files, and RubyGems installs a matching local `.gem` without contacting the server.
 - `gem push` and `gem yank` print one line on success and nothing useful on a 500. When the status matters, send the same request with `curl -w '%{http_code}'`.
 
-**To verify a change or check a feature**, read [features/README.md](features/README.md). It routes the change to its feature files and states what every recipe assumes. Follow each chosen recipe top to bottom on its own run, and drive every bullet: a proof through one entry point is incomplete when the recipe lists others.
+**To verify a change or check a feature**, read [features/INDEX.md](features/INDEX.md). It routes the change to its feature files and states what every recipe assumes. Follow each chosen recipe top to bottom on its own run, and drive every bullet: a proof through one entry point is incomplete when the recipe lists others.
 
 **To reproduce a reported bug**, write down the result the reporter expected and the result they got before you drive anything. Launch as the closest feature file's preconditions say, then run the reporter's own commands through `$S run`, changing only the host, port, and paths. The bug is reproduced when a second, fresh run shows the same wrong result. After a fix, launch a new run and repeat the same commands with the same labels, so the two evidence directories compare file by file.
 
@@ -104,3 +105,27 @@ Report from the evidence files, not from memory:
 - For each `blocked`: the command attempted and the unmet prerequisite, such as no outbound HTTPS for the mirror recipe. An environment blocker is not a Gemstash failure.
 - Each sub-feature you did not drive, named as not driven. A skipped entry point is not verified through another one.
 - The evidence directory of every run.
+
+## Example
+
+The user says: "I changed `gem_pusher.rb` so a duplicate push returns 422. Verify it."
+
+1. [features/INDEX.md](features/INDEX.md) lists `gem_pusher.rb` under Private gems, so the recipe is [features/private-gems.md](features/private-gems.md), launched with plain `$S launch`.
+2. `$S doctor $RUN` ends `doctor: healthy`, and its `info` line shows `lib/bin/exe modified`, which confirms the run loaded the edited code.
+3. Every bullet of the recipe runs through `$S run` or `$S state`, from **Key and credentials** to **Yank effect**.
+4. `$S cleanup $RUN`, then `ls tmp/verify-gemstash/$RUN` still lists the evidence.
+
+The report gives the code under test, then one line per sub-feature: `private-push-duplicate` passes when `NN-push-duplicate.out` shows `{"error":"Version already exists","code":422}` and `HTTP 422`. Because that bullet points to a known failure in Gotchas, the report also says the entry is deleted in the same change. The other sub-features are listed as pass or fail with their evidence files.
+
+## Troubleshooting
+
+These are the helper's own errors. Traps specific to one recipe are in that feature file's Gotchas.
+
+- **`no Ruby found; run .agents/setup or bin/setup`.** Neither `mise exec` in the repository nor `ruby` on `PATH` gave a Ruby. In an orb, mise lives in `~/.local/bin`, which a fresh shell may not have on `PATH`: run `export PATH=$HOME/.local/bin:$PATH`, or run `.agents/setup` if Ruby was never installed.
+- **`bundle is incomplete; run bin/setup (or .agents/setup) first`.** `bundle check` failed, usually on a fresh checkout or after the Gemfile changed. Run `bin/setup` with the same Ruby, then launch again.
+- **`server exited during launch; run cleanup <RUN>`.** Puma died before `/health` answered. The last 40 lines of `launch.log` are printed above the error. Fix what they show, run `$S cleanup <RUN>`, and launch again.
+- **`/health never returned 200; run cleanup <RUN>`.** The server stayed up for about 60 seconds but `/health` never answered 200. `$EVIDENCE/launch-health.json` holds the last response body. Clean up and launch again; a repeat on a fresh run is a Gemstash failure to report.
+- **`doctor: NOT healthy`.** Each `FAIL` line names a check. `checkout code unchanged since launch` means `lib/`, `bin/`, `exe/`, or the bundle changed after launch, so the server still runs the old code. In every case, clean up and launch a new run.
+- **`no run at ... (already cleaned up?)`.** The RUN id is wrong or the run was cleaned up. `$S list` shows the runs on disk.
+- **`PID <pid> still running; not deleting <RUN_DIR>`.** `gemstash stop` and the signals did not stop the server. Check it with `ps -o pid,args -p <pid>`, stop that PID yourself, and run cleanup again.
+- **A mirror step fails with a connection or DNS error.** Outbound HTTPS is blocked. Report the step as `blocked`, not `fail`.
