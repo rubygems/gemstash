@@ -1,0 +1,2 @@
+- After workflow or action changes, run `gh actions-lock --no-narrow` and `gh actions-lock --verify` with the extension version pinned in `.github/workflows/lint.yml`.
+- Update the `gh-actions-lock` CLI pin in `.github/workflows/lint.yml` manually; Dependabot only maintains action dependencies.
