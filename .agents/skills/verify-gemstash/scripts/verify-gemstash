@@ -52,6 +52,23 @@ load_run() {
 
 alive() { kill -0 "$1" 2>/dev/null; }
 
+proc_cwd() { (lsof -a -p "$1" -d cwd -Fn 2>/dev/null || true) | sed -n 's/^n//p'; }
+
+# CRuby puma retitles itself "puma <version> (<bind>) [<cwd basename>]"; on
+# JRuby the JVM keeps its java command line, which ends in our start command.
+server_cmdline() {
+  case "$1" in
+    "puma "*"(tcp://127.0.0.1:$PORT)"*|*"bin/gemstash start --config-file $RUN_DIR/config.yml") return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+# True only while PID is this run's server, so a reused PID is never signaled.
+is_our_server() {
+  alive "$1" && server_cmdline "$(ps -o args= -p "$1" 2>/dev/null || true)" \
+    && [ "$(proc_cwd "$1")" = "$RUN_DIR/work" ]
+}
+
 check_label() {
   [[ "${1:-}" =~ ^[A-Za-z0-9._-]+$ ]] || die "LABEL '${1:-}' must use only letters, digits, '.', '_', and '-'"
 }
@@ -79,7 +96,7 @@ user_env() {
 
 next_seq() {
   local n
-  n=$(find "$EVIDENCE" -maxdepth 1 -name '[0-9][0-9]-*.cmd' | wc -l)
+  n=$(find "$EVIDENCE" -maxdepth 1 -name '[0-9]*-*.cmd' | wc -l)
   printf '%02d' $((n + 1))
 }
 
@@ -111,11 +128,17 @@ cmd_launch() {
       --upstream) upstream="$2"; shift ;;
       --set)
         [[ "${2:-}" =~ ^[a-z_]+=[^[:space:]]+$ ]] || die "--set takes KEY=VALUE, such as db_adapter=postgres"
+        # The helper owns these: they keep each run disposable and under its control.
+        case "${2%%=*}" in
+          base_path|bind|pidfile|log_file|rubygems_url|protected_fetch)
+            die "--set cannot change ${2%%=*}; use --upstream or --protected-fetch for those two, the rest are owned by the run" ;;
+        esac
         settings="$settings $2"; shift ;;
       *) die "unknown launch option: $1" ;;
     esac
     shift
   done
+  [[ "$upstream" =~ ^https?://[^[:space:]]+$ ]] || die "--upstream takes an http(s) URL, such as https://rubygems.org"
 
   local ruby_bin
   ruby_bin=$(cd "$REPO" && { mise exec -- ruby -e 'print RbConfig::CONFIG["bindir"]' 2>/dev/null \
@@ -155,19 +178,12 @@ EOF
     > "$RUN_DIR/launch.log" 2>&1 < /dev/null &
   local pid=$!
 
-  cat > "$RUN_DIR/instance.env" <<EOF
-RUN=$RUN
-PID=$pid
-PORT=$PORT
-URL=$URL
-RUBY_BIN=$ruby_bin
-REPO=$REPO
-EVIDENCE=$EVIDENCE
-PROTECTED_FETCH=$protected
-UPSTREAM=$upstream
-SETTINGS="${settings# }"
-CODE=$code
-EOF
+  # instance.env is sourced later, so every value is shell-quoted with %q.
+  PID=$pid RUBY_BIN=$ruby_bin PROTECTED_FETCH=$protected UPSTREAM=$upstream SETTINGS="${settings# }" CODE=$code
+  local var
+  for var in RUN PID PORT URL RUBY_BIN REPO EVIDENCE PROTECTED_FETCH UPSTREAM SETTINGS CODE; do
+    printf '%s=%q\n' "$var" "${!var}"
+  done > "$RUN_DIR/instance.env"
   cp "$RUN_DIR/config.yml" "$EVIDENCE/config.yml"
 
   local i code=""
@@ -196,14 +212,10 @@ cmd_doctor() {
   pidfile_pid=$(cat "$RUN_DIR/base/puma.pid" 2>/dev/null || true)
   [ "$pidfile_pid" = "$PID" ] && check "puma.pid matches launched PID" ok \
     || check "puma.pid matches launched PID" "pidfile has '${pidfile_pid}'"
-  # CRuby puma retitles itself "puma <version> (<bind>) [<cwd basename>]"; on
-  # JRuby the JVM keeps its java command line, which ends in our start command.
   cmdline=$(ps -o args= -p "$PID" 2>/dev/null || true)
-  case "$cmdline" in
-    "puma "*"(tcp://127.0.0.1:$PORT)"*|*"bin/gemstash start --config-file $RUN_DIR/config.yml") check "process is this run's gemstash server" ok ;;
-    *) check "process is this run's gemstash server" "cmdline '$cmdline'" ;;
-  esac
-  cwd=$( (lsof -a -p "$PID" -d cwd -Fn 2>/dev/null || true) | sed -n 's/^n//p')
+  server_cmdline "$cmdline" && check "process is this run's gemstash server" ok \
+    || check "process is this run's gemstash server" "cmdline '$cmdline'"
+  cwd=$(proc_cwd "$PID")
   [ "$cwd" = "$RUN_DIR/work" ] && check "process cwd is this run's work dir" ok \
     || check "process cwd is this run's work dir" "cwd '${cwd}'"
   listeners=$(lsof -nP -iTCP:"$PORT" -sTCP:LISTEN -t 2>/dev/null || true)
@@ -284,14 +296,24 @@ cmd_state() {
 
 cmd_cleanup() {
   load_run "${1:-}"
-  local i
-  if alive "$PID"; then
-    user_env gemstash stop > "$EVIDENCE/cleanup-stop.txt" 2>&1 || true
-    for i in $(seq 1 40); do alive "$PID" || break; sleep 0.25; done
-    if alive "$PID"; then kill -TERM "$PID" 2>/dev/null || true; sleep 2; fi
-    alive "$PID" && kill -KILL "$PID" 2>/dev/null || true
+  local i stopped="server PID $PID was not running"
+  command -v lsof > /dev/null || die "cleanup needs lsof to confirm PID $PID is this run's server"
+  # Stop or signal PID only while it is still this run's server; a dead
+  # server's PID may now belong to an unrelated process.
+  if is_our_server "$PID"; then
+    # `gemstash stop` signals the pidfile's PID, so use it only when that is ours too.
+    if [ "$(cat "$RUN_DIR/base/puma.pid" 2>/dev/null || true)" = "$PID" ]; then
+      user_env gemstash stop > "$EVIDENCE/cleanup-stop.txt" 2>&1 || true
+    fi
+    for i in $(seq 1 40); do is_our_server "$PID" || break; sleep 0.25; done
+    if is_our_server "$PID"; then kill -TERM "$PID" 2>/dev/null || true; sleep 2; fi
+    is_our_server "$PID" && kill -KILL "$PID" 2>/dev/null || true
+    is_our_server "$PID" && die "PID $PID still running; not deleting $RUN_DIR"
+    stopped="stopped PID $PID"
+  elif alive "$PID"; then
+    echo "warning: PID $PID is no longer this run's server (reused?); left it running" >&2
+    stopped="left PID $PID alone"
   fi
-  alive "$PID" && die "PID $PID still running; not deleting $RUN_DIR"
   if lsof -nP -iTCP:"$PORT" -sTCP:LISTEN -t > /dev/null 2>&1; then
     echo "warning: port $PORT still has a listener (not ours to kill)" >&2
   fi
@@ -299,7 +321,7 @@ cmd_cleanup() {
   cp "$RUN_DIR/base/server.log" "$EVIDENCE/server.log" 2>/dev/null || true
   cp "$RUN_DIR/launch.log" "$EVIDENCE/launch.log" 2>/dev/null || true
   rm -rf "$RUN_DIR"
-  echo "stopped PID $PID, removed $RUN_DIR"
+  echo "$stopped, removed $RUN_DIR"
   echo "evidence kept in $EVIDENCE:"
   ls -1 "$EVIDENCE"
 }
