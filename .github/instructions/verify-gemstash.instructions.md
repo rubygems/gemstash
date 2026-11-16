@@ -5,8 +5,11 @@ excludeAgent: "cloud-agent"
 
 # Prove server and CLI changes with verify-gemstash
 
-This pull request changes code that the `gemstash` CLI or its gem server runs, or the verify-gemstash skill itself. Review its user-facing behavior with that skill: read `.agents/skills/verify-gemstash/SKILL.md`, then `.agents/skills/verify-gemstash/features/INDEX.md`, which routes each changed file to the feature recipes it reaches. The skill owns how to launch, drive, judge, report, and clean up; where these notes and the skill differ, follow the skill.
-
-- Drive every routed recipe with the skill's helper from the repository root. The review environment installs Ruby, the bundle, and `lsof` for it through `.github/workflows/copilot-code-review.yml`. A bullet whose observed result differs from the result its recipe states, and that the recipe's Gotchas do not record as a `Known failure`, is a finding: comment on the changed lines most likely responsible, with the sub-feature ID, the expected result, and the output lines you observed, because people reading the review cannot open your evidence files. A known failure already fails on main, so list it in the review summary as a known failure with its observed output, and comment on changed lines only when the observed result differs from what Gotchas records.
-- When the helper cannot run, such as no shell, `no Ruby found`, `bundle is incomplete`, a launch that never reports healthy, or a mirror step blocked by the network, review the diff against each routed recipe's stated results and Gotchas instead. Say in the review which sub-feature IDs you did not drive and the error that stopped them. Call a sub-feature verified only when you drove it and its evidence matches the recipe.
-- When the diff changes a result that a recipe states, or adds user-facing behavior that no recipe covers, and the pull request leaves the feature files unchanged, comment on the change and name the feature file that needs updating.
+- Read `.agents/skills/verify-gemstash/SKILL.md`, then `.agents/skills/verify-gemstash/features/INDEX.md`, and drive every recipe that INDEX.md routes the changed files to with the skill's helper.
+- The review environment already has Ruby, the bundle, and `lsof` for the helper, installed by `.github/workflows/copilot-code-review.yml`.
+- For each `fail` that does not match a `Known failure` entry in Gotchas, comment on the changed lines most likely responsible, with the sub-feature ID and the expected result.
+- Quote the observed output lines in that comment, because readers of the review cannot open the evidence files.
+- Leave a `fail` that matches its `Known failure` entry uncommented, because it already fails on main.
+- If the helper cannot run, review the diff against those recipes' stated results and Gotchas instead.
+- Call a sub-feature verified only when you drove it and its evidence matches the recipe.
+- When the diff changes a result that a feature file states, or adds user-facing behavior that no recipe covers, and leaves the feature files unchanged, comment on the change and name the feature file to update.
