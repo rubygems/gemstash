@@ -10,5 +10,5 @@ For additional information about RubyGems security, please see https://rubygems.
 
 The following are not treated as vulnerabilities. A technically correct report may still be fixed in public as a regular bug or hardening change.
 
-- Your own environment and settings. This covers attacks that require direct filesystem write access to files Gemstash already loads on your behalf, such as its configuration file or the data under its `:base_path`, and documented configuration behavior, such as unauthenticated download of private gems and specs while `:protected_fetch` is off.
+- Your own environment and settings. This covers attacks that require direct filesystem write access to files Gemstash already loads on your behalf, such as its configuration file or the data under its `:base_path`, and unauthenticated download of private gems and specs while `:protected_fetch` is off, which is the documented default.
 - Issues already fixed on the `main` branch. Please check it before reporting.
