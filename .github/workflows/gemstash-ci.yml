@@ -36,7 +36,7 @@ jobs:
             cache_type: "redis"
     services:
       postgres:
-        image: postgres:13
+        image: postgres:18
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -48,9 +48,22 @@ jobs:
         ports:
           - 11211:11211
       redis:
-        image: redis:7
+        image: redis:8
         ports:
           - 6379:6379
+      mysql:
+        # Only the mysql2 job starts MySQL; an empty image skips the service.
+        image: ${{ matrix.db_adapter == 'mysql2' && 'mysql:9.7' || '' }}
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: gemstash_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 30
     env:
       GEMSTASH_SPEC_CACHE_TYPE: ${{ matrix.cache_type }}
       GEMSTASH_SPEC_DB_ADAPTER: ${{ matrix.db_adapter }}
@@ -68,13 +81,6 @@ jobs:
           bundler-cache: true # 'bundle install' and cache
       - name: increase ulimit
         run: ulimit -n 8192
-      - name: Set up MySQL
-        if: matrix.db_adapter == 'mysql2'
-        run: |
-          set -eux
-          sudo systemctl start mysql.service
-          mysql -e 'CREATE DATABASE gemstash_test;' --user=root --password=root
-          mysqladmin ping --user=root --password=root
       - name: Run Tests
         run: bundle exec rspec --exclude-pattern "spec/integration_spec.rb"
       - name: Run Integration Tests
