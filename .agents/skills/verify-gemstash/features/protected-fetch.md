@@ -27,7 +27,7 @@ Preconditions:
 - **Anonymous download** (`pf-anon-denied`). Run `$S run $RUN fetch-anon 'curl -s -o /dev/null -w "HTTP %{http_code}\n" $VERIFY_GEMSTASH_URL/private/gems/verify-protected-0.1.0.gem'`. Stdout `HTTP 401`.
 - **Push-only key** (`pf-wrong-perm-denied`). Run `$S run $RUN fetch-push-key 'curl -s -o /dev/null -w "HTTP %{http_code}\n" -u verify-push-only: $VERIFY_GEMSTASH_URL/private/gems/verify-protected-0.1.0.gem'`. Stdout `HTTP 401`.
 - **Fetch key** (`pf-fetch-allowed`). Run `$S run $RUN fetch-fetch-key 'curl -s -o got.gem -w "HTTP %{http_code}\n" -u verify-fetch-only: $VERIFY_GEMSTASH_URL/private/gems/verify-protected-0.1.0.gem && cmp got.gem verify-protected-0.1.0.gem && echo identical'`. Stdout `HTTP 200` and `identical`.
-- **Bundler without credentials** (`pf-bundle-denied`). Run `$S run $RUN bundle-anon 'mkdir -p app-anon && cd app-anon && printf "source \"%s/private\"\ngem \"verify-protected\"\n" "$VERIFY_GEMSTASH_URL" > Gemfile && bundle config set --local path vendor/bundle && bundle install'`. Exit `17`, stdout includes `Authentication is required for 127.0.0.1.`
+- **Bundler without credentials** (`pf-bundle-denied`). Run `$S run $RUN bundle-anon 'mkdir -p app-anon && cd app-anon && printf "source \"%s/private\"\ngem \"verify-protected\"\n" "$VERIFY_GEMSTASH_URL" > Gemfile && bundle config set --local path vendor/bundle && bundle install'`. Exit `17`, stderr includes `Authentication is required for 127.0.0.1.`
 - **Bundler with credentials** (`pf-bundle-allowed`). Run `$S run $RUN bundle-key 'cd app-anon && BUNDLE_127__0__0__1=verify-fetch-only bundle install && bundle exec ruby -e "require %q(verify-protected); puts VerifyProtected::VERSION"'`. Exit `0`, stdout `Installing verify-protected 0.1.0` and ends `0.1.0`.
 
 ## Gotchas

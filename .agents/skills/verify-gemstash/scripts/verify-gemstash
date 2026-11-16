@@ -6,15 +6,19 @@ set -euo pipefail
 SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 REPO="$(cd "$SKILL_DIR/../../.." && pwd)"
 RUN_ROOT="${VERIFY_GEMSTASH_ROOT:-${TMPDIR:-/tmp}/verify-gemstash}"
+# Resolve symlinks (macOS TMPDIR lives under /var -> /private/var) so paths
+# match what lsof and ps report for the server.
+RUN_ROOT="$(mkdir -p "$RUN_ROOT" && cd -P "$RUN_ROOT" && pwd)"
 EVIDENCE_ROOT="${VERIFY_GEMSTASH_EVIDENCE:-$REPO/tmp/verify-gemstash}"
 
 usage() {
   cat <<EOF
 Usage: $(basename "$0") <command> [args]
 
-  launch [--protected-fetch] [--upstream URL]
+  launch [--protected-fetch] [--upstream URL] [--set KEY=VALUE]...
         Start a fresh server on a free 127.0.0.1 port with its own base_path.
-        Prints RUN=<id>, URL, and the evidence directory.
+        --set adds a config key, such as db_adapter=postgres or
+        cache_type=redis. Prints RUN=<id>, URL, and the evidence directory.
   doctor RUN       Read-only check that RUN is ours, alive, healthy, and still
         running the code in this checkout.
   run RUN LABEL 'SHELL COMMAND'
@@ -100,11 +104,14 @@ record() { # LABEL COMMAND
 }
 
 cmd_launch() {
-  local protected=false upstream="https://rubygems.org"
+  local protected=false upstream="https://rubygems.org" settings=""
   while [ $# -gt 0 ]; do
     case "$1" in
       --protected-fetch) protected=true ;;
       --upstream) upstream="$2"; shift ;;
+      --set)
+        [[ "${2:-}" =~ ^[a-z_]+=[^[:space:]]+$ ]] || die "--set takes KEY=VALUE, such as db_adapter=postgres"
+        settings="$settings $2"; shift ;;
       *) die "unknown launch option: $1" ;;
     esac
     shift
@@ -132,6 +139,8 @@ cmd_launch() {
 :rubygems_url: $upstream
 :protected_fetch: $protected
 EOF
+  local kv
+  for kv in $settings; do printf ':%s: %s\n' "${kv%%=*}" "${kv#*=}" >> "$RUN_DIR/config.yml"; done
 
   # `gemstash` on the user PATH runs this checkout with its own bundle.
   cat > "$RUN_DIR/bin/gemstash" <<EOF
@@ -156,6 +165,7 @@ REPO=$REPO
 EVIDENCE=$EVIDENCE
 PROTECTED_FETCH=$protected
 UPSTREAM=$upstream
+SETTINGS="${settings# }"
 CODE=$code
 EOF
   cp "$RUN_DIR/config.yml" "$EVIDENCE/config.yml"
@@ -178,7 +188,7 @@ EOF
 }
 
 cmd_doctor() {
-  load_run "$1"
+  load_run "${1:-}"
   local ok=true pidfile_pid listeners cmdline cwd health version
   check() { if [ "$2" = ok ]; then echo "ok    $1"; else echo "FAIL  $1: $2"; ok=false; fi; }
 
@@ -186,11 +196,12 @@ cmd_doctor() {
   pidfile_pid=$(cat "$RUN_DIR/base/puma.pid" 2>/dev/null || true)
   [ "$pidfile_pid" = "$PID" ] && check "puma.pid matches launched PID" ok \
     || check "puma.pid matches launched PID" "pidfile has '${pidfile_pid}'"
-  # Puma retitles the process "puma <version> (<bind>) [<cwd basename>]".
+  # CRuby puma retitles itself "puma <version> (<bind>) [<cwd basename>]"; on
+  # JRuby the JVM keeps its java command line, which ends in our start command.
   cmdline=$(ps -o args= -p "$PID" 2>/dev/null || true)
   case "$cmdline" in
-    "puma "*"(tcp://127.0.0.1:$PORT)"*) check "process is puma bound to $PORT" ok ;;
-    *) check "process is puma bound to $PORT" "cmdline '$cmdline'" ;;
+    "puma "*"(tcp://127.0.0.1:$PORT)"*|*"bin/gemstash start --config-file $RUN_DIR/config.yml") check "process is this run's gemstash server" ok ;;
+    *) check "process is this run's gemstash server" "cmdline '$cmdline'" ;;
   esac
   cwd=$( (lsof -a -p "$PID" -d cwd -Fn 2>/dev/null || true) | sed -n 's/^n//p')
   [ "$cwd" = "$RUN_DIR/work" ] && check "process cwd is this run's work dir" ok \
@@ -207,18 +218,19 @@ cmd_doctor() {
   version=$(user_env gemstash version 2>&1 || true)
   echo "info  $version; checkout $(git -C "$REPO" rev-parse --short HEAD)$(git -C "$REPO" diff --quiet HEAD -- lib bin exe || echo ' (lib/bin/exe modified)')"
   echo "info  url $URL; protected_fetch $PROTECTED_FETCH; upstream $UPSTREAM; evidence $EVIDENCE"
+  [ -z "${SETTINGS:-}" ] || echo "info  settings $(printf '%s' "$SETTINGS" | sed -E 's#//[^@/ ]*@#//#g')"
   $ok && echo "doctor: healthy" || { echo "doctor: NOT healthy; run cleanup $RUN and launch again"; return 1; }
 }
 
 cmd_run() {
-  load_run "$1"
+  load_run "${1:-}"
   [ -n "${2:-}" ] && [ -n "${3:-}" ] || die "usage: run RUN LABEL 'SHELL COMMAND'"
   check_label "$2"
   record "$2" "$3"
 }
 
 cmd_make_gem() {
-  load_run "$1"
+  load_run "${1:-}"
   local name="${2:?NAME}" version="${3:?VERSION}" dir
   dir="$RUN_DIR/work/src/$name-$version"
   mkdir -p "$dir/lib"
@@ -238,23 +250,30 @@ EOF
 }
 
 cmd_state() {
-  load_run "$1"
+  load_run "${1:-}"
   local label="${2:-}" seq
   check_label "$label"
   seq=$(next_seq)
-  # Read-only Sequel connection to the run's SQLite database.
+  # Read the run's database: read-only SQLite by default, else the configured db_url.
   {
-    echo "# database $RUN_DIR/base/gemstash.db"
-    BUNDLE_GEMFILE="$REPO/Gemfile" "$RUBY_BIN/ruby" -rbundler/setup -rsequel -e '
-      path = ARGV[0]
-      abort "no database yet (created on first private-gem or authorize use)" unless File.exist?(path)
-      db = Sequel.sqlite(path, readonly: true)
+    BUNDLE_GEMFILE="$REPO/Gemfile" "$RUBY_BIN/ruby" -rbundler/setup -rsequel -ryaml -e '
+      cfg = YAML.load_file(ARGV[0]) || {}
+      if (cfg[:db_adapter] || "sqlite3").to_s == "sqlite3"
+        path = File.join(cfg[:base_path], "gemstash.db")
+        puts "# database #{path}"
+        abort "no database yet (created on first private-gem or authorize use)" unless File.exist?(path)
+        db = RUBY_PLATFORM == "java" ? Sequel.connect("jdbc:sqlite:#{path}") : Sequel.sqlite(path, readonly: true)
+      else
+        puts "# database #{cfg[:db_url].to_s.sub(%r{//[^@/]*@}, "//")}"
+        db = Sequel.connect(cfg[:db_url])
+      end
       %i[authorizations rubygems versions dependencies upstreams cached_rubygems].each do |t|
         next unless db.table_exists?(t)
-        rows = db[t].all
+        rows = db[t].order(:id).all
         puts "## #{t} (#{rows.size})"
-        rows.each { |r| puts r.reject { |k, _| %i[created_at updated_at].include?(k) }.inspect }
-      end' "$RUN_DIR/base/gemstash.db" 2>&1 || true
+        # One "{key: value, ...}" line per row, the same on every Ruby version.
+        rows.each { |r| puts "{" + r.reject { |k, _| %i[created_at updated_at].include?(k) }.map { |k, v| "#{k}: #{v.inspect}" }.join(", ") + "}" }
+      end' "$RUN_DIR/config.yml" 2>&1 || true
     echo "# files under base_path"
     (cd "$RUN_DIR/base" && find . -type f ! -name '*.log' | sort)
   } > "$EVIDENCE/$seq-state-$label.txt"
@@ -264,7 +283,7 @@ cmd_state() {
 }
 
 cmd_cleanup() {
-  load_run "$1"
+  load_run "${1:-}"
   local i
   if alive "$PID"; then
     user_env gemstash stop > "$EVIDENCE/cleanup-stop.txt" 2>&1 || true

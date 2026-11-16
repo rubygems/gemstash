@@ -1,7 +1,7 @@
 ---
 name: verify-gemstash
 description: Proves Gemstash behavior on a disposable server launched from this checkout, driven the way users do (gemstash CLI, gem, bundle, curl), with every command, exit code, and stored state kept as evidence. Use when asked to "verify this gemstash change", "prove it works end to end", "reproduce this gemstash bug", or "check that gem push to /private still works", or to check private gem, API key, mirror cache, or protected fetch behavior on a running server. Not for running the spec suite.
-compatibility: Needs Ruby and this repository's bundle (.agents/setup with mise, or bin/setup), plus bash, curl, and lsof. The mirror recipes need outbound HTTPS to rubygems.org. Verified on Linux with Ruby 3.3; macOS and JRuby are untested.
+compatibility: Needs Ruby and this repository's bundle (.agents/setup with mise, or bin/setup), plus bash, curl, and lsof. The mirror recipes need outbound HTTPS to rubygems.org. Verified on Linux with Ruby 3.3 and 4.0, JRuby 10.1, sqlite3, postgres, mysql2, memcached, and redis, and on macOS with Ruby 3.3 and sqlite3.
 ---
 
 # Verify Gemstash
@@ -15,7 +15,7 @@ S=.agents/skills/verify-gemstash/scripts/verify-gemstash
 RUN=<the RUN printed by launch>
 ```
 
-`$S help` lists the helper's commands. The helper needs Ruby and the bundle installed: `.agents/setup` installs both with mise (the first run compiles the Ruby that `mise.toml` pins, about 2 to 3 minutes), or run `bin/setup` with a Ruby you already have. The helper looks for Ruby through `mise exec` in the repository, then for `ruby` on `PATH`.
+`$S help` lists the helper's commands. The helper needs Ruby and the bundle installed: `.agents/setup` installs both with mise (the first run compiles the Ruby that `mise.toml` pins, about 2 to 3 minutes), or run `bin/setup` with a Ruby you already have. The helper looks for Ruby through `mise exec` in the repository, then for `ruby` on `PATH`. To verify on another Ruby, install it with mise and set `MISE_RUBY_VERSION` (such as `4.0.9` or `jruby-10.1.3.0`) for the whole session, then run `mise exec -- bundle install` once with it set.
 
 ## 1. Launch
 
@@ -23,7 +23,11 @@ RUN=<the RUN printed by launch>
 $S launch                     # memory cache, sqlite3, upstream https://rubygems.org
 $S launch --protected-fetch   # private gems need a fetch key
 $S launch --upstream URL      # a different default upstream
+$S launch --set db_adapter=postgres --set db_url=postgres://USER:PASS@127.0.0.1:5432/DB \
+          --set cache_type=redis --set redis_servers=redis://127.0.0.1:6379
 ```
+
+`--set KEY=VALUE` adds any key from `docs/gemstash-configuration.5.md` to the run's config, such as `db_adapter=mysql2` with `db_url=mysql2://...` or `cache_type=memcached` with `memcached_servers=127.0.0.1:11211`. The helper does not start or reset those services. Each run needs an empty database and an empty cache, so drop and recreate the database and flush the cache before every launch; leftovers from an earlier run break the recipes' row counts and the fresh-key steps. Doctor's `info settings` line shows the extra keys with passwords removed.
 
 Each launch is a new **run**: its own id, free `127.0.0.1` port, `base_path`, and `HOME`, with `bin/gemstash start` in the background. Runs share nothing, so several can be up at once. Launch returns when `GET /health` answers 200, which means the migrations have run and the database is usable. It prints `RUN=`, `URL=`, `PID=`, `RUN_DIR=` (scratch state under `/tmp/verify-gemstash/`), `EVIDENCE=`, and the health JSON.
 
@@ -122,7 +126,8 @@ The report gives the code under test, then one line per sub-feature: `private-pu
 These are the helper's own errors. Traps specific to one recipe are in that feature file's Gotchas.
 
 - **`no Ruby found; run .agents/setup or bin/setup`.** Neither `mise exec` in the repository nor `ruby` on `PATH` gave a Ruby. In an orb, mise lives in `~/.local/bin`, which a fresh shell may not have on `PATH`: run `export PATH=$HOME/.local/bin:$PATH`, or run `.agents/setup` if Ruby was never installed.
-- **`bundle is incomplete; run bin/setup (or .agents/setup) first`.** `bundle check` failed, usually on a fresh checkout or after the Gemfile changed. Run `bin/setup` with the same Ruby, then launch again.
+- **`bundle is incomplete; run bin/setup (or .agents/setup) first`.** `bundle check` failed, usually on a fresh checkout or after the Gemfile changed. Run `bin/setup` with the same Ruby, then launch again. When this follows a `bin/setup` that succeeded, `bin/setup` ran another Ruby's `bundle`; on macOS a Homebrew Ruby on `PATH` can come before mise's even inside `mise exec`. Run `PATH="$(mise exec -- ruby -e 'print RbConfig::CONFIG["bindir"]'):$PATH" bin/setup`.
+- **`bundle install` on JRuby fails and lists `gemstash-2.8.2-java` as the only matching gem in source `.`.** The gitignored `Gemfile.lock` was resolved on CRuby and locks the `ruby` platform gem. Move it aside, run `mise exec -- bundle install` with JRuby selected so it resolves a fresh lock, and put the CRuby lock back when you switch Rubies again.
 - **`server exited during launch; run cleanup <RUN>`.** Puma died before `/health` answered. The last 40 lines of `launch.log` are printed above the error. Fix what they show, run `$S cleanup <RUN>`, and launch again.
 - **`/health never returned 200; run cleanup <RUN>`.** The server stayed up for about 60 seconds but `/health` never answered 200. `$EVIDENCE/launch-health.json` holds the last response body. Clean up and launch again; a repeat on a fresh run is a Gemstash failure to report.
 - **`doctor: NOT healthy`.** Each `FAIL` line names a check. `checkout code unchanged since launch` means `lib/`, `bin/`, `exe/`, or the bundle changed after launch, so the server still runs the old code. In every case, clean up and launch a new run.
