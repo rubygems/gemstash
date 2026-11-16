@@ -11,7 +11,7 @@ permissions:
 jobs:
   push:
     if: github.repository == 'rubygems/gemstash'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
 
     environment:
       name: rubygems.org
@@ -30,10 +30,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Install pandoc
-        run: sudo apt-get install -y pandoc
+        run: sudo apt-get update && sudo apt-get install -y pandoc
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@d5126b9b3579e429dd52e51e68624dda2e05be25 # v1.267.0
+        uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
         with:
           bundler-cache: true
           ruby-version: ruby
