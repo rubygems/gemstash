@@ -1,6 +1,6 @@
 [tools]
 # Matches the primary CRuby version in CI.
-ruby = "3.3"
+ruby = "4.0"
 
 [settings.ruby]
 # Precompiled Ruby generates broken gem launchers under a custom GEM_HOME.
