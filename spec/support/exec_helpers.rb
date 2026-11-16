@@ -98,7 +98,8 @@ module ExecHelpers
         bundle_gemfile = gemfile_path if File.exist?(gemfile_path)
       end
 
-      { "BUNDLE_GEMFILE" => bundle_gemfile }
+      # Bundler 4 also exports BUNDLE_LOCKFILE, which would make nested bundles write gemstash's own lockfile.
+      { "BUNDLE_GEMFILE" => bundle_gemfile, "BUNDLE_LOCKFILE" => nil }
     end
   end
 

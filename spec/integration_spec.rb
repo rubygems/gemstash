@@ -155,10 +155,6 @@ RSpec.describe "gemstash integration tests" do
         File.write(File.join(env_dir, ".gemrc"), "---\nsources:\n  - #{host}\n")
         env = { "HOME" => env_dir }
 
-        # This way of adjusting sources is required for ruby 3.2 and 3.1 to pass.
-        expect(execute("gem", ["source", "-r", "https://rubygems.org/"], env: env)).to exit_success
-        expect(execute("gem", ["source", "-a", host], env: env)).to exit_success
-
         expect(execute("gem", ["search", "-ar", "speaker"], env: env)).
           to exit_success.and_output(/speaker \(0.1.0\)/)
       end
@@ -168,10 +164,6 @@ RSpec.describe "gemstash integration tests" do
         # Write a clean .gemrc file to avoid that. (This also makes the test much faster.)
         File.write(File.join(env_dir, ".gemrc"), "---\nsources:\n  - #{host}/\n")
         env = { "HOME" => env_dir }
-
-        # This way of adjusting sources is required for ruby 3.2 and 3.1 to pass.
-        expect(execute("gem", ["source", "-r", "https://rubygems.org/"], env: env)).to exit_success
-        expect(execute("gem", ["source", "-a", "#{host}/"], env: env)).to exit_success
 
         expect(execute("gem", ["search", "-ar", "speaker"], env: env)).
           to exit_success.and_output(/speaker \(0.1.0\)/)

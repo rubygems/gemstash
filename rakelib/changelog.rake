@@ -2,7 +2,6 @@
 
 require "forwardable"
 require "open3"
-require "set"
 
 # Helper class for updating CHANGELOG.md
 class Changelog

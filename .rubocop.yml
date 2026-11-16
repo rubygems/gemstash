@@ -9,5 +9,10 @@ AllCops:
     - vendor/**/*
     - gemfiles/**/*
   DisplayCopNames: true
-  TargetRubyVersion: 3.1
+  TargetRubyVersion: 3.3
   SuggestExtensions: false
+
+# Fixture gems keep their own Ruby requirement.
+Gemspec/RequiredRubyVersion:
+  Exclude:
+    - spec/data/**/*.gemspec

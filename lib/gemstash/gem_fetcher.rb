@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "gemstash"
-require "set"
 
 module Gemstash
   # :nodoc:

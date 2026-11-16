@@ -12,31 +12,31 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: ["3.1", "3.2", "3.3", "jruby-9.4"]
+        ruby: ["3.3", "3.4", "4.0", "jruby-10.0", "jruby-10.1"]
         db_adapter: ["sqlite3"]
         cache_type: ["memory"]
         include:
-          - ruby: "3.3"
+          - ruby: "4.0"
             db_adapter: "postgres"
             cache_type: "memory"
-          - ruby: "3.3"
+          - ruby: "4.0"
             db_adapter: "mysql2"
             cache_type: "memory"
-          - ruby: "3.3"
+          - ruby: "4.0"
             db_adapter: "sqlite3"
             cache_type: "memcached"
-          - ruby: "3.3"
+          - ruby: "4.0"
             db_adapter: "sqlite3"
             cache_type: "redis"
-          - ruby: "jruby-9.4"
+          - ruby: "jruby-10.1"
             db_adapter: "sqlite3"
             cache_type: "memcached"
-          - ruby: "jruby-9.4"
+          - ruby: "jruby-10.1"
             db_adapter: "sqlite3"
             cache_type: "redis"
     services:
       postgres:
-        image: postgres:13
+        image: postgres:18
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -48,9 +48,22 @@ jobs:
         ports:
           - 11211:11211
       redis:
-        image: redis:7
+        image: redis:8
         ports:
           - 6379:6379
+      mysql:
+        # Only the mysql2 job starts MySQL; an empty image skips the service.
+        image: ${{ matrix.db_adapter == 'mysql2' && 'mysql:9.7' || '' }}
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: gemstash_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 30
     env:
       GEMSTASH_SPEC_CACHE_TYPE: ${{ matrix.cache_type }}
       GEMSTASH_SPEC_DB_ADAPTER: ${{ matrix.db_adapter }}
@@ -62,19 +75,12 @@ jobs:
         with:
           persist-credentials: false
       - name: Setup ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@v1.338.0
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true # 'bundle install' and cache
       - name: increase ulimit
         run: ulimit -n 8192
-      - name: Set up MySQL
-        if: matrix.db_adapter == 'mysql2'
-        run: |
-          set -eux
-          sudo systemctl start mysql.service
-          mysql -e 'CREATE DATABASE gemstash_test;' --user=root --password=root
-          mysqladmin ping --user=root --password=root
       - name: Run Tests
         run: bundle exec rspec --exclude-pattern "spec/integration_spec.rb"
       - name: Run Integration Tests
@@ -91,6 +97,6 @@ jobs:
 
     steps:
       - name: check test jobs
-        uses: re-actors/alls-green@b5b5b37504aa4183270bd3d855c52a67f212be35 # v1.3.0
+        uses: re-actors/alls-green@v1.3.0
         with:
           jobs: ${{ toJSON(needs) }}

@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "set"
-
 RSpec::Matchers.define :redirect_to do |expected|
   match do |actual|
     actual.redirect? && actual.headers["Location"] == expected
