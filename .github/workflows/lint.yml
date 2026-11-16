@@ -29,7 +29,7 @@ jobs:
         persist-credentials: false
     - uses: ruby/setup-ruby@v1.338.0
       with:
-        ruby-version: 3.3
+        ruby-version: "4.0"
         bundler-cache: true # 'bundle install' and cache
     - name: Rubocop
       run: bundle exec rake rubocop
