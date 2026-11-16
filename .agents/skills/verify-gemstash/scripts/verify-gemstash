@@ -1,0 +1,283 @@
+#!/usr/bin/env bash
+# Launch, inspect, drive, and tear down a disposable Gemstash server built from
+# this checkout. Run with no arguments for usage.
+set -euo pipefail
+
+SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REPO="$(cd "$SKILL_DIR/../../.." && pwd)"
+RUN_ROOT="${VERIFY_GEMSTASH_ROOT:-${TMPDIR:-/tmp}/verify-gemstash}"
+EVIDENCE_ROOT="${VERIFY_GEMSTASH_EVIDENCE:-$REPO/tmp/verify-gemstash}"
+
+usage() {
+  cat <<EOF
+Usage: $(basename "$0") <command> [args]
+
+  launch [--protected-fetch] [--upstream URL]
+        Start a fresh server on a free 127.0.0.1 port with its own base_path.
+        Prints RUN=<id>, URL, and the evidence directory.
+  doctor RUN       Read-only check that RUN is ours, alive, and healthy.
+  run RUN LABEL 'SHELL COMMAND'
+        Run a shell command as a Gemstash user: cwd is the run's work dir,
+        HOME is isolated, \`gemstash\` is this checkout, and
+        \$VERIFY_GEMSTASH_URL is the server. Records command, stdout,
+        stderr, and exit code as evidence. Exits with the command's status.
+  make-gem RUN NAME VERSION
+        Build NAME-VERSION.gem in the run's work dir (a minimal test gem).
+  state RUN LABEL  Record stored state: database rows and base_path files.
+  cleanup RUN      Stop the server and delete scratch state; keep evidence.
+  list             Show runs under $RUN_ROOT.
+
+Runs live in $RUN_ROOT/<RUN>; evidence in $EVIDENCE_ROOT/<RUN>.
+EOF
+}
+
+die() { echo "verify-gemstash: $*" >&2; exit 1; }
+
+load_run() {
+  [ -n "${1:-}" ] || die "missing RUN id"
+  RUN="$1"
+  RUN_DIR="$RUN_ROOT/$RUN"
+  [ -f "$RUN_DIR/instance.env" ] || die "no instance at $RUN_DIR (already cleaned up?)"
+  # shellcheck disable=SC1091
+  . "$RUN_DIR/instance.env"
+}
+
+alive() { kill -0 "$1" 2>/dev/null; }
+
+# Build the PATH and environment a user of this checkout would have.
+user_env() {
+  env -i \
+    PATH="$RUN_DIR/bin:$RUBY_BIN:/usr/local/bin:/usr/bin:/bin" \
+    HOME="$RUN_DIR/home" \
+    TERM="${TERM:-dumb}" LANG="${LANG:-C.UTF-8}" \
+    GEMSTASH_CONFIG="$RUN_DIR/config.yml" \
+    VERIFY_GEMSTASH_URL="$URL" \
+    VERIFY_GEMSTASH_RUN="$RUN" \
+    "$@"
+}
+
+next_seq() {
+  local n
+  n=$(find "$EVIDENCE" -maxdepth 1 -name '[0-9][0-9]-*.cmd' | wc -l)
+  printf '%02d' $((n + 1))
+}
+
+record() { # LABEL COMMAND
+  local label="$1" cmd="$2" seq base status
+  seq=$(next_seq)
+  base="$EVIDENCE/$seq-$label"
+  printf '%s\n' "$cmd" > "$base.cmd"
+  set +e
+  (cd "$RUN_DIR/work" && user_env bash -c "$cmd") > "$base.out" 2> "$base.err"
+  status=$?
+  set -e
+  echo "$status" > "$base.exit"
+  {
+    printf '\n## %s %s\n\n$ %s\nexit: %s\n' "$seq" "$label" "$cmd" "$status"
+    printf -- '--- stdout\n'; cat "$base.out"
+    printf -- '--- stderr\n'; cat "$base.err"
+  } >> "$EVIDENCE/transcript.md"
+  echo "\$ $cmd"; cat "$base.out"; cat "$base.err" >&2
+  echo "[exit $status] evidence: $base.{cmd,out,err,exit}"
+  return "$status"
+}
+
+cmd_launch() {
+  local protected=false upstream="https://rubygems.org"
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --protected-fetch) protected=true ;;
+      --upstream) upstream="$2"; shift ;;
+      *) die "unknown launch option: $1" ;;
+    esac
+    shift
+  done
+
+  local ruby_bin
+  ruby_bin=$(cd "$REPO" && { mise exec -- ruby -e 'print RbConfig::CONFIG["bindir"]' 2>/dev/null \
+    || ruby -e 'print RbConfig::CONFIG["bindir"]'; }) || die "no Ruby found; run .agents/setup or bin/setup"
+  BUNDLE_GEMFILE="$REPO/Gemfile" "$ruby_bin/bundle" check > /dev/null \
+    || die "bundle is incomplete; run bin/setup (or .agents/setup) first"
+
+  RUN="$(date +%Y%m%d-%H%M%S)-$$"
+  RUN_DIR="$RUN_ROOT/$RUN"
+  EVIDENCE="$EVIDENCE_ROOT/$RUN"
+  mkdir -p "$RUN_DIR"/{base,home,work,bin} "$EVIDENCE"
+
+  PORT=$("$ruby_bin/ruby" -rsocket -e 's = TCPServer.new("127.0.0.1", 0); print s.addr[1]; s.close')
+  URL="http://127.0.0.1:$PORT"
+  cat > "$RUN_DIR/config.yml" <<EOF
+---
+:base_path: $RUN_DIR/base
+:bind: tcp://127.0.0.1:$PORT
+:rubygems_url: $upstream
+:protected_fetch: $protected
+EOF
+
+  # `gemstash` on the user PATH runs this checkout with its own bundle.
+  cat > "$RUN_DIR/bin/gemstash" <<EOF
+#!/usr/bin/env bash
+exec env -u BUNDLE_PATH -u BUNDLE_APP_CONFIG BUNDLE_GEMFILE="$REPO/Gemfile" "$ruby_bin/ruby" "$REPO/bin/gemstash" "\$@"
+EOF
+  chmod +x "$RUN_DIR/bin/gemstash"
+
+  # The server runs in the foreground of its own process; we own this PID.
+  (cd "$RUN_DIR/work" && exec env BUNDLE_GEMFILE="$REPO/Gemfile" \
+    "$ruby_bin/ruby" "$REPO/bin/gemstash" start --config-file "$RUN_DIR/config.yml") \
+    > "$RUN_DIR/launch.log" 2>&1 < /dev/null &
+  local pid=$!
+
+  cat > "$RUN_DIR/instance.env" <<EOF
+RUN=$RUN
+PID=$pid
+PORT=$PORT
+URL=$URL
+RUBY_BIN=$ruby_bin
+REPO=$REPO
+EVIDENCE=$EVIDENCE
+PROTECTED_FETCH=$protected
+UPSTREAM=$upstream
+EOF
+  cp "$RUN_DIR/config.yml" "$EVIDENCE/config.yml"
+
+  local i code=""
+  for i in $(seq 1 120); do
+    alive "$pid" || { tail -n 40 "$RUN_DIR/launch.log" >&2; die "server exited during launch; run cleanup $RUN"; }
+    code=$(curl -s -o "$EVIDENCE/launch-health.json" -w '%{http_code}' "$URL/health" || true)
+    [ "$code" = 200 ] && break
+    sleep 0.5
+  done
+  [ "$code" = 200 ] || { tail -n 40 "$RUN_DIR/launch.log" >&2; die "/health never returned 200; run cleanup $RUN"; }
+
+  echo "RUN=$RUN"
+  echo "URL=$URL"
+  echo "PID=$pid"
+  echo "RUN_DIR=$RUN_DIR"
+  echo "EVIDENCE=$EVIDENCE"
+  echo "health: $(cat "$EVIDENCE/launch-health.json")"
+}
+
+cmd_doctor() {
+  load_run "$1"
+  local ok=true pidfile_pid listeners cmdline cwd health version
+  check() { if [ "$2" = ok ]; then echo "ok    $1"; else echo "FAIL  $1: $2"; ok=false; fi; }
+
+  if alive "$PID"; then check "process $PID alive" ok; else check "process $PID alive" "not running"; fi
+  pidfile_pid=$(cat "$RUN_DIR/base/puma.pid" 2>/dev/null || true)
+  [ "$pidfile_pid" = "$PID" ] && check "puma.pid matches launched PID" ok \
+    || check "puma.pid matches launched PID" "pidfile has '${pidfile_pid}'"
+  # Puma retitles the process "puma <version> (<bind>) [<cwd basename>]".
+  cmdline=$(ps -o args= -p "$PID" 2>/dev/null || true)
+  case "$cmdline" in
+    "puma "*"(tcp://127.0.0.1:$PORT)"*) check "process is puma bound to $PORT" ok ;;
+    *) check "process is puma bound to $PORT" "cmdline '$cmdline'" ;;
+  esac
+  cwd=$( (lsof -a -p "$PID" -d cwd -Fn 2>/dev/null || true) | sed -n 's/^n//p')
+  [ "$cwd" = "$RUN_DIR/work" ] && check "process cwd is this run's work dir" ok \
+    || check "process cwd is this run's work dir" "cwd '${cwd}'"
+  listeners=$(lsof -nP -iTCP:"$PORT" -sTCP:LISTEN -t 2>/dev/null || true)
+  if printf '%s\n' "$listeners" | grep -qx "$PID"; then check "port $PORT owned by PID $PID" ok
+  else check "port $PORT owned by PID $PID" "listeners: ${listeners:-none}"; fi
+  health=$(curl -s -w ' %{http_code}' "$URL/health/heartbeat" || true)
+  case "$health" in *" 200") check "GET /health/heartbeat" ok ;; *) check "GET /health/heartbeat" "$health" ;; esac
+  health=$(curl -s -w ' %{http_code}' "$URL/health/db_read" || true)
+  case "$health" in *" 200") check "GET /health/db_read" ok ;; *) check "GET /health/db_read" "$health" ;; esac
+  version=$(user_env gemstash version 2>&1 || true)
+  echo "info  $version; checkout $(git -C "$REPO" rev-parse --short HEAD)$(git -C "$REPO" diff --quiet HEAD -- lib bin exe || echo ' (lib/bin/exe modified)')"
+  echo "info  url $URL; protected_fetch $PROTECTED_FETCH; upstream $UPSTREAM; evidence $EVIDENCE"
+  $ok && echo "doctor: healthy" || { echo "doctor: NOT healthy; run cleanup $RUN and launch again"; return 1; }
+}
+
+cmd_run() {
+  load_run "$1"
+  [ -n "${2:-}" ] && [ -n "${3:-}" ] || die "usage: run RUN LABEL 'SHELL COMMAND'"
+  record "$2" "$3"
+}
+
+cmd_make_gem() {
+  load_run "$1"
+  local name="${2:?NAME}" version="${3:?VERSION}" dir
+  dir="$RUN_DIR/work/src/$name-$version"
+  mkdir -p "$dir/lib"
+  echo "module $(echo "$name" | sed -E 's/(^|[-_])([a-z])/\U\2/g'); VERSION = \"$version\"; end" > "$dir/lib/$name.rb"
+  cat > "$dir/$name.gemspec" <<EOF
+Gem::Specification.new do |s|
+  s.name = "$name"
+  s.version = "$version"
+  s.summary = "verify-gemstash test gem"
+  s.authors = ["verify-gemstash"]
+  s.license = "MIT"
+  s.files = ["lib/$name.rb"]
+end
+EOF
+  record "make-gem-$name-$version" "cd src/$name-$version && gem build $name.gemspec --output ../../$name-$version.gem"
+}
+
+cmd_state() {
+  load_run "$1"
+  local label="${2:?LABEL}" seq
+  seq=$(next_seq)
+  # Read-only Sequel connection to the run's SQLite database.
+  {
+    echo "# database $RUN_DIR/base/gemstash.db"
+    BUNDLE_GEMFILE="$REPO/Gemfile" "$RUBY_BIN/ruby" -rbundler/setup -rsequel -e '
+      path = ARGV[0]
+      abort "no database yet (created on first private-gem or authorize use)" unless File.exist?(path)
+      db = Sequel.sqlite(path, readonly: true)
+      %i[authorizations rubygems versions dependencies upstreams cached_rubygems].each do |t|
+        next unless db.table_exists?(t)
+        rows = db[t].all
+        puts "## #{t} (#{rows.size})"
+        rows.each { |r| puts r.reject { |k, _| %i[created_at updated_at].include?(k) }.inspect }
+      end' "$RUN_DIR/base/gemstash.db" 2>&1 || true
+    echo "# files under base_path"
+    (cd "$RUN_DIR/base" && find . -type f ! -name '*.log' | sort)
+  } > "$EVIDENCE/$seq-state-$label.txt"
+  printf 'state-%s\n' "$label" > "$EVIDENCE/$seq-state-$label.cmd"
+  cat "$EVIDENCE/$seq-state-$label.txt"
+  echo "[evidence: $EVIDENCE/$seq-state-$label.txt]"
+}
+
+cmd_cleanup() {
+  load_run "$1"
+  local i
+  if alive "$PID"; then
+    user_env gemstash stop > "$EVIDENCE/cleanup-stop.txt" 2>&1 || true
+    for i in $(seq 1 40); do alive "$PID" || break; sleep 0.25; done
+    if alive "$PID"; then kill -TERM "$PID" 2>/dev/null || true; sleep 2; fi
+    alive "$PID" && kill -KILL "$PID" 2>/dev/null || true
+  fi
+  alive "$PID" && die "PID $PID still running; not deleting $RUN_DIR"
+  if lsof -nP -iTCP:"$PORT" -sTCP:LISTEN -t > /dev/null 2>&1; then
+    echo "warning: port $PORT still has a listener (not ours to kill)" >&2
+  fi
+  # Keep the server log with the evidence before removing scratch state.
+  cp "$RUN_DIR/base/server.log" "$EVIDENCE/server.log" 2>/dev/null || true
+  cp "$RUN_DIR/launch.log" "$EVIDENCE/launch.log" 2>/dev/null || true
+  rm -rf "$RUN_DIR"
+  echo "stopped PID $PID, removed $RUN_DIR"
+  echo "evidence kept in $EVIDENCE:"
+  ls -1 "$EVIDENCE"
+}
+
+cmd_list() {
+  [ -d "$RUN_ROOT" ] || { echo "no runs"; return; }
+  local d found=false
+  for d in "$RUN_ROOT"/*/; do
+    [ -f "$d/instance.env" ] || continue
+    found=true
+    ( . "$d/instance.env"; printf '%s  %s  pid %s %s\n' "$RUN" "$URL" "$PID" "$(kill -0 "$PID" 2>/dev/null && echo alive || echo dead)" )
+  done
+  $found || echo "no runs"
+}
+
+case "${1:-}" in
+  launch) shift; cmd_launch "$@" ;;
+  doctor) shift; cmd_doctor "$@" ;;
+  run) shift; cmd_run "$@" ;;
+  make-gem) shift; cmd_make_gem "$@" ;;
+  state) shift; cmd_state "$@" ;;
+  cleanup) shift; cmd_cleanup "$@" ;;
+  list) shift; cmd_list ;;
+  *) usage; exit 2 ;;
+esac
