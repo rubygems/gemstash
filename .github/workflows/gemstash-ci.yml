@@ -8,7 +8,7 @@ on:
 
 jobs:
   gemstash_tests:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-26.04
     strategy:
       fail-fast: false
       matrix:
@@ -72,7 +72,7 @@ jobs:
         if: matrix.db_adapter == 'mysql2'
         run: |
           set -eux
-          sudo /etc/init.d/mysql start
+          sudo systemctl start mysql.service
           mysql -e 'CREATE DATABASE gemstash_test;' --user=root --password=root
           mysqladmin ping --user=root --password=root
       - name: Run Tests
@@ -87,7 +87,7 @@ jobs:
     needs:
       - gemstash_tests
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
 
     steps:
       - name: check test jobs
