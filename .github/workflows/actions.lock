@@ -3,6 +3,9 @@
 # Docs: https://gh.io/actions-lockfile
 version: 'v0.0.3'
 workflows:
+    '.github/workflows/copilot-code-review.yml':
+        - 'actions/checkout@v7.0.1'
+        - 'ruby/setup-ruby@v1.338.0'
     '.github/workflows/gemstash-ci.yml':
         - 'actions/checkout@v7.0.1'
         - 're-actors/alls-green@v1.3.0'
