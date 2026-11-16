@@ -15,7 +15,8 @@ RSpec.describe Gemstash::Authorization do
         expect(Gemstash::Authorization["abc"]).to be
         Gemstash::Authorization.remove("abc")
         expect(Gemstash::Authorization["abc"]).to be_nil
-        expect(the_log).to include("Authorization 'abc' with access to 'all' removed")
+        expect(the_log).to include("Authorization '****' with access to 'all' removed")
+        expect(the_log).to_not include("'abc'")
       end
 
       it "removes the named authorization" do
@@ -23,7 +24,8 @@ RSpec.describe Gemstash::Authorization do
         expect(Gemstash::Authorization["def"]).to be
         Gemstash::Authorization.remove("def")
         expect(Gemstash::Authorization["def"]).to be_nil
-        expect(the_log).to include("Authorization 'def' with access to 'all' removed")
+        expect(the_log).to include("Authorization 'named-authorization' with access to 'all' removed")
+        expect(the_log).to_not include("'def'")
       end
     end
 
@@ -79,12 +81,13 @@ RSpec.describe Gemstash::Authorization do
       it "inserts or updates the database" do
         Gemstash::Authorization.authorize("abc", "all")
         expect(Gemstash::Authorization["abc"].all?).to be_truthy
-        expect(the_log).to include("Authorization 'abc' updated with access to 'all'")
+        expect(the_log).to include("Authorization '****' updated with access to 'all'")
         Gemstash::Authorization.authorize("abc", %w[push yank])
         expect(Gemstash::Authorization["abc"].all?).to be_falsey
         expect(Gemstash::Authorization["abc"].push?).to be_truthy
         expect(Gemstash::Authorization["abc"].yank?).to be_truthy
-        expect(the_log).to include("Authorization 'abc' updated with access to 'push,yank'")
+        expect(the_log).to include("Authorization '****' updated with access to 'push,yank'")
+        expect(the_log).to_not include("'abc'")
       end
 
       it "supports naming the authorization" do
@@ -93,7 +96,14 @@ RSpec.describe Gemstash::Authorization do
         authorization = Gemstash::Authorization["abc"]
         expect(authorization.all?).to be_truthy
         expect(authorization.name).to eq "test auth"
-        expect(the_log).to include("Authorization 'abc' updated with access to 'all'")
+        expect(the_log).to include("Authorization 'test auth' updated with access to 'all'")
+        expect(the_log).to_not include("'abc'")
+      end
+
+      it "logs only a masked fingerprint of an unnamed key, never the raw key" do
+        Gemstash::Authorization.authorize("secret-key-abcd1234", "all")
+        expect(the_log).to include("Authorization '****1234' updated with access to 'all'")
+        expect(the_log).to_not include("secret-key-abcd1234")
       end
 
       it "supports naming the authorization in an update" do

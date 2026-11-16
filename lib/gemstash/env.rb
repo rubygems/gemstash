@@ -79,7 +79,10 @@ module Gemstash
       dir = config[:base_path]
 
       if config.default?(:base_path)
-        FileUtils.mkpath(dir) unless Dir.exist?(dir)
+        unless Dir.exist?(dir)
+          FileUtils.mkpath(dir)
+          FileUtils.chmod(0o700, dir)
+        end
       else
         raise "Base path '#{dir}' is not writable" unless File.writable?(dir)
       end
@@ -131,6 +134,8 @@ module Gemstash
           else
             Sequel.connect("sqlite://#{db_path}", config.database_connection_config)
           end
+
+          FileUtils.chmod(0o600, db_path) if File.exist?(db_path)
         when "postgres", "mysql", "mysql2"
           db_url = config[:db_url]
           raise "Missing DB URL" unless db_url

@@ -86,6 +86,12 @@ source "http://localhost:9292/upstream/#{CGI.escape("api_key@my-other.gem-source
 end
 ```
 
+**Recommended:** prefer the `GEMSTASH_<HOST>` environment variable (below)
+over embedding `user:password` in the source URL. Credentials placed in the
+URL are retained by Gemstash and can appear at rest (in the upstreams table,
+the dependency cache keys, and cached gem metadata) and in request logs. The
+environment-variable form keeps the secret out of those sinks.
+
 If you set `GEMSTASH_<HOST>` ENV variable with your authentication
 information, you can omit it from the `Gemfile`:
 

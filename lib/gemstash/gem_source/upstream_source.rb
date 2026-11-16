@@ -197,7 +197,7 @@ module Gemstash
         log.info "Gem #{gem_name.name} is not cached, fetching #{resource_type}"
         gem_fetcher.fetch(gem_name.id, resource_type) do |content, properties|
           resource_properties = {
-            upstream: upstream.to_s,
+            upstream: upstream.without_credentials,
             gem_name: gem_name.name,
             headers: { resource_type => properties }
           }
