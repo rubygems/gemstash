@@ -30,9 +30,9 @@ module Gemstash
 
     def serve
       check_auth
+      save_to_database
       store_gem
       store_gemspec
-      save_to_database
       invalidate_cache
     end
 

@@ -149,9 +149,12 @@ RSpec.describe Gemstash::GemPusher do
         storage.resource("example-0.1.0").save({ gem: "zapatito" }, indexed: false)
       end
 
-      it "rejects the push" do
-        expect { Gemstash::GemPusher.new(auth, gem_contents).serve }.
-          to raise_error(Gemstash::GemPusher::YankedVersionError)
+      it "rejects the push and does not change the stored gem" do
+        expect do
+          expect { Gemstash::GemPusher.new(auth, gem_contents).serve }.
+            to raise_error(Gemstash::GemPusher::YankedVersionError)
+        end.to_not change { storage.resource("example-0.1.0").content(:gem) }.from("zapatito")
+        expect(storage.resource("example-0.1.0").properties[:indexed]).to be(false)
       end
     end
 
