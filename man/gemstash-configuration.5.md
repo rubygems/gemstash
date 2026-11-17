@@ -245,6 +245,24 @@ increase this value. The default is `2` seconds.
 
 Integer value with a minimum of `1`
 
+# Max Unpacked Gem Size
+
+`:max_unpacked_gem_size`
+
+Limits how large a pushed gem's contents (its `data.tar.gz`) can be once
+unpacked, in bytes. Pushes over the limit are rejected with a 422 before
+the gem is stored. This stops a small, highly compressed upload from
+using a lot of CPU while Gemstash reads the gem. Increase it if your
+private gems are larger.
+
+## Default value
+
+`536870912` (512 MiB)
+
+## Valid values
+
+Integer value with a minimum of `1`
+
 # Log File
 
 `:log_file`

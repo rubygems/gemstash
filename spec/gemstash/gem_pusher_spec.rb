@@ -178,5 +178,41 @@ RSpec.describe Gemstash::GemPusher do
           to eq("zapatito")
       end
     end
+
+    context "with a gem larger than :max_unpacked_gem_size when unpacked" do
+      let(:gem_contents) { build_gem("large", "0.1.0", "lib/large.bin" => "\0" * 2_000_000) }
+
+      before do
+        allow(test_env.config).to receive(:[]).and_call_original
+        allow(test_env.config).to receive(:[]).with(:max_unpacked_gem_size).and_return(1_000_000)
+      end
+
+      it "rejects the push before storing anything" do
+        expect(gem_contents.bytesize).to be < 1_000_000
+        expect { Gemstash::GemPusher.new(auth, gem_contents).serve }.
+          to raise_error(Gemstash::GemPusher::GemTooLargeError, /larger than 1000000 bytes/)
+        expect(storage.resource("large-0.1.0").exist?).to be(false)
+        expect(Gemstash::DB::Rubygem[name: "large"]).to be_nil
+      end
+
+      it "checks authorization first" do
+        expect { Gemstash::GemPusher.new(auth_without_permission, gem_contents).serve }.
+          to raise_error(Gemstash::NotAuthorizedError)
+      end
+    end
+
+    context "with a gem within :max_unpacked_gem_size when unpacked" do
+      let(:gem_contents) { build_gem("large", "0.1.0", "lib/large.bin" => "\0" * 900_000) }
+
+      before do
+        allow(test_env.config).to receive(:[]).and_call_original
+        allow(test_env.config).to receive(:[]).with(:max_unpacked_gem_size).and_return(1_000_000)
+      end
+
+      it "stores the gem" do
+        Gemstash::GemPusher.new(auth, gem_contents).serve
+        expect(storage.resource("large-0.1.0").content(:gem)).to eq(gem_contents)
+      end
+    end
   end
 end

@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 require "fileutils"
+require "rubygems/package"
 require "stringio"
+require "tmpdir"
 require "zlib"
 
 # Helper methods to easily find and manipulate test files.
@@ -15,6 +17,29 @@ module FileHelpers
 
   def read_gem(name, version, platform: "ruby")
     File.open(gem_path(name, version, platform: platform), "rb", &:read)
+  end
+
+  # Build a .gem in memory containing the given files (path => content).
+  def build_gem(name, version, files)
+    Dir.mktmpdir do |dir|
+      Dir.chdir(dir) do
+        files.each do |path, content|
+          FileUtils.mkdir_p(File.dirname(path))
+          File.binwrite(path, content)
+        end
+
+        package = Gem::Package.new("#{name}-#{version}.gem")
+        package.spec = Gem::Specification.new do |spec|
+          spec.name = name
+          spec.version = version
+          spec.summary = name
+          spec.authors = ["Gemstash"]
+          spec.files = files.keys
+        end
+        package.build(true)
+        File.binread(package.spec.file_name)
+      end
+    end
   end
 
   def env_path(name)

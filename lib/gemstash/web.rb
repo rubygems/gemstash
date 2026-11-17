@@ -35,6 +35,11 @@ module Gemstash
       body JSON.dump("error" => "Version already exists", "code" => 422)
     end
 
+    error GemPusher::GemTooLargeError do
+      status 422
+      body JSON.dump("error" => env["sinatra.error"].message, "code" => 422)
+    end
+
     get "/" do
       @gem_source.serve_root
     end
