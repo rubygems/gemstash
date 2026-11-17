@@ -214,6 +214,13 @@ RSpec.describe Gemstash::Web do
         expect(storage.resource("rack").exist?(:gem)).to be_truthy
       end
 
+      it "escapes the requested gem name in the log" do
+        # Fetching from the upstream fails after the log line is written.
+        expect { get "/gems/rack%0D%0AFORGED-GEM-LINE.gem", {}, rack_env }.to raise_error(URI::InvalidURIError)
+        expect(the_log).to include("rack\\r\\nFORGED-GEM-LINE")
+        expect(the_log).to_not match(/^FORGED-GEM-LINE/)
+      end
+
       it "keeps the upstream and full gem name in the properties" do
         get "/gems/rack-1.0.0.gem", {}, rack_env
         properties = storage.resource("rack-1.0.0").properties

@@ -189,12 +189,12 @@ module Gemstash
       end
 
       def fetch_local_gem(gem_name, gem_resource, resource_type)
-        log.info "Gem #{gem_name.name} exists, returning cached #{resource_type}"
+        log.info "Gem #{Gemstash::Logging.escape(gem_name.name)} exists, returning cached #{resource_type}"
         gem_resource
       end
 
       def fetch_remote_gem(gem_name, gem_resource, resource_type)
-        log.info "Gem #{gem_name.name} is not cached, fetching #{resource_type}"
+        log.info "Gem #{Gemstash::Logging.escape(gem_name.name)} is not cached, fetching #{resource_type}"
         gem_fetcher.fetch(gem_name.id, resource_type) do |content, properties|
           resource_properties = {
             upstream: upstream.to_s,
