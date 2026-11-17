@@ -19,6 +19,7 @@ module Gemstash
     end
 
     def self.serve(app)
+      app.auth.check("push")
       gem = app.request.body.read
       new(app.auth, gem).serve
     end

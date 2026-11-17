@@ -21,6 +21,41 @@ RSpec.describe Gemstash::GemPusher do
     let(:deps) { Gemstash::Dependencies.for_private }
     let(:gem_contents) { read_gem("example", "0.1.0") }
 
+    context "when called with a request" do
+      let(:body) { StringIO.new(gem_contents) }
+      let(:app) do
+        double("app", auth: app_auth, request: double("request", body: body))
+      end
+
+      context "without authorization" do
+        let(:app_auth) { auth_with_invalid_auth_key }
+
+        it "rejects the push before reading the request body" do
+          expect(body).to_not receive(:read)
+          expect { Gemstash::GemPusher.serve(app) }.to raise_error(Gemstash::NotAuthorizedError)
+          expect(deps.fetch(%w[example])).to eq([])
+        end
+      end
+
+      context "without push permission" do
+        let(:app_auth) { auth_without_permission }
+
+        it "rejects the push before reading the request body" do
+          expect(body).to_not receive(:read)
+          expect { Gemstash::GemPusher.serve(app) }.to raise_error(Gemstash::NotAuthorizedError)
+        end
+      end
+
+      context "with authorization" do
+        let(:app_auth) { auth }
+
+        it "reads the request body and stores the gem" do
+          Gemstash::GemPusher.serve(app)
+          expect(storage.resource("example-0.1.0").content(:gem)).to eq(gem_contents)
+        end
+      end
+    end
+
     context "without authorization" do
       it "prevents pushing" do
         expect { Gemstash::GemPusher.new(Gemstash::ApiKeyAuthorization.new(nil), gem_contents).serve }.
