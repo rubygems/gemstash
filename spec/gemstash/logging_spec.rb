@@ -18,6 +18,24 @@ RSpec.describe Gemstash::Logging do
     expect(log_contents).to include("a message with a newline\n")
     expect(log_contents).to_not include("a formatted message\n\n")
   end
+
+  describe ".escape" do
+    it "escapes CR and LF" do
+      expect(Gemstash::Logging.escape("rack\r\nINFO - forged")).to eq("rack\\r\\nINFO - forged")
+    end
+
+    it "escapes other control characters" do
+      expect(Gemstash::Logging.escape("a\e[31mb\u0000c\u0085d")).to eq("a\\e[31mb\\x00c\\u0085d")
+    end
+
+    it "leaves ordinary values alone" do
+      expect(Gemstash::Logging.escape("rack-1.0.0, sinatra_2")).to eq("rack-1.0.0, sinatra_2")
+    end
+
+    it "handles invalid byte sequences" do
+      expect(Gemstash::Logging.escape("a\xFF\nb".dup.force_encoding("UTF-8"))).to eq("a\uFFFD\\nb")
+    end
+  end
 end
 
 RSpec.describe Gemstash::Logging::StreamLogger do

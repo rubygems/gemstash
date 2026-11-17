@@ -32,6 +32,12 @@ module Gemstash
       end
     end
 
+    # Escape control characters (including CR and LF) in a client-supplied
+    # value so it can't break out of its log line and forge new entries.
+    def self.escape(value)
+      value.to_s.scrub.gsub(/[[:cntrl:]]/) {|char| char.dump[1..-2] }
+    end
+
     def self.setup_logger(logfile)
       @logger = Logger.new(logfile, 2, 10_485_760)
       @logger.level = Logger::INFO

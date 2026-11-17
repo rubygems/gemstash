@@ -125,6 +125,12 @@ RSpec.describe Gemstash::Dependencies do
 
         expect(db_deps.fetch(%w[foo bar baz custom])).to match_dependencies([custom])
       end
+
+      it "escapes requested gem names in the log" do
+        db_deps.fetch(["custom\r\nFORGED-DEPENDENCIES-LINE"])
+        expect(the_log).to include("custom\\r\\nFORGED-DEPENDENCIES-LINE")
+        expect(the_log).to_not match(/^FORGED-DEPENDENCIES-LINE/)
+      end
     end
 
     context "with multiple private gem requests" do
