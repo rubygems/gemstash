@@ -3,6 +3,7 @@
 require "gemstash"
 require "rubygems/package"
 require "stringio"
+require "zlib"
 
 # :nodoc:
 module Gemstash
@@ -18,6 +19,11 @@ module Gemstash
     class YankedVersionError < ExistingVersionError
     end
 
+    # This error is thrown when a gem's contents unpack to more than
+    # the :max_unpacked_gem_size configuration allows.
+    class GemTooLargeError < StandardError
+    end
+
     def self.serve(app)
       gem = app.request.body.read
       new(app.auth, gem).serve
@@ -30,6 +36,7 @@ module Gemstash
 
     def serve
       check_auth
+      check_unpacked_size
       store_gem
       store_gemspec
       save_to_database
@@ -52,6 +59,29 @@ module Gemstash
 
     def check_auth
       @auth.check("push")
+    end
+
+    # Gem::Package#verify decompresses all of data.tar.gz with no size limit,
+    # so check the unpacked size first with a limit.
+    def check_unpacked_size
+      limit = gemstash_env.config[:max_unpacked_gem_size]
+      unpacked = 0
+
+      Gem::Package::TarReader.new(StringIO.new(@content)) do |tar|
+        tar.each do |entry|
+          next unless entry.full_name == "data.tar.gz"
+
+          Zlib::GzipReader.wrap(entry) do |gzip|
+            buffer = +""
+            while gzip.read(16_384, buffer)
+              unpacked += buffer.bytesize
+              raise GemTooLargeError, "Gem contents are larger than #{limit} bytes when unpacked" if unpacked > limit
+            end
+          end
+        end
+      end
+    rescue Gem::Package::Error, Zlib::Error
+      # Not a valid gem; Gem::Package reports the problem when it reads the spec.
     end
 
     def store_gem

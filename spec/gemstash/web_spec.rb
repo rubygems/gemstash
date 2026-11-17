@@ -434,5 +434,15 @@ RSpec.describe Gemstash::Web do
       expect(last_response.status).to eq(422)
       expect(JSON.parse(last_response.body)).to eq("error" => "Version already exists", "code" => 422)
     end
+
+    it "returns a 422 when the gem is larger than :max_unpacked_gem_size when unpacked" do
+      allow(test_env.config).to receive(:[]).and_call_original
+      allow(test_env.config).to receive(:[]).with(:max_unpacked_gem_size).and_return(1_000_000)
+
+      post "/api/v1/gems", build_gem("large", "0.1.0", "lib/large.bin" => "\0" * 2_000_000), env
+      expect(last_response.status).to eq(422)
+      expect(JSON.parse(last_response.body)).
+        to eq("error" => "Gem contents are larger than 1000000 bytes when unpacked", "code" => 422)
+    end
   end
 end
