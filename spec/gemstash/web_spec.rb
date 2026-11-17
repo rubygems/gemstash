@@ -141,6 +141,51 @@ RSpec.describe Gemstash::Web do
           to eq("Too many gems (use --full-index instead)")
       end
     end
+
+    context "from private gems" do
+      let(:gem_source) { Gemstash::GemSource::PrivateSource }
+      let(:auth_key) { "auth-key" }
+
+      before do
+        gem_id = insert_rubygem "private-gem"
+        version_id = insert_version gem_id, "0.1.0"
+        insert_dependency version_id, "private-dep", "~> 1.0"
+      end
+
+      context "with protected fetch disabled" do
+        it "serves dependencies without an API key" do
+          get "#{request}?gems=private-gem", {}, rack_env
+          expect(last_response).to be_ok
+          expect(last_response.body).to include("private-dep")
+        end
+      end
+
+      context "with protected fetch enabled" do
+        before do
+          allow(test_env.config).to receive(:[]).and_call_original
+          allow(test_env.config).to receive(:[]).with(:protected_fetch).and_return(true)
+          Gemstash::Authorization.authorize(auth_key, "all")
+        end
+
+        it "halts with 401 without an API key" do
+          get "#{request}?gems=private-gem", {}, rack_env
+          expect(last_response.status).to eq(401)
+          expect(last_response.body).to_not include("private-dep")
+        end
+
+        it "halts with 401 with an invalid API key" do
+          get "#{request}?gems=private-gem", {}, rack_env.merge("HTTP_AUTHORIZATION" => "bad-key")
+          expect(last_response.status).to eq(401)
+          expect(last_response.body).to_not include("private-dep")
+        end
+
+        it "serves dependencies with a valid API key" do
+          get "#{request}?gems=private-gem", {}, rack_env.merge("HTTP_AUTHORIZATION" => auth_key)
+          expect(last_response).to be_ok
+          expect(last_response.body).to include("private-dep")
+        end
+      end
+    end
   end
 
   context "GET /api/v1/dependencies.json" do
@@ -197,6 +242,51 @@ RSpec.describe Gemstash::Web do
 
         expect(last_response).not_to be_ok
         expect(last_response.body).to eq(error)
+      end
+    end
+
+    context "from private gems" do
+      let(:gem_source) { Gemstash::GemSource::PrivateSource }
+      let(:auth_key) { "auth-key" }
+
+      before do
+        gem_id = insert_rubygem "private-gem"
+        version_id = insert_version gem_id, "0.1.0"
+        insert_dependency version_id, "private-dep", "~> 1.0"
+      end
+
+      context "with protected fetch disabled" do
+        it "serves dependencies without an API key" do
+          get "#{request}?gems=private-gem", {}, rack_env
+          expect(last_response).to be_ok
+          expect(last_response.body).to include("private-dep")
+        end
+      end
+
+      context "with protected fetch enabled" do
+        before do
+          allow(test_env.config).to receive(:[]).and_call_original
+          allow(test_env.config).to receive(:[]).with(:protected_fetch).and_return(true)
+          Gemstash::Authorization.authorize(auth_key, "all")
+        end
+
+        it "halts with 401 without an API key" do
+          get "#{request}?gems=private-gem", {}, rack_env
+          expect(last_response.status).to eq(401)
+          expect(last_response.body).to_not include("private-dep")
+        end
+
+        it "halts with 401 with an invalid API key" do
+          get "#{request}?gems=private-gem", {}, rack_env.merge("HTTP_AUTHORIZATION" => "bad-key")
+          expect(last_response.status).to eq(401)
+          expect(last_response.body).to_not include("private-dep")
+        end
+
+        it "serves dependencies with a valid API key" do
+          get "#{request}?gems=private-gem", {}, rack_env.merge("HTTP_AUTHORIZATION" => auth_key)
+          expect(last_response).to be_ok
+          expect(last_response.body).to include("private-dep")
+        end
       end
     end
   end

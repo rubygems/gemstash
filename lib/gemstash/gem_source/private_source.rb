@@ -26,6 +26,14 @@ module Gemstash
         halt 403, "Not yet supported"
       end
 
+      def serve_dependencies
+        protected_fetch { super }
+      end
+
+      def serve_dependencies_json
+        protected_fetch { super }
+      end
+
       def serve_add_gem
         protected(Gemstash::GemPusher)
       end
@@ -55,8 +63,7 @@ module Gemstash
       end
 
       def serve_marshal(id)
-        authorization.protect(self) do
-          auth.check("fetch") if gemstash_env.config[:protected_fetch]
+        protected_fetch do
           gem_full_name = id.delete_suffix(".gemspec.rz")
           gem = fetch_gem(gem_full_name)
           halt 404 unless gem.exist?(:spec)
@@ -70,8 +77,7 @@ module Gemstash
       end
 
       def serve_gem(id)
-        authorization.protect(self) do
-          auth.check("fetch") if gemstash_env.config[:protected_fetch]
+        protected_fetch do
           gem_full_name = id.delete_suffix(".gem")
           gem = fetch_gem(gem_full_name)
           content_type "application/octet-stream"
@@ -98,6 +104,13 @@ module Gemstash
 
       def protected(servable)
         authorization.protect(self) { servable.serve(self) }
+      end
+
+      def protected_fetch
+        authorization.protect(self) do
+          auth.check("fetch") if gemstash_env.config[:protected_fetch]
+          yield
+        end
       end
 
       def authorization
