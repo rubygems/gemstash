@@ -30,9 +30,19 @@ module Gemstash
 
     def serve
       check_auth
-      save_to_database
-      store_gem
-      store_gemspec
+      resource = storage.resource(full_name)
+      gemstash_env.db.transaction do
+        save_to_database
+        raise ExistingVersionError, "Cannot push to an existing version!" if Dir.exist?(resource.folder)
+
+        begin
+          store_gem(resource)
+          store_gemspec(resource)
+        rescue StandardError
+          FileUtils.remove_entry(resource.folder) if Dir.exist?(resource.folder)
+          raise
+        end
+      end
       invalidate_cache
     end
 
@@ -54,34 +64,27 @@ module Gemstash
       @auth.check("push")
     end
 
-    def store_gem
-      resource_exist = storage.resource(full_name).exist?
-      resource_is_indexed = storage.resource(full_name).properties[:indexed] if resource_exist
-
-      raise ExistingVersionError, "Cannot push to an existing version!" if resource_exist && resource_is_indexed
-
-      storage.resource(full_name).save({ gem: @content }, indexed: true)
+    def store_gem(resource)
+      resource.save({ gem: @content }, indexed: true)
     end
 
-    def store_gemspec
+    def store_gemspec(resource)
       spec = gem.spec
       spec = Marshal.dump(spec)
       spec = Zlib::Deflate.deflate(spec)
-      storage.resource(full_name).save(spec: spec)
+      resource.save(spec: spec)
     end
 
     def save_to_database
       spec = gem.spec
 
-      gemstash_env.db.transaction do
-        gem_id = Gemstash::DB::Rubygem.find_or_insert(spec)
-        existing = Gemstash::DB::Version.find_by_spec(gem_id, spec)
-        raise ExistingVersionError, "Cannot push to an existing version!" if existing && existing.indexed
-        raise YankedVersionError, "Cannot push to a yanked version!" if existing && !existing.indexed
+      gem_id = Gemstash::DB::Rubygem.find_or_insert(spec)
+      existing = Gemstash::DB::Version.find_by_spec(gem_id, spec)
+      raise ExistingVersionError, "Cannot push to an existing version!" if existing && existing.indexed
+      raise YankedVersionError, "Cannot push to a yanked version!" if existing && !existing.indexed
 
-        version_id = Gemstash::DB::Version.insert_by_spec(gem_id, spec)
-        Gemstash::DB::Dependency.insert_by_spec(version_id, spec)
-      end
+      version_id = Gemstash::DB::Version.insert_by_spec(gem_id, spec)
+      Gemstash::DB::Dependency.insert_by_spec(version_id, spec)
     end
 
     def invalidate_cache

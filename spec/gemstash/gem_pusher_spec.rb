@@ -73,6 +73,45 @@ RSpec.describe Gemstash::GemPusher do
         expect(spec.version.to_s).to eq("0.1.0")
         expect(spec.platform.to_s).to eq("ruby")
       end
+
+      %i[gem spec].each do |failed_write|
+        it "rolls back a failed #{failed_write} write and permits a retry", db_transaction: false do
+          resource = storage.resource("example-0.1.0")
+          fail_once = true
+          allow(test_env).to receive(:atomic_write).and_wrap_original do |write, filename, &block|
+            write.call(filename, &block)
+            if fail_once && File.basename(filename) == failed_write.to_s
+              fail_once = false
+              raise IOError, "storage write failed"
+            end
+          end
+
+          expect { Gemstash::GemPusher.new(auth, gem_contents).serve }.
+            to raise_error(IOError, "storage write failed")
+          expect(Gemstash::DB::Version.find_by_full_name("example-0.1.0")).to be_nil
+          expect(Gemstash::DB::Rubygem[name: "example"]).to be_nil
+          expect(Gemstash::DB::Dependency.count).to eq(0)
+          expect(resource.exist?(:gem)).to be(false)
+          expect(resource.exist?(:spec)).to be(false)
+          expect(Dir.exist?(resource.folder)).to be(false)
+
+          Gemstash::GemPusher.new(auth, gem_contents).serve
+          expect(Gemstash::DB::Version.find_by_full_name("example-0.1.0").indexed).to be(true)
+          expect(resource.content(:gem)).to eq(gem_contents)
+          expect(resource.exist?(:spec)).to be(true)
+        end
+      end
+
+      it "does not overwrite stored content with no version record", db_transaction: false do
+        resource = storage.resource("example-0.1.0")
+        resource.save({ gem: "orphan gem", spec: "orphan spec" }, indexed: true)
+
+        expect { Gemstash::GemPusher.new(auth, gem_contents).serve }.
+          to raise_error(Gemstash::GemPusher::ExistingVersionError)
+        expect(Gemstash::DB::Version.find_by_full_name("example-0.1.0")).to be_nil
+        expect(resource.content(:gem)).to eq("orphan gem")
+        expect(resource.content(:spec)).to eq("orphan spec")
+      end
     end
 
     context "with a non-ruby platform" do
@@ -146,14 +185,15 @@ RSpec.describe Gemstash::GemPusher do
       before do
         gem_id = insert_rubygem "example"
         insert_version gem_id, "0.1.0", indexed: false
-        storage.resource("example-0.1.0").save({ gem: "zapatito" }, indexed: false)
+        storage.resource("example-0.1.0").save({ gem: "zapatito", spec: "original spec" }, indexed: false)
       end
 
-      it "rejects the push and does not change the stored gem" do
+      it "rejects the push and does not change the stored gem or gemspec" do
         expect do
           expect { Gemstash::GemPusher.new(auth, gem_contents).serve }.
             to raise_error(Gemstash::GemPusher::YankedVersionError)
         end.to_not change { storage.resource("example-0.1.0").content(:gem) }.from("zapatito")
+        expect(storage.resource("example-0.1.0").content(:spec)).to eq("original spec")
         expect(storage.resource("example-0.1.0").properties[:indexed]).to be(false)
       end
     end
