@@ -9,8 +9,8 @@ RSpec.describe Gemstash::Dependencies do
   let(:db_deps) { Gemstash::Dependencies.for_private }
 
   def valid_url(url, expected_gems)
-    expect(url).to start_with("api/v1/dependencies?gems=")
-    params = url.sub("api/v1/dependencies?gems=", "")
+    expect(url).to start_with("api/v1/dependencies.json?gems=")
+    params = url.sub("api/v1/dependencies.json?gems=", "")
     expect(params.split(",")).to match_array(expected_gems)
   end
 
@@ -26,7 +26,7 @@ RSpec.describe Gemstash::Dependencies do
 
         expect(http_client).to receive(:get) {|url|
           valid_url(url, %w[foo])
-          Marshal.dump(result)
+          JSON.dump(result)
         }
 
         expect(web_deps.fetch(%w[foo])).to eq(result)
@@ -49,7 +49,7 @@ RSpec.describe Gemstash::Dependencies do
 
         expect(http_client).to receive(:get) {|url|
           valid_url(url, %w[foo bar])
-          Marshal.dump(result)
+          JSON.dump(result)
         }
 
         expect(web_deps.fetch(%w[foo bar])).to match_dependencies(result)
@@ -72,7 +72,7 @@ RSpec.describe Gemstash::Dependencies do
 
         expect(http_client).to receive(:get) {|url|
           valid_url(url, %w[foo bar baz])
-          Marshal.dump(result)
+          JSON.dump(result)
         }
 
         expect(web_deps.fetch(%w[foo bar baz])).to match_dependencies(result)
@@ -97,7 +97,7 @@ RSpec.describe Gemstash::Dependencies do
 
         expect(http_client).to receive(:get) {|url|
           valid_url(url, %w[foo bar baz])
-          Marshal.dump([foo, bar])
+          JSON.dump([foo, bar])
         }.once
 
         expect(web_deps.fetch(%w[foo bar baz])).to match_dependencies([foo, bar])

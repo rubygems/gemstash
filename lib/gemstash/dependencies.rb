@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "json"
 require "cgi"
 
 module Gemstash
@@ -76,8 +77,8 @@ module Gemstash
 
         log.info "Fetching dependencies: #{@gems.to_a.join(", ")}"
         gems_param = @gems.map {|gem| CGI.escape(gem) }.join(",")
-        fetched = @http_client.get("api/v1/dependencies?gems=#{gems_param}")
-        fetched = Marshal.load(fetched).group_by {|r| r[:name] }
+        fetched = @http_client.get("api/v1/dependencies.json?gems=#{gems_param}")
+        fetched = JSON.parse(fetched, symbolize_names: true).group_by {|r| r[:name] }
 
         fetched.each do |gem, result|
           @gems.delete(gem)

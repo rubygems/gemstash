@@ -1,17 +1,33 @@
 # frozen_string_literal: true
 
 require "spec_helper"
+require "cgi"
 require "fileutils"
 require "json"
 require "net/http"
 require "uri"
+
+# Records whether Marshal loaded an instance, standing in for a gadget chain.
+class MarshalLoadCanary
+  class << self
+    attr_accessor :loaded
+  end
+
+  def marshal_dump
+    []
+  end
+
+  def marshal_load(_)
+    self.class.loaded = true
+  end
+end
 
 RSpec.describe "gemstash integration tests" do
   let(:auth) { Gemstash::ApiKeyAuthorization.new(auth_key) }
   let(:auth_key) { "test-key" }
 
   before(:all) do
-    speaker_deps = [
+    @speaker_deps = speaker_deps = [
       {
         :name => "speaker",
         :number => "0.1.0",
@@ -293,6 +309,67 @@ RSpec.describe "gemstash integration tests" do
 
       let(:bundle) { "integration_spec/private_gems" }
       it_behaves_like "a bundleable project"
+    end
+  end
+
+  describe "fetching dependencies from an upstream chosen by the client", db_transaction: false do
+    before(:all) do
+      @hostile_requests = requests = []
+      payload = Marshal.dump([MarshalLoadCanary.new])
+      @hostile_server = SimpleServer.new("127.0.0.1")
+
+      %w[/api/v1/dependencies /api/v1/dependencies.json].each do |path|
+        @hostile_server.mount(path) do |request, response|
+          requests << request.path
+          response.status = 200
+          response.body = payload
+        end
+      end
+
+      @hostile_server.start
+    end
+
+    after(:all) do
+      @hostile_server.stop
+    end
+
+    before do
+      MarshalLoadCanary.loaded = false
+      @hostile_requests.clear
+      @gemstash.env.cache.flush
+    end
+
+    shared_examples "a safe upstream dependency fetch" do
+      it "returns the dependencies of a well-behaved upstream" do
+        response = fetch_dependencies(@rubygems_server.url)
+        expect(response).to be_a(Net::HTTPSuccess)
+        expect(Marshal.load(response.body)).to match_dependencies(@speaker_deps)
+      end
+
+      it "does not unmarshal the response of a hostile upstream" do
+        response = fetch_dependencies(@hostile_server.url)
+        expect(@hostile_requests).not_to be_empty
+        expect(MarshalLoadCanary.loaded).to be(false)
+        expect(response).not_to be_a(Net::HTTPSuccess)
+      end
+    end
+
+    context "with the upstream in the X-Gemfile-Source header" do
+      def fetch_dependencies(upstream_url)
+        uri = URI("#{@gemstash.url}/api/v1/dependencies?gems=speaker")
+        Net::HTTP.get_response(uri, "X-Gemfile-Source" => upstream_url)
+      end
+
+      it_behaves_like "a safe upstream dependency fetch"
+    end
+
+    context "with the upstream in an /upstream/ path" do
+      def fetch_dependencies(upstream_url)
+        uri = URI("#{@gemstash.url}/upstream/#{CGI.escape(upstream_url)}/api/v1/dependencies?gems=speaker")
+        Net::HTTP.get_response(uri)
+      end
+
+      it_behaves_like "a safe upstream dependency fetch"
     end
   end
 

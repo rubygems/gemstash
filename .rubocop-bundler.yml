@@ -139,7 +139,8 @@ Layout/LineLength:
 #Security
 
 Security/MarshalLoad:
-  Enabled: false
+  Exclude:
+    - spec/**/*
 
 Security/YAMLLoad:
   Enabled: false
