@@ -213,9 +213,8 @@ RSpec.describe Gemstash::HTTPClient do
       Gemstash::Env.current = old_env
     end
 
-    it "cuts off a drip within an encrypted TLS record" do
-      skip "JRuby's OpenSSL cannot load the test certificate through SSL_CERT_FILE" if RUBY_PLATFORM == "java"
-
+    it "cuts off a drip within an encrypted TLS record",
+       skip: RUBY_PLATFORM == "java" && "JRuby's OpenSSL cannot load the test certificate through SSL_CERT_FILE" do
       key = OpenSSL::PKey::RSA.new(2048)
       cert = OpenSSL::X509::Certificate.new
       cert.version = 2
