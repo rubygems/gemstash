@@ -20,6 +20,10 @@ module Gemstash
 
     private
 
+      def validate_config?
+        true
+      end
+
       def puma_config
         File.expand_path("../puma.rb", __dir__)
       end

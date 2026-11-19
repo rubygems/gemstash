@@ -9,8 +9,8 @@ RSpec.describe Gemstash::Dependencies do
   let(:db_deps) { Gemstash::Dependencies.for_private }
 
   def valid_url(url, expected_gems)
-    expect(url).to start_with("api/v1/dependencies?gems=")
-    params = url.sub("api/v1/dependencies?gems=", "")
+    expect(url).to start_with("api/v1/dependencies.json?gems=")
+    params = url.sub("api/v1/dependencies.json?gems=", "")
     expect(params.split(",")).to match_array(expected_gems)
   end
 
@@ -26,7 +26,7 @@ RSpec.describe Gemstash::Dependencies do
 
         expect(http_client).to receive(:get) {|url|
           valid_url(url, %w[foo])
-          Marshal.dump(result)
+          JSON.dump(result)
         }
 
         expect(web_deps.fetch(%w[foo])).to eq(result)
@@ -49,7 +49,7 @@ RSpec.describe Gemstash::Dependencies do
 
         expect(http_client).to receive(:get) {|url|
           valid_url(url, %w[foo bar])
-          Marshal.dump(result)
+          JSON.dump(result)
         }
 
         expect(web_deps.fetch(%w[foo bar])).to match_dependencies(result)
@@ -72,7 +72,7 @@ RSpec.describe Gemstash::Dependencies do
 
         expect(http_client).to receive(:get) {|url|
           valid_url(url, %w[foo bar baz])
-          Marshal.dump(result)
+          JSON.dump(result)
         }
 
         expect(web_deps.fetch(%w[foo bar baz])).to match_dependencies(result)
@@ -97,7 +97,7 @@ RSpec.describe Gemstash::Dependencies do
 
         expect(http_client).to receive(:get) {|url|
           valid_url(url, %w[foo bar baz])
-          Marshal.dump([foo, bar])
+          JSON.dump([foo, bar])
         }.once
 
         expect(web_deps.fetch(%w[foo bar baz])).to match_dependencies([foo, bar])
@@ -105,6 +105,67 @@ RSpec.describe Gemstash::Dependencies do
         expect(web_deps.fetch(%w[foo])).to match_dependencies([foo])
         expect(web_deps.fetch(%w[bar])).to match_dependencies([bar])
         expect(web_deps.fetch(%w[baz])).to match_dependencies([])
+      end
+    end
+
+    context "with an upstream that does not follow the dependency API" do
+      let(:foo) do
+        {
+          :name => "foo",
+          :number => "1.0.0",
+          :platform => "ruby",
+          :dependencies => [["bar", ">= 1.0"]]
+        }
+      end
+
+      def fetch_with_response(body, gems = %w[foo])
+        allow(http_client).to receive(:get).and_return(body)
+        web_deps.fetch(gems)
+      end
+
+      it "only keeps the fields of the dependency API" do
+        result = fetch_with_response(JSON.dump([foo.merge(:extra => { "nested" => [1, 2] })]))
+        expect(result).to eq([foo])
+      end
+
+      it "ignores and does not cache gems that were not requested" do
+        other = foo.merge(:name => "other")
+        expect(fetch_with_response(JSON.dump([foo, other]))).to eq([foo])
+        expect(http_client).to receive(:get).and_return(JSON.dump([]))
+        expect(web_deps.fetch(%w[other])).to eq([])
+      end
+
+      it "rejects a response that is not valid JSON" do
+        expect { fetch_with_response(Marshal.dump([foo])) }.to raise_error(Gemstash::WebError) do |error|
+          expect(error.code).to eq(502)
+        end
+      end
+
+      it "rejects a response that is not a list of dependencies" do
+        [
+          { :foo => foo },
+          "foo",
+          nil,
+          [1, 2],
+          [["foo", "1.0.0"]],
+          [foo.merge(:name => nil)],
+          [foo.merge(:name => { "a" => 1 })],
+          [foo.merge(:number => 1.0)],
+          [foo.reject {|key, _| key == :platform }],
+          [foo.merge(:dependencies => "bar")],
+          [foo.merge(:dependencies => [["bar"]])],
+          [foo.merge(:dependencies => [["bar", ">= 1.0", "extra"]])],
+          [foo.merge(:dependencies => [["bar", 1]])],
+          [foo.merge(:dependencies => [{ "bar" => ">= 1.0" }])]
+        ].each do |response|
+          expect { fetch_with_response(JSON.dump(response)) }.
+            to raise_error(Gemstash::WebError), "expected #{response.inspect} to be rejected"
+        end
+      end
+
+      it "does not cache anything from a rejected response" do
+        expect { fetch_with_response(JSON.dump([foo, foo.merge(:number => 2)])) }.to raise_error(Gemstash::WebError)
+        expect(fetch_with_response(JSON.dump([foo]))).to eq([foo])
       end
     end
 

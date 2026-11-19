@@ -63,7 +63,7 @@ module Gemstash
 
       def call(env)
         env["rack.logger"] = Gemstash::Logging.logger
-        env["rack.errors"] = Gemstash::Env.current.log_file
+        env["rack.errors"] = Gemstash::Logging::StreamLogger.for_stderr
         @app.call(env)
       end
     end
@@ -89,6 +89,8 @@ module Gemstash
       end
 
       def flush; end
+
+      def close; end
 
       def sync=(_value); end
 

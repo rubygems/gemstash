@@ -35,6 +35,18 @@ module Gemstash
       body JSON.dump("error" => "Version already exists", "code" => 422)
     end
 
+    error Gemstash::WebError do
+      error = env["sinatra.error"]
+      code = error.code == 404 ? 404 : 502
+      Gemstash::Logging.logger.warn("Upstream request failed (HTTP #{error.code})")
+      status code
+      body JSON.dump("error" => "Upstream request failed", "code" => code)
+    end
+
+    def dump_errors!(error)
+      super unless error.is_a?(Gemstash::WebError)
+    end
+
     get "/" do
       @gem_source.serve_root
     end

@@ -28,8 +28,9 @@ module Gemstash
       @client.delete("auths/#{auth_key}")
     end
 
+    # v2: entries written before dependency data was validated are never read
     def dependencies(scope, gems)
-      key_prefix = "deps/v1/#{scope}/"
+      key_prefix = "deps/v2/#{scope}/"
       keys = gems.map {|g| "#{key_prefix}#{g}" }
 
       @client.get_multi(keys) do |key, value|
@@ -38,11 +39,11 @@ module Gemstash
     end
 
     def set_dependency(scope, gem, value)
-      @client.set("deps/v1/#{scope}/#{gem}", value, EXPIRY)
+      @client.set("deps/v2/#{scope}/#{gem}", value, EXPIRY)
     end
 
     def invalidate_gem(scope, gem)
-      @client.delete("deps/v1/#{scope}/#{gem}")
+      @client.delete("deps/v2/#{scope}/#{gem}")
       Gemstash::SpecsBuilder.invalidate_stored if scope == "private"
     end
   end
@@ -105,7 +106,7 @@ module Gemstash
         next if v.nil?
 
         k = keys[idx]
-        yield(k, YAML.load(v))
+        yield(k, YAML.safe_load(v, permitted_classes: [Symbol]))
       end
     end
 

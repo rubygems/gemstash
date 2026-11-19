@@ -13,6 +13,8 @@ RSpec.describe Gemstash::CLI::Info do
       ignore_gemfile_source: false,
       protected_fetch: false,
       fetch_timeout: 20,
+      max_upstream_duration: 300,
+      max_upstream_bytes: 64 * 1024 * 1024,
       db_connection_options: {},
       puma_threads: 16,
       puma_workers: 1,

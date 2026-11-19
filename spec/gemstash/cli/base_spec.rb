@@ -72,5 +72,23 @@ RSpec.describe Gemstash::CLI::Base do
       allow(cli).to receive(:options).and_return(config_file: "")
       expect { base.send(:store_config) }.to raise_error(Gemstash::CLI::Error, /Missing config file/)
     end
+
+    it "fails to start if the config file has an :allowed_upstreams entry that is not a gem source URL" do
+      config_file = File.join(TEST_BASE_PATH, "bad_allowed_upstreams.yml")
+      File.write(config_file, { allowed_upstreams: ["https://user:secret@my.gem-source.local "] }.to_yaml)
+      allow(cli).to receive(:options).and_return(config_file: config_file)
+      start = Gemstash::CLI::Start.new(cli)
+      expect { start.send(:store_config) }.to raise_error(Gemstash::CLI::Error, /Invalid :allowed_upstreams entry 1/) do |error|
+        expect(error.message).not_to include("secret")
+      end
+    end
+
+    it "loads such a config file for the commands that do not start the server" do
+      config_file = File.join(TEST_BASE_PATH, "bad_allowed_upstreams.yml")
+      File.write(config_file, { allowed_upstreams: ["https://my.gem-source.local "] }.to_yaml)
+      allow(cli).to receive(:options).and_return(config_file: config_file)
+      expect(Gemstash::Env.current).to receive(:config=) {|config| expect(config[:allowed_upstreams]).to eq(["https://my.gem-source.local "]) }
+      base.send(:store_config)
+    end
   end
 end

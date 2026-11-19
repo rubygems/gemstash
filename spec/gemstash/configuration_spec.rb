@@ -11,6 +11,30 @@ RSpec.describe Gemstash::Configuration do
     it "loads the default config" do
       expect(env.config[:db_adapter]).to eq("sqlite3")
       expect(env.config.database_connection_config).to match(hash_including(max_connections: 1))
+      expect(env.config[:max_upstream_bytes]).to eq(64 * 1024 * 1024)
+      expect(env.config[:max_upstream_duration]).to eq(300)
+      expect(env.config[:allowed_upstreams]).to eq([])
+      expect(env.config[:allowed_redirects]).to eq([])
+    end
+  end
+
+  it "rejects invalid upstream timeouts at configuration load" do
+    %i[fetch_timeout max_upstream_duration].each do |key|
+      [nil, 0, -1, "20", Float::INFINITY].each do |value|
+        expect { described_class.new(config: { key => value }) }.to raise_error(ArgumentError, /#{key}/)
+      end
+    end
+    expect(described_class.new(config: { fetch_timeout: 0.25, max_upstream_duration: 1.5 })[:fetch_timeout]).to eq(0.25)
+  end
+
+  it "skips the upstream limit checks when validation is off" do
+    expect { described_class.new(config: { fetch_timeout: 0, max_upstream_bytes: 0 }, validate: false) }.not_to raise_error
+  end
+
+  it "allows an absent body cap but rejects invalid byte limits" do
+    expect(described_class.new(config: { max_upstream_bytes: nil })[:max_upstream_bytes]).to be_nil
+    [0, -1, "1024", 1.5].each do |value|
+      expect { described_class.new(config: { max_upstream_bytes: value }) }.to raise_error(ArgumentError, /max_upstream_bytes/)
     end
   end
 
@@ -64,6 +88,66 @@ RSpec.describe Gemstash::Configuration do
       expect(env.config[:db_adapter]).to eq("postgres")
       expect(env.config[:db_url]).to eq("postgres://gemstash")
       expect(env.config[:rubygems_url]).to eq("https://rubygems.org")
+    end
+  end
+
+  context "with :allowed_upstreams" do
+    def load_config(allowed_upstreams)
+      Gemstash::Configuration.new(config: { allowed_upstreams: allowed_upstreams })
+    end
+
+    it "loads the wildcard, gem source URLs, and an unset value" do
+      [
+        "*", ["*"], [], nil, "https://my.gem-source.local",
+        ["https://user:secret@my.gem-source.local/private/", "my.gem-source.local", "http://127.0.0.1:9292", "*"]
+      ].each do |allowed_upstreams|
+        expect(load_config(allowed_upstreams)[:allowed_upstreams]).to eq(allowed_upstreams)
+      end
+    end
+
+    it "refuses an entry that is not a gem source URL, giving its position and not its value" do
+      {
+        ["https://rubygems.org", "https://user:secret@my.gem-source.local "] => "entry 2 (not a valid URL)",
+        ["HTTPS://user:secret@my.gem-source.local"] => "entry 1 (scheme is not http:// or https://)",
+        ["*", "https:user:secret@my.gem-source.local"] => "entry 2 (scheme is not followed by //)",
+        ["http:/my.gem-source.local"] => "entry 1 (scheme is not followed by //)",
+        ["*", "https://user:secret@"] => "entry 2 (no host)",
+        [""] => "entry 1 (empty)",
+        [nil] => "entry 1 (not a string)",
+        8080 => "entry 1 (not a string)"
+      }.each do |allowed_upstreams, problem|
+        expect { load_config(allowed_upstreams) }.to raise_error(Gemstash::Configuration::InvalidAllowedUpstreamError) do |error|
+          expect(error.message).to include(problem)
+          expect(error.message).not_to include("secret", "my.gem-source.local")
+        end
+      end
+    end
+
+    it "refuses such an entry in a config file" do
+      file = File.join(TEST_BASE_PATH, "allowed_upstreams_config.yml")
+      File.write(file, { allowed_upstreams: ["https://my.gem-source.local", "my gem source"] }.to_yaml)
+      expect { Gemstash::Configuration.new(file: file) }.
+        to raise_error(Gemstash::Configuration::InvalidAllowedUpstreamError, /entry 2 \(not a valid URL\)/)
+    end
+
+    it "checks :allowed_redirects in the same way, but without a wildcard" do
+      config = Gemstash::Configuration.new(config: { allowed_redirects: ["https://cdn.example/gems"] })
+      expect(config[:allowed_redirects]).to eq(["https://cdn.example/gems"])
+
+      expect { Gemstash::Configuration.new(config: { allowed_redirects: ["https://cdn.example", "cdn example"] }) }.
+        to raise_error(Gemstash::Configuration::InvalidAllowedUpstreamError, /:allowed_redirects entry 2 \(not a valid URL\)/)
+      expect { Gemstash::Configuration.new(config: { allowed_redirects: "*" }) }.
+        to raise_error(Gemstash::Configuration::InvalidAllowedUpstreamError, /:allowed_redirects entry 1 \(wildcard is not supported\)/)
+    end
+
+    it "does not check the config an env loads on its own, which setup reads before replacing the file" do
+      file = File.join(TEST_BASE_PATH, "allowed_upstreams_config.yml")
+      File.write(file, { allowed_upstreams: ["my gem source"] }.to_yaml)
+      original = ENV["GEMSTASH_CONFIG"]
+      ENV["GEMSTASH_CONFIG"] = file
+      expect(Gemstash::Env.new.config[:allowed_upstreams]).to eq(["my gem source"])
+    ensure
+      ENV["GEMSTASH_CONFIG"] = original
     end
   end
 end

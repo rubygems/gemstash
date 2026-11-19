@@ -2,6 +2,7 @@
 
 require "gemstash"
 require "forwardable"
+require "cgi"
 
 module Gemstash
   # Detects patterns in the Rack env variables related to URI and rewrites
@@ -35,6 +36,8 @@ module Gemstash
       def rewrite
         check_match
         log_start = "Rewriting '#{@rack_env["REQUEST_URI"]}'"
+        log_start = log_start.sub(@request_uri_match["upstream_url"], "[REDACTED]") if
+          @request_uri_match.names.include?("upstream_url")
 
         new_request_uri = @rack_env["REQUEST_URI"].dup
         new_request_uri[@request_uri_match.begin(0)...@request_uri_match.end(0)] = ""

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "json"
 require "rubygems/package"
 require "webrick"
 require "zlib"
@@ -110,6 +111,13 @@ class SimpleServer
 
           response.body = Marshal.dump(results)
         end
+      end
+
+      mount("/api/v1/dependencies.json") do |request, response|
+        gems = request.query["gems"].to_s.split(",")
+        response.status = 200
+        response.content_type = "application/json"
+        response.body = JSON.dump(@gem_deps.values_at(*gems).compact.flatten(1))
       end
     end
 

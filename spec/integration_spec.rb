@@ -1,17 +1,33 @@
 # frozen_string_literal: true
 
 require "spec_helper"
+require "cgi"
 require "fileutils"
 require "json"
 require "net/http"
 require "uri"
+
+# Records whether Marshal loaded an instance, standing in for a gadget chain.
+class MarshalLoadCanary
+  class << self
+    attr_accessor :loaded
+  end
+
+  def marshal_dump
+    []
+  end
+
+  def marshal_load(_)
+    self.class.loaded = true
+  end
+end
 
 RSpec.describe "gemstash integration tests" do
   let(:auth) { Gemstash::ApiKeyAuthorization.new(auth_key) }
   let(:auth_key) { "test-key" }
 
   before(:all) do
-    speaker_deps = [
+    @speaker_deps = speaker_deps = [
       {
         :name => "speaker",
         :number => "0.1.0",
@@ -64,7 +80,8 @@ RSpec.describe "gemstash integration tests" do
     @gemstash_empty_rubygems = TestGemstashServer.new(port: 9041,
                                                       config: {
                                                         :base_path => TEST_BASE_PATH,
-                                                        :rubygems_url => @empty_server.url
+                                                        :rubygems_url => @empty_server.url,
+                                                        :allowed_upstreams => ["http://localhost:9043"]
                                                       })
     @gemstash_empty_rubygems.start
   end
@@ -296,6 +313,77 @@ RSpec.describe "gemstash integration tests" do
     end
   end
 
+  describe "fetching dependencies from an upstream chosen by the client", db_transaction: false do
+    before(:all) do
+      @hostile_requests = requests = []
+      payload = Marshal.dump([MarshalLoadCanary.new])
+      @hostile_server = SimpleServer.new("127.0.0.1")
+
+      %w[/api/v1/dependencies /api/v1/dependencies.json].each do |path|
+        @hostile_server.mount(path) do |request, response|
+          requests << request.path
+          response.status = 200
+          response.body = payload
+        end
+      end
+
+      @hostile_server.start
+
+      # The hostile upstream must be allowed, or it would never be contacted
+      @gemstash_any_upstream = TestGemstashServer.new(port: 9046,
+                                                      config: {
+                                                        :base_path => TEST_BASE_PATH,
+                                                        :rubygems_url => @rubygems_server.url,
+                                                        :allowed_upstreams => [@rubygems_server.url, @hostile_server.url]
+                                                      })
+      @gemstash_any_upstream.start
+    end
+
+    after(:all) do
+      @gemstash_any_upstream.stop
+      @hostile_server.stop
+    end
+
+    before do
+      MarshalLoadCanary.loaded = false
+      @hostile_requests.clear
+      @gemstash_any_upstream.env.cache.flush
+    end
+
+    shared_examples "a safe upstream dependency fetch" do
+      it "returns the dependencies of a well-behaved upstream" do
+        response = fetch_dependencies(@rubygems_server.url)
+        expect(response).to be_a(Net::HTTPSuccess)
+        expect(Marshal.load(response.body)).to match_dependencies(@speaker_deps)
+      end
+
+      it "does not unmarshal the response of a hostile upstream" do
+        response = fetch_dependencies(@hostile_server.url)
+        expect(@hostile_requests).not_to be_empty
+        expect(MarshalLoadCanary.loaded).to be(false)
+        expect(response).not_to be_a(Net::HTTPSuccess)
+      end
+    end
+
+    context "with the upstream in the X-Gemfile-Source header" do
+      def fetch_dependencies(upstream_url)
+        uri = URI("#{@gemstash_any_upstream.url}/api/v1/dependencies?gems=speaker")
+        Net::HTTP.get_response(uri, "X-Gemfile-Source" => upstream_url)
+      end
+
+      it_behaves_like "a safe upstream dependency fetch"
+    end
+
+    context "with the upstream in an /upstream/ path" do
+      def fetch_dependencies(upstream_url)
+        uri = URI("#{@gemstash_any_upstream.url}/upstream/#{CGI.escape(upstream_url)}/api/v1/dependencies?gems=speaker")
+        Net::HTTP.get_response(uri)
+      end
+
+      it_behaves_like "a safe upstream dependency fetch"
+    end
+  end
+
   describe "checking the health of Gemstash", db_transaction: false do
     let(:uri) { URI("#{@gemstash.url}/health") }
     let(:resource) { Gemstash::Storage.for("health").resource("test") }
@@ -362,6 +450,75 @@ RSpec.describe "gemstash integration tests" do
         expect(response).to_not be_a(Net::HTTPSuccess)
         expect(JSON.parse(response.body)["status"]["storage_write"]).to_not eq("OK")
       end
+    end
+  end
+
+  describe "fetching dependencies from an upstream restricted by :allowed_upstreams", db_transaction: false do
+    before(:all) do
+      @unlisted_requests = requests = []
+      @unlisted_server = SimpleServer.new("127.0.0.1")
+
+      %w[/api/v1/dependencies /api/v1/dependencies.json].each do |path|
+        @unlisted_server.mount(path) do |request, response|
+          requests << request.path
+          response.status = 200
+          response.body = Marshal.dump([])
+        end
+      end
+
+      @unlisted_server.start
+
+      # The default upstream has no gems, so anything served came from the allowed one
+      @gemstash_restricted = TestGemstashServer.new(port: 9045,
+                                                    config: {
+                                                      :base_path => TEST_BASE_PATH,
+                                                      :rubygems_url => @empty_server.url,
+                                                      :allowed_upstreams => [@rubygems_server.url]
+                                                    })
+      @gemstash_restricted.start
+    end
+
+    after(:all) do
+      @gemstash_restricted.stop
+      @unlisted_server.stop
+    end
+
+    before do
+      @unlisted_requests.clear
+      @gemstash_restricted.env.cache.flush
+    end
+
+    shared_examples "a restricted upstream dependency fetch" do
+      it "returns the dependencies of an upstream that is in :allowed_upstreams" do
+        response = fetch_dependencies(@rubygems_server.url)
+        expect(response).to be_a(Net::HTTPSuccess)
+        expect(Marshal.load(response.body)).to match_dependencies(@speaker_deps)
+      end
+
+      it "does not contact an upstream that is not in :allowed_upstreams" do
+        response = fetch_dependencies(@unlisted_server.url)
+        expect(response).to be_a(Net::HTTPForbidden)
+        expect(@unlisted_requests).to be_empty
+      end
+    end
+
+    context "with the upstream in the X-Gemfile-Source header" do
+      def fetch_dependencies(upstream_url)
+        uri = URI("#{@gemstash_restricted.url}/api/v1/dependencies?gems=speaker")
+        Net::HTTP.get_response(uri, "X-Gemfile-Source" => upstream_url)
+      end
+
+      it_behaves_like "a restricted upstream dependency fetch"
+    end
+
+    context "with the upstream in an /upstream/ path" do
+      def fetch_dependencies(upstream_url)
+        upstream = URI.encode_www_form_component(upstream_url)
+        uri = URI("#{@gemstash_restricted.url}/upstream/#{upstream}/api/v1/dependencies?gems=speaker")
+        Net::HTTP.get_response(uri)
+      end
+
+      it_behaves_like "a restricted upstream dependency fetch"
     end
   end
 end

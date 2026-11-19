@@ -50,3 +50,25 @@ RSpec.describe Gemstash::Logging::StreamLogger do
     expect(log_contents).to include("ERROR - an error message")
   end
 end
+
+RSpec.describe Gemstash::Logging::RackMiddleware do
+  it "sends Rack error output to the Gemstash log" do
+    app = described_class.new(proc do |env|
+      env.fetch("rack.errors").puts("rack error marker")
+      [200, {}, ["OK"]]
+    end)
+
+    expect(app.call({}).first).to eq(200)
+    expect(the_log).to include("ERROR - rack error marker")
+  end
+
+  it "provides a stream Sinatra can wrap in Logger" do
+    app = described_class.new(proc do |env|
+      Logger.new(env.fetch("rack.errors")).info("Sinatra logger marker")
+      [200, {}, ["OK"]]
+    end)
+
+    expect(app.call({}).first).to eq(200)
+    expect(the_log).to include("Sinatra logger marker")
+  end
+end

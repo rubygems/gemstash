@@ -31,10 +31,17 @@ module Gemstash
       end
 
       def store_config
-        config = Gemstash::Configuration.new(file: @cli.options[:config_file])
+        config = Gemstash::Configuration.new(file: @cli.options[:config_file], validate: validate_config?)
         gemstash_env.config = config
-      rescue Gemstash::Configuration::MissingFileError => e
+      rescue Gemstash::Configuration::MissingFileError, Gemstash::Configuration::InvalidAllowedUpstreamError,
+             Gemstash::Configuration::InvalidUpstreamLimitError => e
         raise Gemstash::CLI::Error.new(@cli, e.message)
+      end
+
+      # Only starting the server needs every entry of the configuration to be
+      # usable. The other commands must work while a broken file is being fixed.
+      def validate_config?
+        false
       end
 
       def check_gemstash_version
