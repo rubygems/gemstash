@@ -40,7 +40,7 @@ module Gemstash
 
     def validate_download(content, headers)
       expected_size = content_length(headers)
-      raise "Incomplete download, only #{body.length} was downloaded out of #{expected_size}" \
+      raise "Incomplete download, only #{content.length} was downloaded out of #{expected_size}" \
         if content.length < expected_size
     end
 

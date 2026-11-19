@@ -26,4 +26,37 @@ RSpec.describe Gemstash::Cache do
       end
     end
   end
+
+  describe "dependencies" do
+    context "with a redis client" do
+      let(:redis) { MockRedis.new }
+      let(:cache) { Gemstash::Cache.new(Gemstash::RedisClient.new("redis://localhost:4242")) }
+      let(:rack) { [{ :name => "rack", :number => "1.0.0", :platform => "ruby", :dependencies => [["foo", ">= 0"]] }] }
+
+      before do
+        allow(Redis).to receive(:new).and_return(redis)
+      end
+
+      def cached_dependencies(gems)
+        results = {}
+        cache.dependencies("upstream/https://rubygems.org", gems) {|gem, value| results[gem] = value }
+        results
+      end
+
+      it "can set and get dependencies" do
+        cache.set_dependency("upstream/https://rubygems.org", "rack", rack)
+        expect(cached_dependencies(%w[rack missing])).to eq("rack" => rack)
+      end
+
+      it "ignores dependencies cached before they were validated" do
+        redis.set("deps/v1/upstream/https://rubygems.org/rack", YAML.dump(rack))
+        expect(cached_dependencies(%w[rack])).to eq({})
+      end
+
+      it "refuses to load anything but plain data" do
+        redis.set("deps/v2/upstream/https://rubygems.org/rack", YAML.dump(Object.new))
+        expect { cached_dependencies(%w[rack]) }.to raise_error(Psych::DisallowedClass)
+      end
+    end
+  end
 end

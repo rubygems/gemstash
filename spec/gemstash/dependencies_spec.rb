@@ -108,6 +108,67 @@ RSpec.describe Gemstash::Dependencies do
       end
     end
 
+    context "with an upstream that does not follow the dependency API" do
+      let(:foo) do
+        {
+          :name => "foo",
+          :number => "1.0.0",
+          :platform => "ruby",
+          :dependencies => [["bar", ">= 1.0"]]
+        }
+      end
+
+      def fetch_with_response(body, gems = %w[foo])
+        allow(http_client).to receive(:get).and_return(body)
+        web_deps.fetch(gems)
+      end
+
+      it "only keeps the fields of the dependency API" do
+        result = fetch_with_response(JSON.dump([foo.merge(:extra => { "nested" => [1, 2] })]))
+        expect(result).to eq([foo])
+      end
+
+      it "ignores and does not cache gems that were not requested" do
+        other = foo.merge(:name => "other")
+        expect(fetch_with_response(JSON.dump([foo, other]))).to eq([foo])
+        expect(http_client).to receive(:get).and_return(JSON.dump([]))
+        expect(web_deps.fetch(%w[other])).to eq([])
+      end
+
+      it "rejects a response that is not valid JSON" do
+        expect { fetch_with_response(Marshal.dump([foo])) }.to raise_error(Gemstash::WebError) do |error|
+          expect(error.code).to eq(502)
+        end
+      end
+
+      it "rejects a response that is not a list of dependencies" do
+        [
+          { :foo => foo },
+          "foo",
+          nil,
+          [1, 2],
+          [["foo", "1.0.0"]],
+          [foo.merge(:name => nil)],
+          [foo.merge(:name => { "a" => 1 })],
+          [foo.merge(:number => 1.0)],
+          [foo.reject {|key, _| key == :platform }],
+          [foo.merge(:dependencies => "bar")],
+          [foo.merge(:dependencies => [["bar"]])],
+          [foo.merge(:dependencies => [["bar", ">= 1.0", "extra"]])],
+          [foo.merge(:dependencies => [["bar", 1]])],
+          [foo.merge(:dependencies => [{ "bar" => ">= 1.0" }])]
+        ].each do |response|
+          expect { fetch_with_response(JSON.dump(response)) }.
+            to raise_error(Gemstash::WebError), "expected #{response.inspect} to be rejected"
+        end
+      end
+
+      it "does not cache anything from a rejected response" do
+        expect { fetch_with_response(JSON.dump([foo, foo.merge(:number => 2)])) }.to raise_error(Gemstash::WebError)
+        expect(fetch_with_response(JSON.dump([foo]))).to eq([foo])
+      end
+    end
+
     context "with private gem requests" do
       before do
         gem_id = insert_rubygem "custom"

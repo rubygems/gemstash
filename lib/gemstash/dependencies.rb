@@ -29,6 +29,8 @@ module Gemstash
       include Gemstash::Env::Helper
       include Gemstash::Logging
 
+      FIELDS = %i[name number platform dependencies].freeze
+
       def initialize(gems, scope, http_client, db_model)
         @gems = Set.new(gems)
         @scope = scope
@@ -78,13 +80,34 @@ module Gemstash
         log.info "Fetching dependencies: #{@gems.to_a.join(", ")}"
         gems_param = @gems.map {|gem| CGI.escape(gem) }.join(",")
         fetched = @http_client.get("api/v1/dependencies.json?gems=#{gems_param}")
-        fetched = JSON.parse(fetched, symbolize_names: true).group_by {|r| r[:name] }
+        fetched = parse_dependencies(fetched).group_by {|r| r[:name] }
 
         fetched.each do |gem, result|
-          @gems.delete(gem)
+          # Only keep what was asked for
+          next unless @gems.delete?(gem)
+
           gemstash_env.cache.set_dependency(@scope, gem, result)
           @dependencies += result
         end
+      end
+
+      # The result is cached and handed to clients, so only the fields of the
+      # dependency API are taken from what the upstream sent.
+      def parse_dependencies(body)
+        entries = JSON.parse(body, symbolize_names: true)
+        valid = entries.is_a?(Array) && entries.all? {|entry| valid_entry?(entry) }
+        raise Gemstash::WebError.new("Unexpected dependency data from the upstream", 502) unless valid
+
+        entries.map {|entry| entry.slice(*FIELDS) }
+      rescue JSON::ParserError
+        raise Gemstash::WebError.new("Dependency data from the upstream is not valid JSON", 502)
+      end
+
+      def valid_entry?(entry)
+        entry.is_a?(Hash) &&
+          entry.values_at(:name, :number, :platform).all?(String) &&
+          entry[:dependencies].is_a?(Array) &&
+          entry[:dependencies].all? {|dependency| dependency.is_a?(Array) && dependency.size == 2 && dependency.all?(String) }
       end
 
       def cache_missing
