@@ -33,7 +33,8 @@ module Gemstash
       def store_config
         config = Gemstash::Configuration.new(file: @cli.options[:config_file], validate: validate_config?)
         gemstash_env.config = config
-      rescue Gemstash::Configuration::MissingFileError, Gemstash::Configuration::InvalidAllowedUpstreamError => e
+      rescue Gemstash::Configuration::MissingFileError, Gemstash::Configuration::InvalidAllowedUpstreamError,
+             Gemstash::Configuration::InvalidUpstreamLimitError => e
         raise Gemstash::CLI::Error.new(@cli, e.message)
       end
 

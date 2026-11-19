@@ -31,7 +31,9 @@ gemstash-configuration
 :bind: tcp://0.0.0.0:4242
 :protected_fetch: true
 :fetch_timeout: 10
+:max_upstream_duration: 300
 :open_timeout: 2
+:max_upstream_bytes: 67108864
 :log_file: gemstash.log
 ```
 
@@ -294,11 +296,14 @@ Boolean values `true` or `false`
 
 `:fetch_timeout`
 
-This is the number of seconds to allow for fetching a gem from upstream.
-It covers establishing the connection and receiving the response. Fetching
-gems over a slow connection may cause timeout errors. If you experience
-timeout errors, you may want to increase this value. The default is `20`
-seconds.
+This is the number of seconds to wait for an upstream read, not the total
+download time. A connection that keeps delivering data can take longer;
+`:max_upstream_duration` bounds the entire request. After `:fetch_timeout`
+seconds, the upstream connection must also average at least 1 KiB/s across
+all response bytes, including headers, redirects, chunk metadata and trailers,
+to prevent a connection that drips one byte at a time from holding a worker.
+Fetching gems over a very slow connection may cause timeout errors. The default
+is `20` seconds.
 
 ## Default value
 
@@ -306,7 +311,24 @@ seconds.
 
 ## Valid values
 
-Integer value with a minimum of `1`
+Positive finite number of seconds (including fractions); `nil` is not supported
+
+# Max Upstream Duration
+
+`:max_upstream_duration`
+
+Maximum seconds for an entire upstream request, including redirects and
+streaming the body. Slow but steady downloads may exceed `:fetch_timeout`
+without exceeding this limit. Increase it if legitimate downloads need longer
+than five minutes.
+
+## Default value
+
+`300` seconds
+
+## Valid values
+
+Positive finite number of seconds (including fractions); `nil` is not supported
 
 # Open Timeout
 
@@ -325,6 +347,28 @@ increase this value. The default is `2` seconds.
 ## Valid values
 
 Integer value with a minimum of `1`
+
+# Max Upstream Bytes
+
+`:max_upstream_bytes`
+
+The size in bytes of the largest response to accept from an upstream gem
+server. This applies to every gem, gemspec, index of specs, and list of
+dependencies that is fetched. A larger response is abandoned while it is being
+downloaded and is not stashed, and the request for it fails. The size is that
+of the response after any compression used to transfer it has been undone.
+Make sure the value is larger than the largest gem you need. Response headers
+are limited to 64 KiB total, and each chunk metadata line to 64 KiB. A
+response can use about twice the byte cap while buffers grow (over 2 GiB
+with 16 default Puma threads). Increase this limit if your upstream has larger gems.
+
+## Default value
+
+`67108864` (64 MiB)
+
+## Valid values
+
+Positive integer, or `nil` to disable the body cap (not recommended)
 
 # Log File
 

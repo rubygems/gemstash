@@ -18,6 +18,8 @@ module Gemstash
       protected_fetch: false,
       fetch_timeout: 20,
       open_timeout: 2,
+      max_upstream_duration: 300,
+      max_upstream_bytes: 64 * 1024 * 1024,
       # Actual default for db_connection_options is dynamic based on the adapter
       db_connection_options: {},
       puma_threads: 16,
@@ -44,6 +46,10 @@ module Gemstash
       end
     end
 
+    # This error is thrown when :fetch_timeout, :max_upstream_duration or
+    # :max_upstream_bytes has a value that cannot be used.
+    class InvalidUpstreamLimitError < ArgumentError; end
+
     # This error is thrown when :allowed_upstreams or :allowed_redirects has an
     # entry that cannot be used. It gives the position of the entry and never
     # its value, because the value can contain credentials.
@@ -57,7 +63,7 @@ module Gemstash
     def initialize(file: nil, config: nil, validate: true)
       if config
         @config = DEFAULTS.merge(config).freeze
-        validate_allowed_upstreams if validate
+        check_config if validate
         return
       end
 
@@ -73,7 +79,7 @@ module Gemstash
         @config = DEFAULTS
       end
 
-      validate_allowed_upstreams if validate
+      check_config if validate
     end
 
     def default?(key)
@@ -101,6 +107,20 @@ module Gemstash
     end
 
   private
+
+    def check_config
+      validate_upstream_limits
+      validate_allowed_upstreams
+    end
+
+    def validate_upstream_limits
+      %i[fetch_timeout max_upstream_duration].each do |key|
+        value = @config[key]
+        raise InvalidUpstreamLimitError, "#{key} must be a positive finite number" unless value.is_a?(Numeric) && value.finite? && value.positive?
+      end
+      bytes = @config[:max_upstream_bytes]
+      raise InvalidUpstreamLimitError, "max_upstream_bytes must be nil or a positive integer" unless bytes.nil? || (bytes.is_a?(Integer) && bytes.positive?)
+    end
 
     def default_file
       # Support the config file being specified via environment variable

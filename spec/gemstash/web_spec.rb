@@ -65,7 +65,7 @@ RSpec.describe Gemstash::Web do
 
     it "does not dump the handled error through Sinatra in production" do
       allow(app.settings).to receive(:dump_errors?).and_return(true)
-      get "/specs.4.8.gz", {}, rack_env
+      get "/specs.4.8.gz", {}, rack_env.merge("rack.errors" => Gemstash::Logging::StreamLogger.for_stderr)
       expect(last_response.status).to eq(502)
       expect(the_log).to include("Upstream request failed (HTTP 401)")
       expect(the_log).not_to include("PRIVATE-UPSTREAM-MSG", "web.rb:")
@@ -596,6 +596,15 @@ RSpec.describe Gemstash::Web do
         properties = storage.resource("rack-1.0.0").properties
         expect(properties[:upstream]).to eq(upstream.to_s)
         expect(properties[:gem_name]).to eq("rack-1.0.0")
+      end
+
+      it "does not store a gem that is larger than :max_upstream_bytes" do
+        allow(current_env.config).to receive(:[]).and_call_original
+        allow(current_env.config).to receive(:[]).with(:max_upstream_bytes).and_return(7)
+        get "/gems/rack.gem", {}, rack_env
+        expect(last_response.status).to eq(502)
+        expect(last_response.body).to_not include("zapatito")
+        expect(storage.resource("rack").exist?(:gem)).to be_falsey
       end
 
       it "keeps headers for specs that have been previously fetched" do

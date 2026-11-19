@@ -11,8 +11,30 @@ RSpec.describe Gemstash::Configuration do
     it "loads the default config" do
       expect(env.config[:db_adapter]).to eq("sqlite3")
       expect(env.config.database_connection_config).to match(hash_including(max_connections: 1))
+      expect(env.config[:max_upstream_bytes]).to eq(64 * 1024 * 1024)
+      expect(env.config[:max_upstream_duration]).to eq(300)
       expect(env.config[:allowed_upstreams]).to eq([])
       expect(env.config[:allowed_redirects]).to eq([])
+    end
+  end
+
+  it "rejects invalid upstream timeouts at configuration load" do
+    %i[fetch_timeout max_upstream_duration].each do |key|
+      [nil, 0, -1, "20", Float::INFINITY].each do |value|
+        expect { described_class.new(config: { key => value }) }.to raise_error(ArgumentError, /#{key}/)
+      end
+    end
+    expect(described_class.new(config: { fetch_timeout: 0.25, max_upstream_duration: 1.5 })[:fetch_timeout]).to eq(0.25)
+  end
+
+  it "skips the upstream limit checks when validation is off" do
+    expect { described_class.new(config: { fetch_timeout: 0, max_upstream_bytes: 0 }, validate: false) }.not_to raise_error
+  end
+
+  it "allows an absent body cap but rejects invalid byte limits" do
+    expect(described_class.new(config: { max_upstream_bytes: nil })[:max_upstream_bytes]).to be_nil
+    [0, -1, "1024", 1.5].each do |value|
+      expect { described_class.new(config: { max_upstream_bytes: value }) }.to raise_error(ArgumentError, /max_upstream_bytes/)
     end
   end
 
