@@ -126,9 +126,12 @@ module Gemstash
       end
 
       def fetch_gem(gem_full_name)
-        gem = storage.resource(gem_full_name)
+        version = Gemstash::DB::Version.find_by_full_name(gem_full_name)
+        halt 404 unless version
+
+        gem = storage.resource(version.storage_id)
         halt 404 unless gem.exist?(:gem)
-        halt 403, "That gem has been yanked" unless gem.properties[:indexed]
+        halt 403, "That gem has been yanked" unless version.indexed && gem.properties[:indexed]
         gem
       end
     end

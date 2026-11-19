@@ -834,6 +834,32 @@ RSpec.describe Gemstash::Web do
           expect(last_response.body).to_not eq("Example yanked gem content")
         end
       end
+
+      context "with a yanked gem whose storage is marked as indexed" do
+        before do
+          gem_id = insert_rubygem "yanked"
+          insert_version gem_id, "0.1.0", indexed: false
+          storage.resource("yanked-0.1.0").save({ gem: "Example yanked gem content" }, indexed: true)
+        end
+
+        it "halts with 403" do
+          get "/gems/yanked-0.1.0.gem", {}, rack_env
+          expect(last_response.status).to eq(403)
+          expect(last_response.body).to_not eq("Example yanked gem content")
+        end
+      end
+
+      context "with stored gem content but no version record" do
+        before do
+          storage.resource("orphan-0.1.0").save({ gem: "Example orphan gem content" }, indexed: true)
+        end
+
+        it "halts with 404" do
+          get "/gems/orphan-0.1.0.gem", {}, rack_env
+          expect(last_response.status).to eq(404)
+          expect(last_response.body).to_not eq("Example orphan gem content")
+        end
+      end
     end
   end
 
@@ -954,6 +980,21 @@ RSpec.describe Gemstash::Web do
         it "halts with 403" do
           get "/quick/Marshal.4.8/yanked-0.1.0.gemspec.rz", {}, rack_env
           expect(last_response).to_not be_ok
+          expect(last_response.status).to eq(403)
+          expect(last_response.body).to_not match(/Example yanked gem(spec)? content/)
+        end
+      end
+
+      context "with a yanked gem whose storage is marked as indexed" do
+        before do
+          gem_id = insert_rubygem "yanked"
+          insert_version gem_id, "0.1.0", indexed: false
+          storage.resource("yanked-0.1.0").save({ gem: "Example yanked gem content",
+                                                  spec: "Example yanked gemspec content" }, indexed: true)
+        end
+
+        it "halts with 403" do
+          get "/quick/Marshal.4.8/yanked-0.1.0.gemspec.rz", {}, rack_env
           expect(last_response.status).to eq(403)
           expect(last_response.body).to_not match(/Example yanked gem(spec)? content/)
         end
