@@ -120,10 +120,11 @@ RSpec.describe Gemstash::HTTPClient do
       expect { http_client.get("oversized_header") }.to raise_error(Gemstash::WebError, "Upstream response headers are too large")
     end
 
-    it "rejects 5,000 short headers and 2,000 informational responses" do
+    it "rejects 5,000 short headers and 90 large informational responses" do
       headers = "X-Padding: xx\r\n" * 5_000
       expect { socket_response("HTTP/1.1 200 OK\r\n#{headers}Content-Length: 0\r\n\r\n") }.to raise_error(Gemstash::WebError, "Upstream response headers are too large")
-      interim = "HTTP/1.1 103 Early Hints\r\nX-Pad: x\r\n\r\n" * 2_000
+      # Fewer than the 100 informational responses newer net-http accepts
+      interim = "HTTP/1.1 103 Early Hints\r\nX-Pad: #{"x" * 800}\r\n\r\n" * 90
       expect { socket_response("#{interim}HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n") }.to raise_error(Gemstash::WebError, "Upstream response headers are too large")
     end
 
@@ -212,7 +213,8 @@ RSpec.describe Gemstash::HTTPClient do
       Gemstash::Env.current = old_env
     end
 
-    it "cuts off a drip within an encrypted TLS record" do
+    it "cuts off a drip within an encrypted TLS record",
+       skip: RUBY_PLATFORM == "java" && "JRuby's OpenSSL cannot load the test certificate through SSL_CERT_FILE" do
       key = OpenSSL::PKey::RSA.new(2048)
       cert = OpenSSL::X509::Certificate.new
       cert.version = 2

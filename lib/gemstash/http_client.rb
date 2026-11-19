@@ -8,11 +8,14 @@ require "net/http"
 # Net::HTTP reads response headers and chunk-size lines into an unbounded
 # buffer before Faraday's on_data callback can enforce the body limit.
 module GemstashHTTPReadLimits
-  # Net::BufferedIO's positional boolean is part of its API.
+  # Net::BufferedIO's positional boolean is part of its API. Newer net-http
+  # also passes a limit: keyword, which is far above Gemstash's own limit.
   # rubocop:disable Style/OptionalBooleanParameter
-  def readuntil(terminator, ignore_eof = false)
+  def readuntil(terminator, ignore_eof = false, limit: nil)
     limits = Thread.current[:gemstash_http_limits]
-    return super unless limits
+    unless limits
+      return limit ? super(terminator, ignore_eof, limit: limit) : super(terminator, ignore_eof)
+    end
 
     offset = @rbuf_offset
     begin
