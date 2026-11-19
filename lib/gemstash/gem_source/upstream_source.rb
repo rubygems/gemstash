@@ -201,21 +201,24 @@ module Gemstash
       end
 
       def serve_latest_specs
-        http_client = http_client_for(upstream)
-        http_client.get("latest_specs.4.8.gz")
+        serve_index("latest_specs.4.8.gz")
       end
 
       def serve_prerelease_specs
-        http_client = http_client_for(upstream)
-        http_client.get("prerelease_specs.4.8.gz")
+        serve_index("prerelease_specs.4.8.gz")
       end
 
       def serve_specs
-        http_client = http_client_for(upstream)
-        http_client.get("specs.4.8.gz")
+        serve_index("specs.4.8.gz")
       end
 
     private
+
+      def serve_index(path)
+        index = http_client_for(upstream).get(path)
+        content_type "application/octet-stream"
+        index
+      end
 
       def serve_cached(id, resource_type)
         upstream
@@ -227,11 +230,12 @@ module Gemstash
         gem.content(resource_type)
       end
 
+      # The upstream chose the stored content type, so it is never replayed
       def set_gem_headers(gem, resource_type)
+        content_type "application/octet-stream"
         return unless gem.property?(:headers, resource_type)
 
         gem_headers = gem.properties[:headers][resource_type]
-        headers["Content-Type"] = gem_headers["content-type"] if gem_headers.include?("content-type")
         headers["Last-Modified"] = gem_headers["last-modified"] if gem_headers.include?("last-modified")
         headers["ETag"] = gem_headers["etag"] if gem_headers.include?("etag")
       end
