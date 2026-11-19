@@ -20,6 +20,10 @@ gemstash-configuration
   :pool_timeout: 2
 :rubygems_url: https://my.gem-source.local
 :ignore_gemfile_source: false
+:allowed_upstreams:
+  - https://my-other.gem-source.local
+:allowed_redirects:
+  - https://cdn.my-other.gem-source.local
 :puma_threads: 32
 :bind: tcp://0.0.0.0:4242
 :protected_fetch: true
@@ -167,6 +171,87 @@ gems upstream.
 ## Valid values
 
 Boolean: `true` or `false`
+
+# Allowed Upstreams
+
+`:allowed_upstreams`
+
+Specifies the gem sources that clients may ask Gemstash to fetch from,
+whether they use an `/upstream/<url>` or `/redirect/<url>` prefix, or
+the header Bundler sends when Gemstash is used as a mirror. The gem
+source specified by `:rubygems_url` is always allowed. A request for any
+other gem source is answered with a `403` status, and that gem source is
+not contacted.
+
+Bundler reports a `403` as `Access token could not be authenticated`, so
+that is the error someone sees when they bundle with a gem source that
+is not allowed. The actual reason is in the body of the response and in
+the Gemstash log, as a `Refusing upstream` warning.
+
+A gem source is allowed when its scheme, host, port, and path are the
+same as those of an entry. Credentials and a trailing slash are ignored,
+so an entry of `https://my.gem-source.local` allows
+`https://user:password@my.gem-source.local/`, but does not allow
+`http://my.gem-source.local` or `https://my.gem-source.local/private`.
+
+Credentials in an entry are ignored only for that comparison. When a
+client asks for the gem source without credentials of its own, Gemstash
+fetches from it with the credentials of the entry, so anyone who can
+reach Gemstash can read that gem source. Gemstash does not pass them on
+to clients: the requests it answers with a redirect, such as `/versions`
+and `/info/*`, reach the gem source without credentials. This also
+applies to credentials in `:rubygems_url`.
+
+By default only `:rubygems_url` is allowed. When upgrading, add every
+other Gemfile source and mirror source you use to this list; otherwise
+Bundler requests for those sources will fail with 403. Set `"*"` only
+if you deliberately want to accept arbitrary client-selected sources.
+Redirects from an allowed source to an unlisted source are refused.
+If an allowed source redirects gem downloads to a CDN, list the CDN in
+`:allowed_redirects`. Redirect targets containing credentials are refused.
+
+## Default value
+
+`[]` (only `:rubygems_url`)
+
+## Valid values
+
+`"*"` to allow any gem source, or a list of gem source URLs. An empty
+list allows only the gem source specified by `:rubygems_url`.
+
+Each URL needs a host, and its scheme, if it has one, must be `http://`
+or `https://`. `gemstash start` refuses a configuration with any other
+entry. The error gives the position of the entry in the list and not its
+value, because the value may contain credentials.
+
+# Allowed Redirects
+
+`:allowed_redirects`
+
+Specifies further URLs that a fetch from an allowed gem source may be
+redirected to, such as the CDN a gem server sends its downloads to.
+Clients cannot ask Gemstash to use these as gem sources. `:rubygems_url`
+and the entries of `:allowed_upstreams` are always valid redirect
+targets.
+
+A redirect is followed when its scheme, host, and port are those of an
+entry and its path is the path of the entry or lies below it. An `http`
+entry also accepts the same host over `https`, and a redirect from
+`https` to `http` is never followed. Paths are compared segment by
+segment, and a redirect below an entry with a path is refused when a
+segment could be resolved to another path, such as `..;` or a doubly
+encoded `..`. Do not rely on the path of an entry alone to keep gem
+sources on one host apart: the access control of that host is what
+separates them.
+
+## Default value
+
+`[]`
+
+## Valid values
+
+A list of URLs, checked like the entries of `:allowed_upstreams`. `"*"`
+is not supported.
 
 # Puma Threads
 

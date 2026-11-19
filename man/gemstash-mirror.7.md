@@ -11,9 +11,15 @@ everyone on your team to go through the Gemstash server, you can use Bundler
 mirroring to bundle against your Gemstash server.
 
 For each source in your `Gemfile`, add a mirror pointing to your Gemstash
-server:
+server. Before upgrading, add every source other than the configured
+`:rubygems_url` to `:allowed_upstreams` in Gemstash's configuration.
+Unlisted mirror sources return 403; list any CDN used for redirects in
+`:allowed_redirects`.
+The mirror source scheme must match its `:allowed_upstreams` entry (or
+`:rubygems_url` for the default source).
+For example:
 ```
-$ bundle config mirror.http://rubygems.org http://localhost:9292
+$ bundle config mirror.https://rubygems.org http://localhost:9292
 $ bundle config mirror.https://my.gem-source.local http://localhost:9292/upstream/$(ruby -rcgi -e 'puts CGI.escape("https://my.gem-source.local")')
 ```
 
@@ -27,7 +33,7 @@ server.
 If you are using Bundler version `1.11.0` or greater, the mirroring becomes a
 bit easier:
 ```
-$ bundle config mirror.http://rubygems.org http://localhost:9292
+$ bundle config mirror.https://rubygems.org http://localhost:9292
 $ bundle config mirror.https://my.gem-source.local http://localhost:9292
 ```
 

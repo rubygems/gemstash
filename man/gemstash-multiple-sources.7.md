@@ -37,9 +37,10 @@ separate location, ensuring different sources won't leak between each other.
 
 Changing the default source won't help you if you need to bundle against
 https://rubygems.org along with additional sources. If you need to bundle with
-multiple gem sources, Gemstash doesn't need to be specially configured. Your
-Gemstash server will honor any gem source specified via a specialized URL.
-Consider the following `Gemfile`:
+multiple gem sources, list each additional source in `:allowed_upstreams`
+before upgrading. By default Gemstash permits only its configured
+`:rubygems_url`; an unlisted source returns 403. Consider the following
+`Gemfile`:
 
 ```ruby
 # ./Gemfile
@@ -109,6 +110,12 @@ with all `.` characters replaced with `__`, all `-` with `___` and a `GEMSTASH_`
 
 Example: `my.gem-source.local` => `GEMSTASH_MY__GEM___SOURCE__LOCAL`
 
+When credentials for a request are available from more than one place,
+Gemstash uses the first of: the URL the client asked for, the matching
+`:rubygems_url` or `:allowed_upstreams` entry, and the `GEMSTASH_<HOST>`
+variable. Credentials in a URL are percent-decoded before use, while the
+variable is used as written.
+
 ## Redirecting
 
 Gemstash supports an alternate mode of specifying your gem sources. If you want
@@ -126,4 +133,23 @@ to the provided URL. Redirected calls like this will not be cached by Gemstash,
 and gem files will not be stashed, even if they were previously cached or
 stashed from the same gem source.
 
+## Restricting Gem Sources
+
+Gemstash allows only its configured `:rubygems_url` by default. Before
+upgrading, list any additional Gemfile or mirror sources you use in the
+Gemstash configuration so Bundler requests for them continue working:
+```yaml
+# ~/.gemstash/config.yml
+---
+:allowed_upstreams:
+  - https://my.gem-source.local
+  - https://my-other.gem-source.local
+```
+
+Gemstash will then only fetch from, or redirect to, the default source and the
+listed gem sources. Requests for any other gem source are refused. See the
+[`:allowed_upstreams` configuration key][ALLOWED_UPSTREAMS] for how gem sources
+are compared.
+
 [README_QUICKSTART]: ../readme.md#quickstart-guide
+[ALLOWED_UPSTREAMS]: ./gemstash-configuration.5.md#allowed-upstreams

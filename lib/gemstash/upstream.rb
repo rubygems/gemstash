@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "cgi"
 require "digest"
 require "forwardable"
 require "uri"
@@ -14,9 +15,14 @@ module Gemstash
     def_delegators :@uri, :scheme, :host, :to_s
 
     def initialize(upstream, user_agent: nil)
-      url = CGI.unescape(upstream.to_s)
-      url = "https://#{url}" unless %r{^https?://}.match?(url)
-      @uri = URI(url)
+      if upstream.is_a?(URI::Generic)
+        @uri = upstream.dup
+      else
+        url = upstream.to_s
+        url = CGI.unescape(url) if url.match?(/\Ahttps?%3A%2F%2F/i)
+        url = "https://#{url}" unless %r{^https?://}.match?(url)
+        @uri = URI(url)
+      end
       @user_agent = user_agent
       raise "URL '#{@uri}' is not valid!" unless @uri.to_s.match?(URI::DEFAULT_PARSER.make_regexp)
     end
@@ -42,12 +48,83 @@ module Gemstash
       @host_id ||= "#{host}_#{hash}"
     end
 
+    # Cache records need a distinct source per credential, but not the credential itself.
+    def cache_uri
+      return to_s unless @uri.userinfo
+
+      clean = @uri.dup
+      clean.user = clean.password = nil
+      clean.fragment = host_id
+      identity = clean.to_s
+      identity.bytesize <= 191 ? identity : host_id
+    end
+
     def user
-      env_auth_user || @uri.user
+      return URI::DEFAULT_PARSER.unescape(@uri.user) if @uri.user
+
+      env_auth_user
     end
 
     def password
-      env_auth_pass || @uri.password
+      return URI::DEFAULT_PARSER.unescape(@uri.password) if @uri.user && @uri.password
+      return nil if @uri.user
+
+      env_auth_pass
+    end
+
+    # Whether +other+ is the same gem source: the scheme, host, port and path
+    # must match, while credentials and trailing slashes are ignored.
+    def same_source?(other)
+      source_key == other.source_key
+    end
+
+    def allowed?(config)
+      allowed = Array(config[:allowed_upstreams])
+      allowed.include?("*") || [config[:rubygems_url], *allowed].any? do |url|
+        same_source?(Gemstash::Upstream.new(url))
+      end
+    end
+
+    def self.allowed_redirect?(target, config)
+      return false if target.userinfo || !%w[http https].include?(target.scheme) || !target.hostname
+
+      path = URI::DEFAULT_PARSER.unescape(target.path)
+      return false if path.split("/").include?("..")
+
+      allowed = Array(config[:allowed_upstreams])
+      allowed.include?("*") || [config[:rubygems_url], *allowed, *Array(config[:allowed_redirects])].any? do |url|
+        source = Gemstash::Upstream.new(url)
+        upgrade = source.scheme == "http" && target.scheme == "https"
+        (target.scheme == source.scheme || upgrade) && target.hostname.downcase == source.uri.hostname.downcase &&
+          (target.port == source.uri.port || (upgrade && target.port == 443)) &&
+          path_within?(source.uri.path, target.path)
+      end
+    end
+
+    # Whether +target_path+ is +source_path+ or lies below it, comparing whole
+    # segments. A source without a path covers its host, so nothing is confined.
+    def self.path_within?(source_path, target_path)
+      prefix = source_path.sub(%r{/+\z}, "").gsub(/%\h\h/, &:upcase).split("/", -1)
+      segments = target_path.gsub(/%\h\h/, &:upcase).split("/", -1)
+      return true if prefix.size <= 1
+
+      segments.first(prefix.size) == prefix && segments.drop(prefix.size).none? {|segment| ambiguous_segment?(segment) }
+    end
+
+    # A segment that some servers resolve differently from how it reads: a dot
+    # segment (also behind a ";param" suffix), an escaped separator or control
+    # character, or a second layer of escaping.
+    def self.ambiguous_segment?(segment)
+      decoded = URI::DEFAULT_PARSER.unescape(segment)
+      decoded.sub(/;.*\z/m, "").match?(/\A\.\.?\z/) || decoded.match?(%r{[/\\\x00-\x1f\x7f]|%\h\h})
+    end
+
+    private_class_method :path_within?, :ambiguous_segment?
+
+  protected
+
+    def source_key
+      [scheme, host.to_s.downcase, @uri.port, @uri.path.sub(%r{/+\z}, ""), @uri.query]
     end
 
   private
@@ -93,7 +170,7 @@ module Gemstash
       end
 
       def name
-        @name ||= @id.gsub(/\.gem(spec\.rz)?$/i, "")
+        @name ||= @id.gsub(/\.gem(spec\.rz)?\z/, "")
       end
     end
   end

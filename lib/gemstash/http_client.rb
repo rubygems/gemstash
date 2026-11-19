@@ -31,8 +31,10 @@ module Gemstash
     DEFAULT_USER_AGENT = "Gemstash/#{Gemstash::VERSION}"
 
     def self.for(upstream)
-      client = Faraday.new(upstream.to_s) do |config|
-        config.use FaradayMiddleware::FollowRedirects
+      url = upstream.uri.dup
+      url.user = url.password = nil
+      client = Faraday.new(url.to_s) do |config|
+        config.use FaradayMiddleware::FollowRedirects, callback: method(:refuse_redirect)
         config.adapter :net_http
         config.options.timeout = gemstash_env.config[:fetch_timeout]
       end
@@ -43,6 +45,24 @@ module Gemstash
       user_agent = user_agent.to_s + DEFAULT_USER_AGENT
 
       new(client, user_agent: user_agent)
+    end
+
+    def self.refuse_redirect(from, to)
+      target = URI(to[:url].to_s)
+      if !(from[:url].scheme == "https" && target.scheme != "https") &&
+          Gemstash::Upstream.allowed_redirect?(target, gemstash_env.config)
+        source = from[:url]
+        to[:request_headers].delete("Authorization") if
+          [source.scheme, source.hostname.downcase, source.port] != [target.scheme, target.hostname.downcase, target.port]
+        return
+      end
+
+      log_target = "#{target.scheme}://#{target.hostname}:#{target.port}#{target.path}"
+      Gemstash::Logging.logger.warn("Refusing upstream redirect to #{log_target}")
+      raise Gemstash::WebError.new("Refusing an unlisted upstream redirect", 502)
+    rescue URI::InvalidURIError, ArgumentError
+      Gemstash::Logging.logger.warn("Refusing invalid upstream redirect")
+      raise Gemstash::WebError.new("Refusing an invalid upstream redirect", 502)
     end
 
     attr_reader :client
@@ -60,13 +80,17 @@ module Gemstash
         end
       end
 
-      raise Gemstash::WebError.new(response.body, response.status) unless response.success?
+      raise Gemstash::WebError.new("Upstream returned HTTP #{response.status}", response.status) unless response.success?
 
       if block_given?
         yield(response.body, response.headers)
       else
         response.body
       end
+    rescue URI::InvalidURIError
+      raise Gemstash::WebError.new("Upstream sent an invalid redirect", 502)
+    rescue Faraday::Error
+      raise Gemstash::WebError.new("Upstream request failed", 502)
     end
 
   private
@@ -77,8 +101,8 @@ module Gemstash
         begin
           return yield
         rescue Faraday::ConnectionFailed => e
-          log_error("Connection failure", e)
-          raise(ConnectionError, e.message) unless times > 0
+          log.warn "Upstream connection failure (#{e.class})"
+          raise(ConnectionError, "Upstream connection failed") unless times > 0
 
           log.info "retrying... #{times} more times"
         end

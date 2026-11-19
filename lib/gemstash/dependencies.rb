@@ -11,7 +11,7 @@ module Gemstash
     end
 
     def self.for_upstream(upstream, http_client)
-      new(scope: "upstream/#{upstream}", http_client: http_client)
+      new(scope: "upstream/#{upstream.is_a?(Gemstash::Upstream) ? upstream.cache_uri : upstream}", http_client: http_client)
     end
 
     def initialize(scope: nil, http_client: nil, db_model: nil)

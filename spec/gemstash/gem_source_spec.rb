@@ -47,8 +47,7 @@ RSpec.describe Gemstash::GemSource do
       expect(env["gemstash.gem_source"]).to eq(Gemstash::GemSource::UpstreamSource)
       expect(env["REQUEST_URI"]).to eq("/some/path?arg=abc")
       expect(env["PATH_INFO"]).to eq("/some/path")
-      expect(the_log).to include("Rewriting '/upstream/#{escaped_upstream_url}\
-/some/path?arg=abc' to '/some/path?arg=abc'")
+      expect(the_log).to include("Rewriting '/upstream/[REDACTED]/some/path?arg=abc' to '/some/path?arg=abc'")
     end
   end
 

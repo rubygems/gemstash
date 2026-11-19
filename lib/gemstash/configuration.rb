@@ -13,6 +13,8 @@ module Gemstash
       bind: "tcp://0.0.0.0:9292",
       rubygems_url: "https://rubygems.org",
       ignore_gemfile_source: false,
+      allowed_upstreams: [],
+      allowed_redirects: [],
       protected_fetch: false,
       fetch_timeout: 20,
       open_timeout: 2,
@@ -26,6 +28,14 @@ module Gemstash
 
     DEFAULT_FILE = File.expand_path("~/.gemstash/config.yml").freeze
 
+    # A scheme other than a lowercase http or https. Gemstash::Upstream would
+    # read such an entry as a host name and put https:// in front of it.
+    UNSUPPORTED_SCHEME = %r{\A(?!https?://)[A-Za-z][A-Za-z0-9+.-]*://}
+
+    # An http or https scheme without the // after it. Gemstash::Upstream would
+    # read "https:user:pass@host" as user "https" and "https:/host" as host "https".
+    SCHEME_WITHOUT_SLASHES = %r{\Ahttps?:(?!//)}i
+
     # This error is thrown when a config file is explicitly specified that
     # doesn't exist.
     class MissingFileError < StandardError
@@ -34,9 +44,20 @@ module Gemstash
       end
     end
 
-    def initialize(file: nil, config: nil)
+    # This error is thrown when :allowed_upstreams or :allowed_redirects has an
+    # entry that cannot be used. It gives the position of the entry and never
+    # its value, because the value can contain credentials.
+    class InvalidAllowedUpstreamError < StandardError
+      def initialize(key, position, problem)
+        accepted = key == :allowed_upstreams ? "\"*\" or an http(s) gem source URL" : "an http(s) URL"
+        super("Invalid :#{key} entry #{position} (#{problem}). Each entry must be #{accepted}.")
+      end
+    end
+
+    def initialize(file: nil, config: nil, validate: true)
       if config
         @config = DEFAULTS.merge(config).freeze
+        validate_allowed_upstreams if validate
         return
       end
 
@@ -51,6 +72,8 @@ module Gemstash
       else
         @config = DEFAULTS
       end
+
+      validate_allowed_upstreams if validate
     end
 
     def default?(key)
@@ -93,6 +116,33 @@ module Gemstash
         YAML.load(ERB.new(File.read(file)).result) || {}
       else
         YAML.load_file(file) || {}
+      end
+    end
+
+    # Entries are checked when the configuration is loaded, so that a typo
+    # stops Gemstash from starting instead of failing requests later on.
+    def validate_allowed_upstreams
+      %i[allowed_upstreams allowed_redirects].each do |key|
+        Array(self[key]).each_with_index do |entry, index|
+          problem = allowed_upstream_problem(entry, wildcard: key == :allowed_upstreams)
+          raise InvalidAllowedUpstreamError.new(key, index + 1, problem) if problem
+        end
+      end
+    end
+
+    def allowed_upstream_problem(entry, wildcard:)
+      return if entry == "*" && wildcard
+      return "wildcard is not supported" if entry == "*"
+      return "not a string" unless entry.is_a?(String)
+      return "empty" if entry.strip.empty?
+      return "scheme is not http:// or https://" if entry.match?(UNSUPPORTED_SCHEME)
+      return "scheme is not followed by //" if entry.match?(SCHEME_WITHOUT_SLASHES)
+
+      begin
+        "no host" if Gemstash::Upstream.new(entry).host.to_s.empty?
+      rescue URI::InvalidURIError, RuntimeError
+        # The parser's message repeats the entry, so it is not passed on.
+        "not a valid URL"
       end
     end
   end

@@ -59,8 +59,10 @@ module Gemstash
       Thread.current[:gemstash_env] = value
     end
 
+    # Not validated: "gemstash setup" reads the current file through this
+    # before replacing it. "gemstash start" gives the server a checked config.
     def config
-      @config ||= Gemstash::Configuration.new
+      @config ||= Gemstash::Configuration.new(validate: false)
     end
 
     def config=(value)
