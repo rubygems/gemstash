@@ -39,7 +39,7 @@ jobs:
           ruby-version: ruby
 
       - name: Publish to RubyGems
-        uses: rubygems/release-gem@v1.4.1
+        uses: rubygems/release-gem@v1.4.2
 
       - name: Create GitHub release
         run: |

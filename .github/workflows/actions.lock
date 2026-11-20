@@ -16,7 +16,7 @@ workflows:
     '.github/workflows/push_gem.yml':
         - 'actions/checkout@v7.0.1'
         - 'ruby/setup-ruby@v1.338.0'
-        - 'rubygems/release-gem@v1.4.1'
+        - 'rubygems/release-gem@v1.4.2'
         - 'step-security/harden-runner@v2.22.4'
 dependencies:
     'actions/checkout@v7.0.1':
@@ -39,9 +39,9 @@ dependencies:
         commit: 'sha1-dc5a8d8553e6ee01fc26761a49e99e733d17954a'
         owner_id: 208761
         repo_id: 631633510
-    'rubygems/release-gem@v1.4.1':
-        ref: 'v1.4.1'
-        commit: 'sha1-7f9650160c1a4e7989fdc9855807bdbd421d8b6b'
+    'rubygems/release-gem@v1.4.2':
+        ref: 'v1.4.2'
+        commit: 'sha1-5c53f5308233b7c0f47411f0471b3faae6fa57b2'
         owner_id: 208761
         repo_id: 731435765
         uses:
