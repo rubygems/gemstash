@@ -71,6 +71,10 @@ module Gemstash
         redirect index_upstream.url("versions", request.query_string)
       end
 
+      def serve_gem_versions(name)
+        redirect index_upstream.url("api/v1/versions/#{name}", request.query_string)
+      end
+
       def serve_info(name)
         upstream
         halt 404 unless VALID_ID.match?(name)
