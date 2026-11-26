@@ -5,17 +5,17 @@ version: 'v0.0.3'
 workflows:
     '.github/workflows/copilot-code-review.yml':
         - 'actions/checkout@v7.0.1'
-        - 'ruby/setup-ruby@v1.338.0'
+        - 'ruby/setup-ruby@v1.343.0'
     '.github/workflows/gemstash-ci.yml':
         - 'actions/checkout@v7.0.1'
         - 're-actors/alls-green@v1.3.0'
-        - 'ruby/setup-ruby@v1.338.0'
+        - 'ruby/setup-ruby@v1.343.0'
     '.github/workflows/lint.yml':
         - 'actions/checkout@v7.0.1'
-        - 'ruby/setup-ruby@v1.338.0'
+        - 'ruby/setup-ruby@v1.343.0'
     '.github/workflows/push_gem.yml':
         - 'actions/checkout@v7.0.1'
-        - 'ruby/setup-ruby@v1.338.0'
+        - 'ruby/setup-ruby@v1.343.0'
         - 'rubygems/release-gem@v1.4.2'
         - 'step-security/harden-runner@v2.23.0'
 dependencies:
@@ -29,9 +29,9 @@ dependencies:
         commit: 'sha1-b5b5b37504aa4183270bd3d855c52a67f212be35'
         owner_id: 46427759
         repo_id: 434447646
-    'ruby/setup-ruby@v1.338.0':
-        ref: 'v1.338.0'
-        commit: 'sha1-b3aaceaef7e0ee231b499e7b5f49c03fc1d32199'
+    'ruby/setup-ruby@v1.343.0':
+        ref: 'v1.343.0'
+        commit: 'sha1-be3c7df29b3349ec6bcfc6b4792f1cf9f5237d18'
         owner_id: 210414
         repo_id: 231208785
     'rubygems/configure-rubygems-credentials@dc5a8d8553e6ee01fc26761a49e99e733d17954a':
