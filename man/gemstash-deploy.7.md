@@ -30,6 +30,13 @@ $ bundle update
 $ bundle exec gemstash start
 ```
 
+## Security
+
+Before anyone you do not fully trust can reach your Gemstash server, read the
+[threat model][THREAT_MODEL]. Its [deployment checklist][DEPLOYMENT_CHECKLIST]
+lists what to change from the defaults, such as the address Gemstash listens
+on, TLS, and whether private gems can be fetched without a key.
+
 ## Monitoring
 
 Health monitoring is built in to Gemstash using the
@@ -61,3 +68,5 @@ It is not recommended to go backwards in Gemstash versions. Migrations may have
 run that could leave the database in a bad state.
 
 [SERVER_HEALTH_CHECK_RACK]: https://github.com/on-site/server_health_check-rack
+[THREAT_MODEL]: https://github.com/rubygems/gemstash/blob/main/THREATMODEL.md
+[DEPLOYMENT_CHECKLIST]: https://github.com/rubygems/gemstash/blob/main/THREATMODEL.md#deployment-checklist

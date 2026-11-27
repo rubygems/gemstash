@@ -27,6 +27,16 @@ again once you are done:
     $ bundle update
     $ bundle exec gemstash start
 
+## Security
+
+Before anyone you do not fully trust can reach your Gemstash server,
+read the [threat
+model](https://github.com/rubygems/gemstash/blob/main/THREATMODEL.md).
+Its [deployment
+checklist](https://github.com/rubygems/gemstash/blob/main/THREATMODEL.md#deployment-checklist)
+lists what to change from the defaults, such as the address Gemstash
+listens on, TLS, and whether private gems can be fetched without a key.
+
 ## Monitoring
 
 Health monitoring is built in to Gemstash using the

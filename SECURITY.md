@@ -6,6 +6,8 @@ For any security bug or issue with Gemstash, please email security@rubygems.org 
 
 For additional information about RubyGems security, please see https://rubygems.org/pages/security.
 
+For what Gemstash defends against and what it does not, including the weaknesses that are already known, see the [threat model](https://github.com/rubygems/gemstash/blob/main/THREATMODEL.md).
+
 ## Out of scope for Gemstash
 
 The following are not treated as vulnerabilities. A technically correct report may still be fixed in public as a regular bug or hardening change.
