@@ -454,4 +454,5 @@ Update this document in the same change that does any of the following:
 - sends a request to a new place, or builds a URL or a path from new input
 - adds a configuration key that changes who is trusted, or changes the
   default of one
-- closes one of the [known gaps](#known-gaps), or finds a new one
+- closes one of the [known gaps](#known-gaps), or finds a new one (if a new
+  gap would be exploitable, report it privately per SECURITY.md)
