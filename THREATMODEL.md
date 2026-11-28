@@ -45,6 +45,9 @@ and `gem`, and gem sources. It does two jobs:
 ## What Is Worth Protecting
 
 1. The **integrity** of the gems and gem metadata that clients receive.
+   Gemstash does not verify gems itself. Bundler can, using checksums from the
+   compact index or the lockfile; see
+   [Tampering With What Clients Install](#tampering-with-what-clients-install).
 2. The **confidentiality** of private gems, and of gems from upstreams that
    need credentials.
 3. **Secrets**: API keys, upstream credentials, and the connection settings of
@@ -106,8 +109,8 @@ cache, and the base path.
 
 ## Rules the Code Follows
 
-Changes to Gemstash should keep these true. A change that cannot is a change
-to this threat model, and should say so.
+Every change to Gemstash should follow these rules. A change that has to break
+a rule should update this document and explain why.
 
 1. **Data from clients and upstreams is never unmarshalled or evaluated.**
    Gems, gemspecs, and spec indexes from an upstream are stored and served byte
@@ -152,9 +155,11 @@ to this threat model, and should say so.
    exists or was yanked cannot be pushed again, and a push that fails leaves
    neither a row nor a file behind. A private gem is only served while both
    the database and the store list it as indexed.
-9. **Stored gems are kept apart by gem source.** Each upstream URL,
-   credentials included, has its own directory and its own dependency cache,
-   and private gems have theirs.
+9. **Each gem source has its own storage.** Each upstream URL gets its own
+   directory in the base path and its own entries in the dependency cache,
+   and private gems have their own as well. The same URL with different
+   credentials counts as a different upstream. So a gem fetched from one
+   upstream is never served for another upstream, or as a private gem.
 10. **Upstream credentials stay out of what Gemstash keeps.** They are not
     written to the log, the database, a cache key, or the metadata of a
     stored gem. Credentials from the configuration or the environment are
@@ -210,19 +215,25 @@ prefixes keep working.
 
 ### Redirects
 
-*From an upstream.* Gemstash follows up to three redirects when it fetches.
-Unless `:allowed_upstreams` is `"*"`, each must lead to `:rubygems_url`, an
-allowed upstream, or an entry of `:allowed_redirects`: its scheme, host, and
-port must be those of the entry, and its path must be the path of the entry or
-lie below it. An `http` entry also accepts the same host over `https`. A
-redirect from `https` to `http`, or to a URL with credentials, is never
-followed, and the credentials Gemstash sent are dropped when a redirect leads
-to another scheme, host, or port. The path of an entry only confines redirects
-as far as the server behind it keeps its paths apart, so treat a host that
-serves several gem sources as a whole.
+**Redirects that an upstream sends.** Gemstash follows at most three redirects
+for each fetch. Unless `:allowed_upstreams` is `"*"`, it follows a redirect
+only if the target matches `:rubygems_url`, an allowed upstream, or an entry
+of `:allowed_redirects`. A target matches an entry when:
 
-*To a client.* `/redirect/<url>/...`, `/`, `/fetch/actual/gem/<file>`, and the
-compact index paths answer with a redirect to the gem source of the request.
+- its scheme, host, and port are the entry's (an `http` entry also matches
+  the same host over `https`), and
+- its path is the entry's path or lies below it.
+
+Gemstash never follows a redirect from `https` to `http`, or to a URL that
+contains credentials, even when `:allowed_upstreams` is `"*"`. When a redirect
+leads to another scheme, host, or port, Gemstash does not send its
+credentials along. A path in an entry only narrows redirects as far as the
+server keeps its paths apart. If one host serves several gem sources, trust
+all of them as much as the one you listed.
+
+**Redirects that Gemstash sends to a client.** `/redirect/<url>/...`, `/`,
+`/fetch/actual/gem/<file>`, and the compact index paths answer with a
+redirect to the gem source of the request.
 Since that gem source has to be allowed, these redirects only lead to gem
 sources the operator chose. While `:allowed_upstreams` is `"*"`, anyone can
 build a URL on the Gemstash server that redirects to a host of their choice.
@@ -232,9 +243,11 @@ redirect is then sent with `Cache-Control: no-store`.
 
 ### Tampering With What Clients Install
 
-Gemstash does not verify gems. It checks no checksum and no signature, neither
-when it fetches a gem nor when it serves one. The integrity of a stored gem
-rests on the upstream, on TLS to the upstream, and on the base path.
+Gemstash does not verify gems. It checks no checksum or signature, either
+when it fetches a gem or when it serves one. The integrity of a stored gem
+rests on the upstream, on TLS to the upstream, and on the base path. On the
+client, Bundler can also catch a changed gem by comparing it with a checksum
+from the compact index or the lockfile, when it has one.
 
 - Stored gems and gemspecs are **never refreshed**
   ([gap 2](#known-gaps)). Dependency data expires with the cache.
